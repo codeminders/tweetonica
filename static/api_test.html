@@ -1,0 +1,128 @@
+<!-- test login page -->
+<html>
+<head>
+    <title>POST test</title>
+    <script type="text/javascript">
+        var current_id = 1;
+        var URL = '/api';
+        var CONTENT_TYPE = 'application/json'
+    
+        function createHTTP()
+        {
+            if (window.XMLHttpRequest) {
+                try {
+                    return new XMLHttpRequest();
+                } catch(e) {}
+            }
+            if (window.ActiveXObject) {
+                try {
+                    return new ActiveXObject("Msxml2.XMLHTTP");
+                } catch(e) { }
+
+                try {
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                } catch(e) { }
+            }
+
+            return false;
+        }
+
+
+
+        function getLoginJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "login",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "login": "vzalivatest",\n' +
+                    '         "password": "vzalivatest"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getHttpResult(http)
+        {
+            var result = '';
+            result += http.status + " " + http.statusText + "\n";
+            result += http.getAllResponseHeaders();
+            result += "\n";
+            result += http.responseText;
+            return result;
+        }
+
+        function doSubmitPostTest()
+        {
+            var responseText = document.getElementById("responseText");
+            var http = createHTTP();
+            if (!http)
+            {
+                responseText.value = "Cannot create HTTP request.";
+                return;
+            }
+
+            responseText.value = "--- Starting...\n";
+
+            var content = document.getElementById("post_content").value;
+
+            http.onreadystatechange = function() {
+                responseText.value += "-- State: " + http.readyState + "\n";
+
+                if (http.readyState == 4)
+                    responseText.value += "-- Result:\n" + getHttpResult(http);
+            }
+            http.open("POST", URL, true);
+            http.setRequestHeader('Content-Type', CONTENT_TYPE);
+            http.send(content);
+        }
+
+        function doSubmitOtherTest(method)
+        {
+            var responseText = document.getElementById("responseText");
+            var http = createHTTP();
+            if (!http)
+            {
+                responseText.value = "Cannot create HTTP request.";
+                return;
+            }
+
+            responseText.value = "--- Starting...\n";
+
+            http.onreadystatechange = function() {
+                responseText.value += "-- State: " + http.readyState + "\n";
+
+                if (http.readyState == 4)
+                    responseText.value += "-- Result:\n" + getHttpResult(http);
+            }
+
+            http.open(method, URL, true);
+            http.send(null);
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>API debugger</h2>
+
+<p>
+Content: 
+<input type="submit" value="Login JSON" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
+<br/>
+<textarea id="post_content" rows="10" cols="125"></textarea>
+</p>
+
+<p>
+<input type="submit" value="Send POST" onclick="doSubmitPostTest()"/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="submit" value="Send GET" onclick="doSubmitOtherTest('GET')"/>
+<input type="submit" value="Send DELETE" onclick="doSubmitOtherTest('DELETE')"/>
+</p>
+
+
+<h2>Response text</h2>
+<textarea id="responseText" rows="30" cols="125"></textarea>
+
+</body>
+</html>
