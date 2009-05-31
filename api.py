@@ -22,6 +22,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def json_login(self, login=None, password=None):
         t = twitter.Api(login, password)
+        # account/verify_credentials?
         friends =  t.GetFriends()
         return "OK"
 
