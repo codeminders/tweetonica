@@ -53,6 +53,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if u.password != password:
             u.password = password
             changed = True
+        # TODO: update firends list
         if changed:
             u.put()
             
