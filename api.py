@@ -3,6 +3,7 @@ import os
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template, util
 
+import twitter
 import json
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
@@ -20,6 +21,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     # -- API methods delegates below --
 
     def json_login(self, login=None, password=None):
+        t = twitter.Api(login, password)
+        friends =  t.GetFriends()
         return "OK"
 
 
