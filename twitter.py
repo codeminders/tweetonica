@@ -1227,6 +1227,20 @@ class Api(object):
     data = simplejson.loads(json)
     return User.NewFromJsonDict(data)
 
+  def verifyCredentials(self):
+    '''Use this method to test if supplied user credentials are valid
+
+    The twitter.Api instance must be authenticated.
+
+    Args: none
+    Returns:
+      A twitter.User instance representing the API user.
+    '''
+    url = 'http://twitter.com/account/verify_credentials.json'
+    json = self._FetchUrl(url)
+    data = simplejson.loads(json)
+    return User.NewFromJsonDict(data)
+
   def SetCredentials(self, username, password):
     '''Set the username and password for this instance
 
