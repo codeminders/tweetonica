@@ -3,13 +3,14 @@
 from google.appengine.ext import db
 
 class User(db.Model):
-    id = db.IntegerProperty(required=True) # primary key
-    screen_name = db.StringProperty(required=True)
+    screen_name = db.StringProperty(required=True) # primary key
     password = db.StringProperty(required=True)
-    timeline_last_updated = db.DateTimeProperty(auto_now_add=True)
+    id = db.IntegerProperty(required=True) 
+    timeline_last_updated = db.DateTimeProperty()
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
+    memberships_last_updated = db.DateTimeProperty()
     # foreing keys
     user = db.ReferenceProperty(User)
 
@@ -24,7 +25,7 @@ class Friend(db.Model):
 class StatusUpdate(db.Model):
     id = db.IntegerProperty(required=True) # primary key
     text = db.StringProperty(required=True, multiline=True)
-    created_at = db.DateTimeProperty(auto_now_add=False)
+    created_at = db.DateTimeProperty()
     truncated = db.BooleanProperty()
     in_reply_to_status_id = db.IntegerProperty()
     in_reply_to_user_id = db.IntegerProperty()
