@@ -19,6 +19,10 @@ import urllib
 import urllib2
 import urlparse
 import twitter
+try:
+  from google.appengine.api import memcache
+except ImportError:
+  memcache = None
 
 class TwitterError(Exception):
   '''Base class for Twitter errors'''
@@ -897,7 +901,11 @@ class Api(object):
       input_encoding: The encoding used to encode input strings. [optional]
       request_header: A dictionary of additional HTTP request headers. [optional]
     '''
-    self._cache = _FileCache()
+    try:
+      self._cache = _FileCache()
+    except:
+      if memcache:
+        self._cache = _MemCache()
     self._urllib = urllib2
     self._cache_timeout = Api.DEFAULT_CACHE_TIMEOUT
     self._InitializeRequestHeaders(request_headers)
@@ -1536,3 +1544,29 @@ class _FileCache(object):
 
   def _GetPrefix(self,hashed_key):
     return os.path.sep.join(hashed_key[0:_FileCache.DEPTH])
+
+
+class _MemCache(object):
+  '''A cache implementation that uses memcache'''
+  
+  def _GetCacheKey(self, key):
+    return 'twitter_' + key
+
+  def Get(self, key):
+    data = memcache.get(self._GetCacheKey(key))
+    if data is not None:
+      return data[0]
+    return None
+
+  def Set(self, key, data):
+    data = (data, time.time())
+    memcache.set(self._GetCacheKey(key), data)
+
+  def Remove(self, key):
+    memcache.delete(self._GetCacheKey(key))
+
+  def GetCachedTime(self,key):
+    data = memcache.get(self._GetCacheKey(key))
+    if data is not None:
+      return data[1]
+    return None
