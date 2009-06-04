@@ -2,6 +2,7 @@ import os
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template, util
+from google.appengine.ext import db
 
 import twitter
 import json
@@ -24,7 +25,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_login(self, login=None, password=None):
         t = twitter.Api(login, password)
         me =  t.verifyCredentials()
-        q = data.User.gql('WHERE __key__ == :1', login)
+        q = data.User.gql('WHERE screen_name = :1', login)
         users = q.fetch(1)
         if len(users)!=1:
             self._newUser(me, password)
@@ -40,11 +41,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         return "BLAH"
     
     def _newUser(self, me, password):
-        u = data.User()
-        u.screen_name = me.screen_name
-        u.password = password
-        u.id = me.id
-        u.timeline_last_updated = None
+        u = data.User(screen_name = me.screen_name,
+                      password = password,
+                      id = me.id,
+                      timeline_last_updated = None)
         # TODO fetch friends and put them into default group
         u.put()
     
