@@ -12,6 +12,8 @@ import json
 import data
 
 DEFAULT_GROUP_NAME="__ALL__"
+MAX_GROUPS=255
+MAX_FRIENDS_PER_GROUP=4096
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -27,25 +29,65 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- API methods delegates below --
 
-    def json_login(self, login=None, password=None):
-        logging.debug('login invoked for user %s' % login)
-        t = twitter.Api(login, password)
+    def json_login(self, screen_name=None, password=None):
+        logging.debug('Method \'login\' invoked for user %s' % screen_name)
+        t = twitter.Api(screen_name, password)
         me =  t.verifyCredentials()
-        q = data.User.gql('WHERE screen_name = :1', login)
-        users = q.fetch(1)
-        if len(users)!=1:
-            u = self._newUser(me, password)
-        else:
-            u = users[0]
+        u = self._getUserByScreenName(screen_name)
+        if u:
             self._updateUser(me, password, u)
+        else:
+            u = self._newUser(me, password)
         self._updateFriends(t,u)
         return self._buildAuthToken(me)
 
+    def json_get_users(self, auth_token=None, screen_name=None):
+        logging.debug('Method \'get_users\' invoked for user %s' % screen_name)
+        u = self._getUserByScreenName(screen_name)
+        if not u:
+            raise Exception("Unknown user '%s'" % screen_name)
+        self._verifyAuthToken(auth_token, screen_name, u)
 
+        q = data.Group.gql('WHERE user = :1', u.key())
+        groups = q.fetch(MAX_GROUPS)
+        res = []
+        for g in groups:
+            res.append({
+                'name': g.name,
+                'rssurl': self._groupRSS_URL(g),
+                "users": [f.screen_name for f in self._groupMembers(g)]
+                });
+        return res
+    
     # -- implementation method below  ---
 
+    def _groupMembers(self,g):
+        q = data.Friend.gql('WHERE  group = :1', g.key())
+        return q.fetch(MAX_FRIENDS_PER_GROUP)
+    
+
+    def _groupRSS_URL(self,g):
+        #TODO imeplemnt
+        return "http://example.com/%s/%s" % (g.user.screen_name, g.name)
+    
+    def _getUserByScreenName(self, screen_name):
+        q = data.User.gql('WHERE screen_name = :1', screen_name)
+        users = q.fetch(1)
+        if len(users)==1:
+            return users[0]
+        elif len(users)>1:
+            logging.error("Multiple user records with screen name '%s'" %
+                          screen_name)
+            return None
+        else:
+            return None
+
+    def _verifyAuthToken(self, token, screen_name, u):
+        #TODO imeplemnt
+        pass
+
     def _buildAuthToken(self, me):
-        # TODO
+        #TODO imeplemnt
         return "BLAH"
     
     def _newUser(self, me, password):
@@ -85,7 +127,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
 
     def _getDefaultGroup(self, u):
-        q = data.Group.gql('WHERE name = :1', DEFAULT_GROUP_NAME)
+        q = data.Group.gql('WHERE name = :1 and user=:2', DEFAULT_GROUP_NAME,
+                           u.key())
         groups = q.fetch(1)
         return groups[0]
         
