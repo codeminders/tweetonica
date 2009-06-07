@@ -20,6 +20,7 @@ class Friend(db.Model):
     real_name = db.StringProperty()
     profile_image_url = db.LinkProperty()
     # foreing keys
+    user = db.ReferenceProperty(User)
     group = db.ReferenceProperty(Group)
 
 class StatusUpdate(db.Model):

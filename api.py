@@ -34,9 +34,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         q = data.User.gql('WHERE screen_name = :1', login)
         users = q.fetch(1)
         if len(users)!=1:
-            self._newUser(me, password)
+            u = self._newUser(me, password)
         else:
-            self._updateUser(me, password, users[0])
+            u = users[0]
+            self._updateUser(me, password, u)
+        self._updateFriends(t,u)
         return self._buildAuthToken(me)
 
 
@@ -60,6 +62,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                        user=u,
                        parent=u)
         g.put()
+        return u
 
     
     def _updateUser(self, me, password, u):
@@ -72,6 +75,38 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if changed:
             u.put()
 
+    def _updateFriends(self, t, u):
+        friends = t.GetFriends()
+        for f in friends:
+            if self._isKnownFriend(u,f):
+                logging.debug("Friend %s is already known" % f.screen_name)
+            else:
+                self._addNewFriend(u,f,self._getDefaultGroup(u))
+
+
+    def _getDefaultGroup(self, u):
+        q = data.Group.gql('WHERE name = :1', DEFAULT_GROUP_NAME)
+        groups = q.fetch(1)
+        return groups[0]
+        
+    def _isKnownFriend(self,u,f):
+        q = data.Friend.gql('WHERE screen_name = :1 and user=:2',
+                            f.screen_name, u.key())
+        
+        friends = q.fetch(1)
+        return len(friends)==1
+    
+
+    def _addNewFriend(self,u,f,g):
+        logging.debug("Adding friend %s to %s" % (f.screen_name, u.screen_name))
+        fo = data.Friend(id = f.id,
+                         screen_name = f.screen_name,
+                         real_name = f.name,
+                         profile_image_url = f.profile_image_url,
+                         user = u,
+                         group = g,
+                        parent=u)
+        fo.put()
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
