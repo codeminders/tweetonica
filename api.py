@@ -13,6 +13,11 @@ import data
 
 DEFAULT_GROUP_NAME="__ALL__"
 
+# Error Codes (100=999)
+ERR_TWITTER_AUTH_FAILED = 101
+ERR_BAD_AUTH_TOKEN = 102
+ERR_BAD_USER = 103
+
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def get(self):
@@ -33,8 +38,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         try:
             me =  t.verifyCredentials()
         except Exception:
-            # TODO: return JSON error
-            pass
+            logging.exception("Twitter auth failed for %s" % screen_name)
+            raise json.JSONRPCError("Twitter authentication failed",
+                                    code=ERR_TWITTER_AUTH_FAILED)
+
         u = self._getUserByScreenName(screen_name)
         if u:
             self._updateUser(me, password, u)
@@ -46,13 +53,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_get_friends(self, auth_token=None):
         logging.debug('Method \'get_fiends\' invoked for user %s' % screen_name)
         screen_name = self._verifyAuthToken(auth_token)
-        if not screen_name:
-            # TODO return error
-            pass
-
         u = self._getUserByScreenName(screen_name)
         if not u:
-            raise Exception("Unknown user '%s'" % screen_name)
+            logging.error("Unknown user '%s'" % screen_name)
+            raise json.JSONRPCError("Unknown user '%s'" % screen_name,
+                                    code=ERR_BAD_USER)
 
         q = data.Group.gql('WHERE user = :1', u.key())
         res = []
@@ -114,6 +119,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _verifyAuthToken(self, token):
         """ Verify user, returns screen name or None for invalid token"""
+
+        if False:
+            logging.warning("Bad auth token %s" % token)
+            raise json.JSONRPCError("Invalid auth token",
+                                    code=ERR_BAD_AUTH_TOKEN)
+        
         #TODO implemnt
         screen_name = None
         return screen_name
