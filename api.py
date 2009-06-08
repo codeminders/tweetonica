@@ -61,9 +61,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def _groupMembers(self,g):
         q = data.Friend.gql('WHERE  group = :1', g.key())
         return q
-
     
-
     def _groupRSS_URL(self,g):
         #TODO imeplemnt
         return "http://example.com/%s/%s" % (g.user.screen_name, g.name)
@@ -91,7 +89,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                       password = password,
                       id = me.id,
                       timeline_last_updated = None)
-        # TODO fetch friends and put them into default group
         u.put()
         g = data.Group(name=DEFAULT_GROUP_NAME,
                        memberships_last_updated=datetime.datetime.now(),
@@ -112,11 +109,22 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _updateFriends(self, t, u):
         friends = t.GetFriends()
+        fnames = []
         for f in friends:
-            if self._isKnownFriend(u,f):
-                logging.debug("Friend %s is already known" % f.screen_name)
-            else:
+            fnames.append(f.screen_name)
+            if not self._isKnownFriend(u,f):
                 self._addNewFriend(u,f,self._getDefaultGroup(u))
+
+        q = data.Friend.gql('WHERE user = :1', u.key())
+        n = 0
+        for f in q:
+            if f.screen_name not in fnames:
+                logging.debug("%s is no longer friend." % f.screen_name)
+                f.delete()
+            else:
+                n = n+1
+        logging.debug("User %s have %d friends" % (u.screen_name, n))
+                
 
 
     def _getDefaultGroup(self, u):
