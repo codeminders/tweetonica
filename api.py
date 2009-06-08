@@ -120,6 +120,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         for f in q:
             if f.screen_name not in fnames:
                 logging.debug("%s is no longer friend." % f.screen_name)
+                # remove all his status updates
+                q1 = data.StatusUpdate.gql('WHERE from_friend = :1', f.key())
+                for s in q1:
+                    s.delete()
                 f.delete()
             else:
                 n = n+1
