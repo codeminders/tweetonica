@@ -30,7 +30,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_login(self, screen_name=None, password=None):
         logging.debug('Method \'login\' invoked for user %s' % screen_name)
         t = twitter.Api(screen_name, password)
-        me =  t.verifyCredentials()
+        try:
+            me =  t.verifyCredentials()
+        except Exception:
+            # TODO: return JSON error
+            pass
         u = self._getUserByScreenName(screen_name)
         if u:
             self._updateUser(me, password, u)
@@ -39,12 +43,16 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         self._updateFriends(t,u)
         return self._buildAuthToken(me)
 
-    def json_get_users(self, auth_token=None, screen_name=None):
-        logging.debug('Method \'get_users\' invoked for user %s' % screen_name)
+    def json_get_friends(self, auth_token=None):
+        logging.debug('Method \'get_fiends\' invoked for user %s' % screen_name)
+        screen_name = self._verifyAuthToken(auth_token)
+        if not screen_name:
+            # TODO return error
+            pass
+
         u = self._getUserByScreenName(screen_name)
         if not u:
             raise Exception("Unknown user '%s'" % screen_name)
-        self._verifyAuthToken(auth_token, screen_name, u)
 
         q = data.Group.gql('WHERE user = :1', u.key())
         res = []
@@ -55,15 +63,45 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 "users": [f.screen_name for f in self._groupMembers(g)]
                 });
         return res
+
+    def json_move_friend(self, screen_name=None, from_group=None, to_group=None):
+        """ Move user betwen groups """
+        pass
+
+    def json_new_group(self,auth_token=None, group_name=None):
+        """ Create new group """
+        pass
+
+    def json_rename_group(self, auth_token=None,
+                          old_group_name=None,
+                          new_group_name=None):
+        """ Create new group """
+        pass
     
+    def json_delete_group(self, auth_token=None, group_name=None):
+        """ Delete group """
+        pass
+
+    def json_get_user_info(self, auth_token=None, screen_name=None):
+        """ Get user info """
+        pass
+
     # -- implementation method below  ---
+
+    def _updateTimeLine(self,u,t):
+        # TODO: since
+        # TODO: paging back
+        timeline = t.GetFriendsTimeline()
+        for t in timeline:
+            logging.debug("Got timeline entry %s" % t)
+            pass
 
     def _groupMembers(self,g):
         q = data.Friend.gql('WHERE  group = :1', g.key())
         return q
     
     def _groupRSS_URL(self,g):
-        #TODO imeplemnt
+        #TODO implemnt
         return "http://example.com/%s/%s" % (g.user.screen_name, g.name)
     
     def _getUserByScreenName(self, screen_name):
@@ -74,12 +112,14 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         else:
             return None
 
-    def _verifyAuthToken(self, token, screen_name, u):
-        #TODO imeplemnt
-        pass
+    def _verifyAuthToken(self, token):
+        """ Verify user, returns screen name or None for invalid token"""
+        #TODO implemnt
+        screen_name = None
+        return screen_name
 
     def _buildAuthToken(self, me):
-        #TODO imeplemnt
+        #TODO implemnt
         return "BLAH"
     
     def _newUser(self, me, password):
