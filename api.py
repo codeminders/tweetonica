@@ -2,6 +2,7 @@ import os
 
 import datetime
 import logging
+from urllib2 import HTTPError
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template, util
@@ -11,12 +12,15 @@ import twitter
 import json
 import data
 
+
+
 DEFAULT_GROUP_NAME="__ALL__"
 
 # JSON-RPC Error Codes (101=999)
 ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
 ERR_BAD_USER = 103
+ERR_TWITTER_COMM_ERROR = 104
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -37,10 +41,15 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         t = twitter.Api(screen_name, password)
         try:
             me =  t.verifyCredentials()
-        except Exception:
-            logging.exception("Twitter auth failed for %s" % screen_name)
-            raise json.JSONRPCError("Twitter authentication failed",
+        except HTTPError, e:
+            if e.code==401:
+                raise json.JSONRPCError("Twitter authentication failed",
                                     code=ERR_TWITTER_AUTH_FAILED)
+            else:
+                logging.exception("Error talking to twitter %s" % screen_name)
+                raise json.JSONRPCError("Error talking to twiter",
+                                    code=ERR_TWITTER_COMM_ERROR)
+                
 
         u = self._getUserByScreenName(screen_name)
         if u:
@@ -96,7 +105,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def _updateTimeLine(self,u,t):
         # TODO: since
         # TODO: paging back
-        timeline = t.GetFriendsTimeline()
+        try:
+            timeline = t.GetFriendsTimeline()
+        except Exception:
+            logging.exception("Error fetching friends timeline for %s" % u.screen_name)
+            raise json.JSONRPCError("Error fetching friends timeline",
+                                    code=ERR_TWITTER_COMM_ERROR)
         for t in timeline:
             logging.debug("Got timeline entry %s" % t)
             pass
@@ -159,7 +173,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             u.put()
 
     def _updateFriends(self, t, u):
-        friends = t.GetFriends()
+        try:
+            friends = t.GetFriends()
+        except Exception:
+            logging.exception("Error fetching friends for %s" % u.screen_name)
+            raise json.JSONRPCError("Error fetching friends",
+                                    code=ERR_TWITTER_COMM_ERROR)
         fnames = []
         for f in friends:
             fnames.append(f.screen_name)
