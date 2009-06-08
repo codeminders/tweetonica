@@ -32,5 +32,6 @@ class StatusUpdate(db.Model):
     in_reply_to_user_id = db.IntegerProperty()
     in_reply_to_screen_name = db.StringProperty()
     # foreing keys
+    group = db.ReferenceProperty(Group)
     from_friend = db.ReferenceProperty(Friend)
 
