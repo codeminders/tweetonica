@@ -12,8 +12,6 @@ import json
 import data
 
 DEFAULT_GROUP_NAME="__ALL__"
-MAX_GROUPS=255
-MAX_FRIENDS_PER_GROUP=4096
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -49,9 +47,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         self._verifyAuthToken(auth_token, screen_name, u)
 
         q = data.Group.gql('WHERE user = :1', u.key())
-        groups = q.fetch(MAX_GROUPS)
         res = []
-        for g in groups:
+        for g in q:
             res.append({
                 'name': g.name,
                 'rssurl': self._groupRSS_URL(g),
@@ -63,7 +60,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _groupMembers(self,g):
         q = data.Friend.gql('WHERE  group = :1', g.key())
-        return q.fetch(MAX_FRIENDS_PER_GROUP)
+        return q
+
     
 
     def _groupRSS_URL(self,g):
@@ -75,10 +73,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         users = q.fetch(1)
         if len(users)==1:
             return users[0]
-        elif len(users)>1:
-            logging.error("Multiple user records with screen name '%s'" %
-                          screen_name)
-            return None
         else:
             return None
 
@@ -113,7 +107,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if u.password != password:
             u.password = password
             changed = True
-        # TODO: update firends list
         if changed:
             u.put()
 
