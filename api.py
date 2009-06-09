@@ -21,8 +21,7 @@ AUTH_TOKEN_LIFESPAN = datetime.timedelta(1,1)
 # JSON-RPC Error Codes (101=999)
 ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
-ERR_BAD_USER = 103
-ERR_TWITTER_COMM_ERROR = 104
+ERR_TWITTER_COMM_ERROR = 103
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -67,14 +66,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                  'auth_token_expires' : auth_token_expires.isoformat() }
 
     def json_get_friends(self, auth_token=None):
-        screen_name = self._verifyAuthToken(auth_token)
-        logging.debug('Method \'get_fiends\' invoked for user %s' % screen_name)
-        u = self._getUserByScreenName(screen_name)
-        if not u:
-            logging.error("Unknown user '%s'" % screen_name)
-            raise json.JSONRPCError("Unknown user '%s'" % screen_name,
-                                    code=ERR_BAD_USER)
-
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         q = data.Group.gql('WHERE user = :1', u.key())
         res = []
         for g in q:
@@ -153,7 +146,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 raise json.JSONRPCError("Expired auth token",
                                         code=ERR_BAD_AUTH_TOKEN)
             else:
-                return users[0].screen_name
+                return users[0]
 
     def _buildAuthToken(self, me):
         return (str(uuid1()),
