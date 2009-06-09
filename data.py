@@ -5,6 +5,8 @@ from google.appengine.ext import db
 class User(db.Model):
     screen_name = db.StringProperty(required=True) # primary key
     password = db.StringProperty(required=True)
+    auth_token = db.StringProperty()
+    auth_token_expires = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
     timeline_last_updated = db.DateTimeProperty()
 

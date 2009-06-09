@@ -3,6 +3,7 @@ import os
 import datetime
 import logging
 from urllib2 import HTTPError
+from uuid import uuid1
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import template, util
@@ -12,9 +13,10 @@ import twitter
 import json
 import data
 
-
-
 DEFAULT_GROUP_NAME="__ALL__"
+
+# for how long auth token is valid ( 1day+1sec)
+AUTH_TOKEN_LIFESPAN = datetime.timedelta(1,1)
 
 # JSON-RPC Error Codes (101=999)
 ERR_TWITTER_AUTH_FAILED = 101
@@ -57,11 +59,16 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         else:
             u = self._newUser(me, password)
         self._updateFriends(t,u)
-        return self._buildAuthToken(me)
+        (auth_token, auth_token_expires)  = self._buildAuthToken(me)
+        u.auth_token = auth_token
+        u.auth_token_expires = auth_token_expires
+        u.put()
+        return { 'auth_token' : auth_token,
+                 'auth_token_expires' : auth_token_expires.isoformat() }
 
     def json_get_friends(self, auth_token=None):
-        logging.debug('Method \'get_fiends\' invoked for user %s' % screen_name)
         screen_name = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'get_fiends\' invoked for user %s' % screen_name)
         u = self._getUserByScreenName(screen_name)
         if not u:
             logging.error("Unknown user '%s'" % screen_name)
@@ -134,18 +141,23 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def _verifyAuthToken(self, token):
         """ Verify user, returns screen name or None for invalid token"""
 
-        if False:
+        q = data.User.gql('WHERE auth_token = :1', token)
+        users = q.fetch(1)
+        if len(users)!=1:
             logging.warning("Bad auth token %s" % token)
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
-        
-        #TODO implemnt
-        screen_name = None
-        return screen_name
+        else:
+            if users[0].auth_token_expires < datetime.datetime.now():
+                logging.warning("Expired auth token %s" % token)
+                raise json.JSONRPCError("Expired auth token",
+                                        code=ERR_BAD_AUTH_TOKEN)
+            else:
+                return users[0].screen_name
 
     def _buildAuthToken(self, me):
-        #TODO implemnt
-        return "BLAH"
+        return (str(uuid1()),
+                datetime.datetime.now()+AUTH_TOKEN_LIFESPAN)
     
     def _newUser(self, me, password):
         """ Creates new user record with empty default group """
