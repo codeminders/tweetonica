@@ -22,6 +22,7 @@ AUTH_TOKEN_LIFESPAN = datetime.timedelta(1,1)
 ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
 ERR_TWITTER_COMM_ERROR = 103
+ERR_GROUP_ALREADY_EXISTS = 104
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -84,8 +85,19 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def json_new_group(self,auth_token=None, group_name=None):
         """ Create new group """
-        pass
-
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'new_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
+        if self._isGroupExists(group_name):
+            raise json.JSONRPCError("Group %s already exists" % group_name,
+                                    code=ERR_GROUP_ALREADY_EXISTS)
+            
+        g = data.Group(name=group_name,
+                       memberships_last_updated=datetime.datetime.now(),
+                       user=u,
+                       parent=u)
+        g.put()
+        return g.key()
+        
     def json_rename_group(self, auth_token=None,
                           old_group_name=None,
                           new_group_name=None):
@@ -211,7 +223,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                            u.key())
         groups = q.fetch(1)
         return groups[0]
-        
+
+    def _isGroupExists(self, group_name):
+        q = data.Group.gql('WHERE name = :1', group_name)
+        groups = q.fetch(1)
+        return len(groups)==1
+
     def _isKnownFriend(self,u,f):
         q = data.Friend.gql('WHERE screen_name = :1 and user=:2',
                             f.screen_name, u.key())
