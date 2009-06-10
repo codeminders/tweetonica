@@ -96,7 +96,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                        user=u,
                        parent=u)
         g.put()
-        return g.key()
         
     def json_rename_group(self, auth_token=None,
                           old_group_name=None,
