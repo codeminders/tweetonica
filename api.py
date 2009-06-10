@@ -87,7 +87,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """ Create new group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'new_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
-        if self._isGroupExists(group_name):
+
+        #TODO: transacton
+        if self._isGroupExists(group_name, u):
             raise json.JSONRPCError("Group %s already exists" % group_name,
                                     code=ERR_GROUP_ALREADY_EXISTS)
             
@@ -223,8 +225,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         groups = q.fetch(1)
         return groups[0]
 
-    def _isGroupExists(self, group_name):
-        q = data.Group.gql('WHERE name = :1', group_name)
+    def _isGroupExists(self, group_name, u):
+        q = data.Group.gql('WHERE name = :1 and user=:2', group_name, u.key())
         groups = q.fetch(1)
         return len(groups)==1
 
