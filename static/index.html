@@ -1,5 +1,141 @@
 <html>
+<head>
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
+    <script type="text/javascript" src="js/api.js"></script>
+    <script type="text/javascript">
+
+        var data = null;
+
+        function login(screen_name, password) {
+            phalanges.api.login(screen_name, password, function() {
+                console.log('logged in');
+            });
+        }
+
+        function render_tree() {
+            var html = '';
+            for (var g in data) {
+                var info = data[g];
+                html += 'Group: ' + info.name + '<br/>';
+                for (var i = 0; i < info.users.length; i++)
+                    html += '&nbsp;&nbsp;&nbsp;&nbsp;' + info.users[i] + '<br/>';
+            }
+            if (html == '')
+                html = 'No users found';
+            $('#tree').html(html);
+        }
+
+        $(document).ready(function() {
+            $('#btnlogin').click(function() {
+                var screen_name = jQuery.trim($('#screen_name').val());
+                var password    = jQuery.trim($('#password').val());
+
+                if (screen_name == '') {
+                    alert('Please enter screenname');
+                    return;
+                }
+
+                if (password == '') {
+                    alert('Please enter password');
+                    return;
+                }
+
+                phalanges.api.login(screen_name, password, function() {
+                    $('#login').hide();
+                    $('#tree').html('Loading data....');
+                    $('#main').show();
+                    phalanges.api.get_friends(function(results) {
+                        data = results;
+                        render_tree();
+                    });
+                });
+
+            });
+
+            $('#btncreate').click(function() {
+                var name = prompt('Enter group name');
+                phalanges.api.new_group(name, function(results) {
+                    data[name] = {name:name, rssurl:'TODO',users:[]};
+                    render_tree();
+                });
+            });
+
+            $('#btnrename').click(function() {
+                var old_name = prompt('Enter old group name');
+                var new_name = prompt('Enter new group name');
+                phalanges.api.rename_group(old_name, new_name, function(results) {
+                    var tmp = [];
+                    for (var g in data) {
+                        var info = data[g];
+                        if (g == old_name) {
+                            info.name = new_name;
+                            tmp[new_name] = info;
+                        }
+                        else
+                            tmp[g] = info;
+                    }
+                    data = tmp;
+                    render_tree();
+                });
+            });
+
+            $('#btnmove').click(function() {
+                var screen_name = prompt('Enter screen name');
+                var group_name = prompt('Enter group name');
+                phalanges.api.move_friend(screen_name, group_name, function(results) {
+                    for (var g in data) {
+                        var info = data[g];
+                        for (var i = 0; i < info.users.length; i++) {
+                            if (info.users[i] == screen_name) {
+                                info.users.splice(i, 1);
+                                break;
+                            }
+                        }
+                        if (g == group_name) {
+                            info.users.push(screen_name);
+                        }
+                    }
+                    render_tree();
+                });
+            });
+
+
+            $('#btndelete').click(function() {
+                var name = prompt('Enter group name');
+                phalanges.api.delete_group(name, function(results) {
+                    var tmp = [];
+                    for (var g in data) {
+                        var info = data[g];
+                        if (g != name)
+                            tmp[g] = info;
+                    }
+                    data = tmp;
+                    render_tree();
+                });
+            });
+
+
+        });
+    </script>
+</head>
 <body>
-  hello world!
+  <div id="login">
+    <form method="post" id="loginform">
+        <input id="screen_name"/>
+        <input id="password" type="password"/>
+        <input id="btnlogin" type="button">
+  </div>
+  <div id="main" style="display:none">
+    <div id="tree">TREE IS HERE</div>
+    <div id="controls">
+        CONTROLS IS HERE
+        <input type="button" value="create" id="btncreate"/>
+        <input type="button" value="move" id="btnmove"/>
+        <input type="button" value="delete" id="btndelete"/>
+        <input type="button" value="rename" id="btnrename"/>
+    </div>
+    <div id="details">DETAILS ARE HERE</div>
+  </div>
 </body>
 </html>
