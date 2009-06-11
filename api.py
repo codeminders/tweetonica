@@ -23,6 +23,8 @@ ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
 ERR_TWITTER_COMM_ERROR = 103
 ERR_GROUP_ALREADY_EXISTS = 104
+ERR_NO_SUCH_GROUP = 105
+ERR_NO_SUCH_FRIEND =106
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -79,17 +81,28 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 });
         return res
 
-    def json_move_friend(self, screen_name=None, from_group=None, to_group=None):
-        """ Move user betwen groups """
-        pass
+    def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
+        """ Moves friend to new group """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'move_friend(%s,%s)\' invoked for user %s' % (screen_name, group_name, u.screen_name))
+        g = self._getGroupByName(group_name, u)
+        if g==None:
+            raise json.JSONRPCError("Group %s does not exists" % group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+        f = self._getFriendByName(screen_name, u)
+        if f==None:
+            raise json.JSONRPCError("%s is not your friend" % screen_name,
+                                    code=ERR_NO_SUCH_FRIEND)
+        f.group = g
+        f.put()
 
-    def json_new_group(self,auth_token=None, group_name=None):
+    def json_new_group(self, auth_token=None, group_name=None):
         """ Create new group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'new_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
         #TODO: transacton
-        if self._isGroupExists(group_name, u):
+        if self._getGroupByName(group_name, u)!=None:
             raise json.JSONRPCError("Group %s already exists" % group_name,
                                     code=ERR_GROUP_ALREADY_EXISTS)
             
@@ -200,7 +213,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         fnames = []
         for f in friends:
             fnames.append(f.screen_name)
-            if not self._isKnownFriend(u,f):
+            if self._getFriendByName(f.screen_name, u)==None:
                 self._addNewFriend(u,f,self._getDefaultGroup(u))
 
         q = data.Friend.gql('WHERE user = :1', u.key())
@@ -225,17 +238,23 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         groups = q.fetch(1)
         return groups[0]
 
-    def _isGroupExists(self, group_name, u):
+    def _getGroupByName(self, group_name, u):
         q = data.Group.gql('WHERE name = :1 and user=:2', group_name, u.key())
         groups = q.fetch(1)
-        return len(groups)==1
+        if len(groups)==1:
+            return groups[0]
+        else:
+            return None
 
-    def _isKnownFriend(self,u,f):
+    def _getFriendByName(self, screen_name, u):
         q = data.Friend.gql('WHERE screen_name = :1 and user=:2',
-                            f.screen_name, u.key())
+                            screen_name, u.key())
         
         friends = q.fetch(1)
-        return len(friends)==1
+        if len(friends)==1:
+            return friends[0]
+        else:
+            return None
     
 
     def _addNewFriend(self,u,f,g):

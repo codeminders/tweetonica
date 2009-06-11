@@ -27,7 +27,44 @@
             return false;
         }
 
+        function getGetFriendsJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "get_friends",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": ""\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
 
+        function getNewGroupJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "new_group",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "",\n' +
+                    '         "group_name": "group1"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getMoveFriendJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "move_friend",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "",\n' +
+                    '         "screen_name": "",\n' +
+                    '         "group_name": "group1"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
 
         function getLoginJSON()
         {
@@ -107,8 +144,11 @@
 <h2>API debugger</h2>
 
 <p>
-Content: 
-<input type="submit" value="Login JSON" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
+Methods: 
+<input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
+<input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
+<input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
+<input type="submit" value="move_friend" onclick="document.getElementById('post_content').value = getMoveFriendJSON()"/>
 <br/>
 <textarea id="post_content" rows="10" cols="125"></textarea>
 </p>
@@ -116,8 +156,11 @@ Content:
 <p>
 <input type="submit" value="Send POST" onclick="doSubmitPostTest()"/>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!--
 <input type="submit" value="Send GET" onclick="doSubmitOtherTest('GET')"/>
 <input type="submit" value="Send DELETE" onclick="doSubmitOtherTest('DELETE')"/>
+--!>
+
 </p>
 
 
