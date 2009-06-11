@@ -5,6 +5,8 @@
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
+    <script type="text/javascript" src="js/interface.1.2/interface.js" ></script>
+	<script type="text/javascript" src="js/interface.1.2/inestedsortable.js" ></script>
     <script type="text/javascript" src="js/api.js"></script>
     <script type="text/javascript">
 
@@ -16,21 +18,77 @@
             });
         }
 
+        function paintGroup(group, i){
+            h = '<li class="treeItem list-item" id="li_' + i + '" style="-moz-user-select: none;">'
+        	   + '<a href="javascript:;" class="groupname" rssurl="' + group.rssurl + '">' + group.name 
+        	   + '</a> <a href="javascript:;" class="groupopen"> > </a>'
+        	   + '<ul style="display:none; height:20px;" class="groups">'; 
+        	for(j in group.users)
+        	   h += '<li class="list-item"><a href="javascript:;" class="twittername">' + group.users[j] 
+        	       + '</a><div style="display:none;"></div></li>';
+        	h += '</ul></li>';
+        	return h;
+        }
+        
         function render_tree() {
             var html = '';
-            for (var g in data) {
-                var info = data[g];
-                html += 'Group: ' + info.name + '<br/>';
-                for (var i = 0; i < info.users.length; i++)
-                    html += '&nbsp;&nbsp;&nbsp;&nbsp;' + info.users[i] + '<br/>';
-            }
+            console.log(data);
+            html = '<ul id="myTree">';
+        
+            for (var g in data)
+                html += paintGroup(data[g], g);
+            
+            html += '</ul>';
             if (html == '')
                 html = 'No users found';
             $('#tree').html(html);
+            $('.twittername').click(function(){
+                phalanges.api.get_user_info($(this).attr('innerHTML'), function(res){
+                    $('#details').html('Fullname: ' + o.fullname + ', bio: ' + o.bio + ', web: ' + o.web 
+                        + ', avatar: <img width=30 height=30 src="' + o.avatar + '" />');
+                }, function(o){
+                    //Error
+                });
+            });
+            
+            $('.groupopen').click(function(){
+                o = $(this).next();
+                if(o.css('display') == 'none'){
+                    o.show();
+                    $(this).attr('innerHTML', ' \\/ ');    
+                }else{
+                    $(this).attr('innerHTML', ' > '); 
+                    o.hide();
+                }
+            });
+            
+            $('.groupname').click(function(){
+                $('.groupname').removeClass('active-group');
+                $(this).addClass('active-group');
+                $('#details').html($(this).attr('rssurl'));
+            });
+            
+            $('#myTree').NestedSortable({
+                accept: 'list-item',
+                noNestingClass: "no-nesting",
+                opacity: .8,
+                helperclass: 'helper',
+                nestingPxSpace: '3',
+                onChange: function(serialized) {
+                    console.log('here');
+                    console.log(serialized);
+                },
+                
+                onStop: function(res){
+                    $('.helper').remove();
+                },
+                autoScroll: true
+            });
         }
 
-        $(document).ready(function() {
 
+        
+        $(document).ready(function() {
             $('#new-group-dialog').dialog({
                 buttons: {
                     'Cancel': function() {
@@ -59,27 +117,86 @@
                 }
             });
 
+            $('#rename-group-dialog').dialog({
+                buttons: {
+                    'Cancel': function() {
+                        $('#rename-group-dialog').dialog('close');
+                    },
+                    'OK': function() {
+                        $('#rename-group-dialog').dialog('close');
+                        var new_name = jQuery.trim($('#rename-group-name').val());
+                        var old_name = $('.active-group').attr('innerHTML');
+                        if (new_name != '') {
+                            phalanges.api.rename_group(old_name, new_name, function(results) {
+                                var tmp = [];
+                                for (var g in data) {
+                                    var info = data[g];
+                                    if (g == old_name) {
+                                        info.name = new_name;
+                                        tmp[new_name] = info;
+                                    }
+                                    else
+                                        tmp[g] = info;
+                                }
+                                data = tmp;
+                                render_tree();
+                            });
+                        }
+                    }
+                },
+                autoOpen: false,
+                closeOnEscape: true,
+                modal: true,
+                resizable: false,
+                title: 'Group name',
+                width: 350,
+                open: function() {
+                    setTimeout(function() {$('#rename-group-name').val('').focus()}, 100);
+                }
+            });
+            
+            $('#delete-group-dialog').dialog({
+                buttons: {
+                    'Cancel': function() {
+                        $('#delete-group-dialog').dialog('close');
+                    },
+                    'OK': function() {
+                        $('#delete-group-dialog').dialog('close');
+                        var old_name = $('.active-group').attr('innerHTML');
+                        if (name != '') {
+                            phalanges.api.delete_group(name, function(results) {
+                                var tmp = [];
+                                for (var g in data) {
+                                    var info = data[g];
+                                    if (g != name)
+                                        tmp[g] = info;
+                                }
+                                data = tmp;
+                                render_tree();
+                            });
+                        }
+                    }
+                },
+                autoOpen: false,
+                closeOnEscape: true,
+                modal: true,
+                resizable: false,
+                title: 'Group name',
+                width: 350,
+                open: function() {
+                    //setTimeout(function() {$('#rename-group-name').val('').focus()}, 100);
+                }
+            });
+            
             $('#btncreate').click(function() {
                 $('#new-group-dialog').dialog('open');
             });
 
             $('#btnrename').click(function() {
-                var old_name = prompt('Enter old group name');
-                var new_name = prompt('Enter new group name');
-                phalanges.api.rename_group(old_name, new_name, function(results) {
-                    var tmp = [];
-                    for (var g in data) {
-                        var info = data[g];
-                        if (g == old_name) {
-                            info.name = new_name;
-                            tmp[new_name] = info;
-                        }
-                        else
-                            tmp[g] = info;
-                    }
-                    data = tmp;
-                    render_tree();
-                });
+                if($('.active-group').length){
+                    console.log('rename-open');
+                    $('#rename-group-dialog').dialog('open');
+                }
             });
 
             $('#btnmove').click(function() {
@@ -104,17 +221,7 @@
 
 
             $('#btndelete').click(function() {
-                var name = prompt('Enter group name');
-                phalanges.api.delete_group(name, function(results) {
-                    var tmp = [];
-                    for (var g in data) {
-                        var info = data[g];
-                        if (g != name)
-                            tmp[g] = info;
-                    }
-                    data = tmp;
-                    render_tree();
-                });
+                $('#delete-group-dialog').dialog('open');
             });
 
             $('#login').dialog({
@@ -184,18 +291,26 @@
     </div>
 
     <div id="main" style="display:none">
-        <div id="tree">TREE IS HERE</div>
         <div id="controls">
             <button class="ui-state-default ui-corner-all command-button" type="button" id="btncreate">Create group</button>
-            <button class="ui-state-default ui-corner-all command-button" type="button" id="btnmove">Move</button>
+            <!--<button class="ui-state-default ui-corner-all command-button" type="button" id="btnmove">Move</button>-->
             <button class="ui-state-default ui-corner-all command-button" type="button" id="btndelete">Delete</button>
             <button class="ui-state-default ui-corner-all command-button" type="button" id="btnrename">Rename</button>
         </div>
         <div id="details">DETAILS ARE HERE</div>
+        <div id="tree">TREE IS HERE</div>
+
     </div>
 
     <div id="new-group-dialog" style="display:none">
         <input id="new-group-name"/>
+    </div>
+    <div id="rename-group-dialog" style="display:none">
+        <input id="rename-group-name"/>
+    </div>
+    
+    <div id="delete-group-dialog" style="display:none">
+        Do you really wanr to delete this group?
     </div>
 </body>
 </html>
