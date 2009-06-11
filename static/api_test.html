@@ -52,6 +52,20 @@
                     '}\n';
         }
 
+        function getRenameGroupJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "rename_group",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "",\n' +
+                    '         "old_group_name": "group1",\n' +
+                    '         "new_group_name": "group2"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
         function getMoveFriendJSON()
         {
             return '{\n' +
@@ -148,6 +162,7 @@ Methods:
 <input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
 <input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
 <input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
+<input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
 <input type="submit" value="move_friend" onclick="document.getElementById('post_content').value = getMoveFriendJSON()"/>
 <br/>
 <textarea id="post_content" rows="10" cols="125"></textarea>

@@ -24,7 +24,8 @@ ERR_BAD_AUTH_TOKEN = 102
 ERR_TWITTER_COMM_ERROR = 103
 ERR_GROUP_ALREADY_EXISTS = 104
 ERR_NO_SUCH_GROUP = 105
-ERR_NO_SUCH_FRIEND =106
+ERR_NO_SUCH_FRIEND = 106
+ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED = 107
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -116,7 +117,25 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                           old_group_name=None,
                           new_group_name=None):
         """ Create new group """
-        pass
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'rename_group(%s,%s)\' invoked for user %s' % (old_group_name, new_group_name, u.screen_name))
+
+        if old_group_name==DEFAULT_GROUP_NAME or \
+           new_group_name==DEFAULT_GROUP_NAME:
+            raise json.JSONRPCError("Could not modify default group",
+                                    code=ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED)
+        #TODO: transacton
+        g = self._getGroupByName(old_group_name, u)
+        if g==None:
+            raise json.JSONRPCError("Group %s does not exists" % old_group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+        
+        if self._getGroupByName(new_group_name, u)!=None:
+            raise json.JSONRPCError("Group %s already exists" % new_group_name,
+                                    code=ERR_GROUP_ALREADY_EXISTS)
+
+        g.name = new_group_name
+        g.put()
     
     def json_delete_group(self, auth_token=None, group_name=None):
         """ Delete group """
