@@ -87,5 +87,5 @@ class JSONRPC(object):
 
     def _encodeResponse(self, result, error, id):
         response = {'result': result, 'error': error, 'id': id}
-        return parser.dumps(response)
+        return parser.dumps(response, indent=4)
 

@@ -72,13 +72,13 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         q = data.Group.gql('WHERE user = :1', u.key())
-        res = []
+        res = {}
         for g in q:
-            res.append({
+            res[g.name]={
                 'name': g.name,
                 'rssurl': self._groupRSS_URL(g),
                 "users": [f.screen_name for f in self._groupMembers(g)]
-                });
+                };
         return res
 
     def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
