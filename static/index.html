@@ -1,6 +1,9 @@
 <html>
 <head>
+    <link href="css/trontastic/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="css/style.css" rel="stylesheet" type="text/css" media="screen"/>
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
     <script type="text/javascript" src="js/api.js"></script>
     <script type="text/javascript">
@@ -27,38 +30,37 @@
         }
 
         $(document).ready(function() {
-            $('#btnlogin').click(function() {
-                var screen_name = jQuery.trim($('#screen_name').val());
-                var password    = jQuery.trim($('#password').val());
 
-                if (screen_name == '') {
-                    alert('Please enter screenname');
-                    return;
+            $('#new-group-dialog').dialog({
+                buttons: {
+                    'Cancel': function() {
+                        $('#new-group-dialog').dialog('close');
+                    },
+                    'OK': function() {
+                        $('#new-group-dialog').dialog('close');
+                        var name = jQuery.trim($('#new-group-name').val());
+                        if (name != '') {
+                            phalanges.api.new_group(name, 
+                                function(results) {
+                                    data[name] = {name:name, rssurl:'TODO',users:[]};
+                                    render_tree();
+                                });
+                        }
+                    }
+                },
+                autoOpen: false,
+                closeOnEscape: true,
+                modal: true,
+                resizable: false,
+                title: 'Group name',
+                width: 350,
+                open: function() {
+                    setTimeout(function() {$('#new-group-name').val('').focus()}, 100);
                 }
-
-                if (password == '') {
-                    alert('Please enter password');
-                    return;
-                }
-
-                phalanges.api.login(screen_name, password, function() {
-                    $('#login').hide();
-                    $('#tree').html('Loading data....');
-                    $('#main').show();
-                    phalanges.api.get_friends(function(results) {
-                        data = results;
-                        render_tree();
-                    });
-                });
-
             });
 
             $('#btncreate').click(function() {
-                var name = prompt('Enter group name');
-                phalanges.api.new_group(name, function(results) {
-                    data[name] = {name:name, rssurl:'TODO',users:[]};
-                    render_tree();
-                });
+                $('#new-group-dialog').dialog('open');
             });
 
             $('#btnrename').click(function() {
@@ -115,27 +117,85 @@
                 });
             });
 
+            $('#login').dialog({
+                buttons: {
+                    'OK': function() {
+
+                        $('.ui-state-error').hide();
+
+                        var screen_name = jQuery.trim($('#screen_name').val());
+                        var password    = jQuery.trim($('#password').val());
+
+                        if (screen_name == '')
+                            $('#ename').show();
+
+                        if (password == '')
+                            $('#epass').show();
+
+                        if (screen_name == '' || password == '')
+                            return;
+
+                        phalanges.api.login(screen_name, password, function() {
+                            $('#login').hide().dialog('close');
+                            $('#tree').html('Loading data....');
+                            $('#main').show();
+                            phalanges.api.get_friends(function(results) {
+                                data = results;
+                                render_tree();
+                            });
+                        }, function() {
+                            $('#eauth').show();
+                        });
+                    }
+                },
+                closeOnEscape: false,
+                modal: true,
+                resizable: false,
+                title: 'Login to Phalanges',
+                width: 350,
+                open: function() {
+                    setTimeout(function() {$('#screen_name').focus()}, 100);
+                }
+            });
+
 
         });
     </script>
 </head>
 <body>
-  <div id="login">
-    <form method="post" id="loginform">
-        <input id="screen_name"/>
-        <input id="password" type="password"/>
-        <input id="btnlogin" type="button">
-  </div>
-  <div id="main" style="display:none">
-    <div id="tree">TREE IS HERE</div>
-    <div id="controls">
-        CONTROLS IS HERE
-        <input type="button" value="create" id="btncreate"/>
-        <input type="button" value="move" id="btnmove"/>
-        <input type="button" value="delete" id="btndelete"/>
-        <input type="button" value="rename" id="btnrename"/>
+    <div id="login">
+        <table>
+            <tr>
+                <td>Twitter name: </td>
+                <td>
+                    <input id="screen_name"/>
+                    <div class="ui-state-error" id="ename" style="display:none">Please enter Twitter name</div>
+                    <div class="ui-state-error" id="eauth" style="display:none">Invalid credentials are entered</div>
+                </td>
+             </tr>
+            <tr>
+                <td>Password: </td>
+                <td>
+                    <input id="password" type="password"/>
+                    <div class="ui-state-error" id="epass" style="display:none">Please enter password</div>
+                </td>
+            </tr>
+        </table>
     </div>
-    <div id="details">DETAILS ARE HERE</div>
-  </div>
+
+    <div id="main" style="display:none">
+        <div id="tree">TREE IS HERE</div>
+        <div id="controls">
+            <button class="ui-state-default ui-corner-all command-button" type="button" id="btncreate">Create group</button>
+            <button class="ui-state-default ui-corner-all command-button" type="button" id="btnmove">Move</button>
+            <button class="ui-state-default ui-corner-all command-button" type="button" id="btndelete">Delete</button>
+            <button class="ui-state-default ui-corner-all command-button" type="button" id="btnrename">Rename</button>
+        </div>
+        <div id="details">DETAILS ARE HERE</div>
+    </div>
+
+    <div id="new-group-dialog" style="display:none">
+        <input id="new-group-name"/>
+    </div>
 </body>
 </html>
