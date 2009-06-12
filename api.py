@@ -97,8 +97,15 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if f==None:
             raise json.JSONRPCError("%s is not your friend" % screen_name,
                                     code=ERR_NO_SUCH_FRIEND)
+        # TODO: transaction
         f.group = g
         f.put()
+        # update status updates with new group
+        q = data.StatusUpdate.gql('WHERE from_friend = :1', f.key())
+        for s in q:
+            s.group = g
+            s.put()
+        
 
     def json_new_group(self, auth_token=None, group_name=None):
         """ Create new group """
