@@ -175,10 +175,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.delete()
         
 
-    def json_get_user_info(self, auth_token=None, screen_name=None):
-        """ Get user info """
-        pass
-
     # -- implementation method below  ---
 
     def _updateTimeLine(self,u,t):
