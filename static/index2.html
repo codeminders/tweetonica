@@ -6,176 +6,7 @@
     <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
     <script type="text/javascript" src="js/api.js"></script>
-    <script type="text/javascript">
-
-        var cache = [];
-
-        $(document).ready(function() {
-            
-            // aux functions 
-            var escape_html = function(html) {
-                return html.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;');
-            };
-
-            var render_group = function(g) {
-                var container = $('<div>').addClass('clear');
-                var node = $('<a>').attr({href: 'javascript:;', groupname:g.name}).addClass('groupclosed').click(function(e) {
-                    open_group($(this));
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                var span = $('<span>').append(g.name == '__ALL__' ? 'Uncategorized': g.name);
-                $('#groups').append(container.append(node.append(span)));
-            };
-
-            var render_user = function(u) {
-                var container   = $('<li class="userinfo green">');
-                var picture     = $('<div>').addClass('userinfo_pic').append('<img src="' + u.profile_image_url + '" alt="' + escape_html(u.screen_name) + '" width="48" height="48"/>');
-                var screen_name = $('<div>').addClass('userinfo_screenname').html('<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>');
-                container.append(picture);
-                container.append(screen_name);
-                if (u.real_name && u.real_name != '')
-                    container.append($('<div>').addClass('userinfo_realname').text(u.real_name));
-                $('#groupmembers ul').append(container);
-            }
-
-            var open_page = function(id) {                
-                $('.menu').removeClass('active');
-                $('#m' + id).addClass('active');
-                $('.page').hide();
-                if (id != 'manage') {
-                    $('#' + id).load(id + '.html').show();
-                }
-                else {
-                    if (phalanges.api.token) {
-                        $('#' + id).show();
-                    } else {
-                        $('#login-dialog').dialog('open');
-                    }
-                }
-            };
-
-            var open_group = function(e) {
-                $('#groups a').removeClass('groupopen').addClass('groupclosed');
-                e.removeClass('groupclosed').addClass('groupopen');
-
-                var g = cache[e.attr('groupname')];
-                $('#info_groupname').html(g.name == '__ALL__' ? 'Uncategorized': g.name);
-                $('#info_groupfeed').attr('href', g.rssurl);
-
-                $('#groupmembers ul').empty();
-                for (var i = 0; i< g.users.length; i++) {
-                    render_user(g.users[i]);    
-                }
-            }
-
-            var do_login = function() {
-                $('.error').hide();
-
-                var screen_name = jQuery.trim($('#screen_name').val());
-                var password    = jQuery.trim($('#password').val());
-
-                if (screen_name == '')
-                    $('#ename').show();
-
-                if (password == '')
-                    $('#epass').show();
-
-                if (screen_name == '' || password == '')
-                    return;
-
-                phalanges.api.login(screen_name, password, function() {
-                    $('#login-dialog').dialog('close');
-                    $('#currentuser').html(screen_name);
-                    $('#currentuserurl').attr('href', 'http://twitter.com/' + screen_name);
-                    $('#loggedin').show();
-                    $('#loggedout').hide();
-
-                    phalanges.api.get_friends(function(results) {
-                        for (var g in results) {
-                            var group = results[g];
-                            render_group(group);
-                        }
-                        cache = results;
-                        open_group($('#groups a[groupname=__ALL__]'));
-                        open_page('manage');
-                    }, function(error) {
-                        open_page('manage');
-                    });
-                },  function() {
-                    $('#eauth').show();
-                });
-            };
-
-            // UI initialization
-            $('#login-dialog').dialog({
-                buttons: {
-                    'Cancel': function() {
-                        $('#login-dialog').dialog('close');
-                    },
-                    'Login': function() {
-                        do_login();                        
-                    },
-                },
-                autoOpen: false,
-                modal: true,
-                resizable: false,
-                title: 'Login to Phalanges',
-                width: 350,
-                open: function() {
-                    setTimeout(function() {$('#screen_name').focus()}, 100);
-                }
-            });
-
-
-            // handlers
-
-            $('#groups a').click(function(e) {
-                $(this).toggleClass('groupopen').toggleClass('groupclosed');
-                e.stopPropagation();
-                e.preventDefault();
-            });
-
-            $('.menu').click(function(e) {
-                var pageid = this.id.substring(1);
-                open_page(pageid);
-                e.stopPropagation();
-                e.preventDefault();
-            });
-
-            $('#logoutbutton').click(function(e) {
-                $('#loggedin').hide();
-                $('#loggedout').show();
-                phalanges.api.token = null;
-                cache = [];
-                open_page('about');
-                e.stopPropagation();
-                e.preventDefault();
-            });
-
-            $('#loginbutton').click(function(e) {
-                $('#login-dialog').dialog('open');
-                e.stopPropagation();
-                e.preventDefault();
-            });
-
-            $('#screen_name,#password').keypress(function(e) {
-                if (e.which == 13) {
-                    do_login();
-                    e.preventDefault();
-                    e.stopPropagation();
-                }
-            });
-
-            $(':radio[name=viewstyle]').click(function() {
-                if (this.value == 's')
-                    $('.userinfo').addClass('short_details');
-                else
-                    $('.userinfo').removeClass('short_details');
-            });
-
-        });
-    </script>
+    <script type="text/javascript" src="js/scripts.js"></script>
 </head>
 <body>
     <!-- header -->
@@ -247,6 +78,20 @@
             </tr>
         </table>
     </div>
+
+    <div id="delete-confirm-dialog" style="display:none">
+        <input type="hidden" id="group-to-delete"/>
+        Please confirm deletion of group <span id="group-to-delete-name"></span>.<br/>
+        <i>Note: all your contacts from this group will be moved to &quot;Uncategorized&quot;</i>
+    </div>
+
+    <div id="move-dialog" style="display:none">
+        <input type="hidden" id="user-to-move"/>
+        Please choose destination group to move <span id="user-to-move-name"></span> to.<br/>
+        <select id="group-to-move">
+        </select>
+    </div>
+
 
 </body>
 </html>
