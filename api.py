@@ -78,7 +78,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             res[g.name]={
                 'name': g.name,
                 'rssurl': self._groupRSS_URL(g),
-                "users": [f.screen_name for f in self._groupMembers(g)]
+                "users": [{'screen_name':f.screen_name,
+                           'real_name':f.real_name,
+                           'profile_image_url': f.profile_image_url} \
+                          for f in self._groupMembers(g)]
                 };
         return res
 
