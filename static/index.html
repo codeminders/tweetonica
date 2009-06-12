@@ -6,7 +6,7 @@
     <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
     <script type="text/javascript" src="js/interface.1.2/interface.js" ></script>
-	<script type="text/javascript" src="js/interface.1.2/inestedsortable.js" ></script>
+    <script type="text/javascript" src="js/interface.1.2/inestedsortable.js" ></script>
     <script type="text/javascript" src="js/api.js"></script>
     <script type="text/javascript">
 
@@ -14,25 +14,23 @@
 
         function login(screen_name, password) {
             phalanges.api.login(screen_name, password, function() {
-                console.log('logged in');
             });
         }
 
         function paintGroup(group, i){
             h = '<li class="treeItem list-item" id="li_' + i + '" style="-moz-user-select: none;">'
-        	   + '<a href="javascript:;" class="groupname" rssurl="' + group.rssurl + '">' + group.name 
-        	   + '</a> <a href="javascript:;" class="groupopen"> > </a>'
-        	   + '<ul style="display:none; height:20px;" class="groups">'; 
-        	for(j in group.users)
-        	   h += '<li class="list-item"><a href="javascript:;" class="twittername">' + group.users[j] 
-        	       + '</a><div style="display:none;"></div></li>';
-        	h += '</ul></li>';
-        	return h;
+               + '<a href="javascript:;" class="groupname" rssurl="' + group.rssurl + '">' + group.name 
+               + '</a> <a href="javascript:;" class="groupopen"> > </a>'
+               + '<ul style="display:none; height:20px;" class="groups">'; 
+            for(j in group.users)
+               h += '<li class="list-item"><a href="javascript:;" class="twittername">' + group.users[j].real_name
+                   + '</a><div style="display:none;"></div></li>';
+            h += '</ul></li>';
+            return h;
         }
         
         function render_tree() {
             var html = '';
-            console.log(data);
             html = '<ul id="myTree">';
         
             for (var g in data)
@@ -75,8 +73,6 @@
                 helperclass: 'helper',
                 nestingPxSpace: '3',
                 onChange: function(serialized) {
-                    console.log('here');
-                    console.log(serialized);
                 },
                 
                 onStop: function(res){
@@ -240,7 +236,6 @@
 
             $('#btnrename').click(function() {
                 if($('.active-group').length){
-                    console.log('rename-open');
                     $('#rename-group-dialog').dialog('open');
                 }
             });
@@ -249,18 +244,21 @@
                 var screen_name = prompt('Enter screen name');
                 var group_name = prompt('Enter group name');
                 phalanges.api.move_friend(screen_name, group_name, function(results) {
+                    var user, group;
                     for (var g in data) {
                         var info = data[g];
                         for (var i = 0; i < info.users.length; i++) {
-                            if (info.users[i] == screen_name) {
+                            if (info.users[i].screen_name == screen_name) {
+                                user = info.users[i];
                                 info.users.splice(i, 1);
                                 break;
                             }
                         }
                         if (g == group_name) {
-                            info.users.push(screen_name);
+                            group = g;
                         }
                     }
+                    group.users.push(user);
                     render_tree();
                 });
             });
