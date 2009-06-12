@@ -129,6 +129,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                        user=u,
                        parent=u)
         g.put()
+        return {
+            'name': g.name,
+            'rssurl': self._groupRSS_URL(g),
+            'users': []
+        }               
         
     def json_rename_group(self, auth_token=None,
                           old_group_name=None,

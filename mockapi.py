@@ -61,7 +61,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             users = []
             for u in range(0, numusers):
                 user = {
-                    'screen_name': 'user' + str(u),
+                    'screen_name': 'user_' + str(g) + '_' + str(u),
                     'real_name': 'First ' + str(u) + ' Last ' + str(u),
                     'profile_image_url': 'http://s3.amazonaws.com/twitter_production/profile_images/256569959/logo_big_normal.jpg'
                     }

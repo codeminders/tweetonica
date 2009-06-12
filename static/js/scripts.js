@@ -4,6 +4,10 @@ $(document).ready(function() {
     
     // aux functions 
 
+    var display_group_name = function(name) {
+        return name == '__ALL__' ? 'Uncategorized' : name;
+    }
+
     var render_group = function(g) {
         var container = $('<div>').addClass('clear');
         var node = $('<a>').attr({href: 'javascript:;', groupname:g.name}).addClass('groupclosed').click(function(e) {
@@ -11,7 +15,7 @@ $(document).ready(function() {
             e.stopPropagation();
             e.preventDefault();
         });
-        var span = $('<span>').text(g.name == '__ALL__' ? 'Uncategorized': g.name);
+        var span = $('<span>').text(display_group_name(g.name));
         container.droppable({accept: '.userinfo_pic', drop: function(event, ui) {
             var src  = ui.draggable;
             var dest = $('a', this).attr('groupname');
@@ -21,15 +25,29 @@ $(document).ready(function() {
     };
 
     var render_user = function(u) {
-        var container   = $('<li class="userinfo green">');
+        var container   = $('<li class="userinfo green' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
         var picture     = $('<div class="userinfo_pic" id="user_' + u.screen_name + '">')
             .append('<img src="' + u.profile_image_url + '" alt="' + u.screen_name + '" width="48" height="48"/>')
             .draggable({appendTo : 'body',helper:'clone'});
         var screen_name = $('<div class="userinfo_screenname">').html('<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>');
-        container.append(picture);
-        container.append(screen_name);
+        var controls = $('<a href="javascript:;">[<-->]</a>').click(function(e) {
+            $('#user-to-move').val(u.screen_name);
+            $('#user-to-move-name').text(u.real_name);
+            var groups = $('#group-to-move');
+            groups.empty();
+            for (var g in cache) {
+                if (g != $('#info_groupname').text()) {
+                    groups.append($('<option>').attr('value', g).text(display_group_name(g)));
+                }
+            }
+            $('#move-dialog').dialog('open');
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        container.append(picture).append(screen_name);
         if (u.real_name && u.real_name != '')
             container.append($('<div>').addClass('userinfo_realname').text(u.real_name));
+        container.append(controls);
         $('#groupmembers ul').append(container);
     }
 
@@ -62,9 +80,9 @@ $(document).ready(function() {
                         info.users.splice(i, 1);
                         break;
                     }
-                    if (info.name == group_name) {
-                        destg = info;
-                    }
+                }
+                if (info.name == group_name) {
+                    destg = info;
                 }
             }
             if (destg && src) {
@@ -82,7 +100,7 @@ $(document).ready(function() {
 
     var create_group = function(name) {
         phalanges.api.new_group(name, function(results) {
-            var g = {name: name, users: [], rssurl: 'TODO'};
+            var g = {name: name, users: [], rssurl: results.rssurl};
             cache[name] = g;
             render_group(g);
         });
@@ -90,7 +108,23 @@ $(document).ready(function() {
 
     var rename_group = function(old_name, new_name) {
         phalanges.api.rename_group(old_name, new_name, function(results) {
-            // TODO
+            var tmp = [];
+            for (var g in cache) {
+                var info = cache[g];
+                if (info.name == old_name) {
+                    info.name = new_name;
+                }
+                tmp[info.name] = info;
+            }
+            cache = tmp;
+            $('#groups a').each(function() {
+                var o = $(this);
+                if (o.attr('groupname') == old_name) {
+                    o.attr('groupname', new_name);
+                    $('span', o).text(new_name);
+                    open_group(o);
+                }
+            });
         });
     }
 
@@ -99,8 +133,21 @@ $(document).ready(function() {
         e.removeClass('groupclosed').addClass('groupopen');
 
         var g = cache[e.attr('groupname')];
-        $('#info_groupname').html(g.name == '__ALL__' ? 'Uncategorized': g.name);
+        $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
+
+        $('#delete-group').unbind('click').click(function(e) {
+            delete_group(g.name);
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        $('#rename-group').unbind('click').click(function(e) {
+            rename_group(g.name, 'new ' + g.name);
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
 
         $('#groupmembers ul').empty();
         for (var i = 0; i< g.users.length; i++) {
@@ -145,6 +192,8 @@ $(document).ready(function() {
                     return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
                 });
                 cache = [];
+
+                $('#groups').empty();
                 for (var i = 0; i < groups.length; i++) {
                     var group = groups[i];
                     render_group(group);
@@ -199,13 +248,14 @@ $(document).ready(function() {
                     var tmp = [];
                     for (var g in cache) {
                         var info = cache[g];
-                        if (g != name)
+                        if (g.name != name)
                             tmp[g] = info;                
                     }
                     cache = tmp;
                     $('#groups a').each(function() {
-                        if (this.groupname == name) {
-                            $(this).remove();
+                        var o = $(this);
+                        if (o.attr('groupname') == name) {
+                            o.remove();
                         }
                     });
                     open_group($('#groups a[groupname=__ALL__]'));
@@ -229,6 +279,7 @@ $(document).ready(function() {
                 var screen_name = $('#user-to-move').val();
                 var group_name  = $('#group-to-move').val();
                 move_user(screen_name, group_name);
+                $('#move-dialog').dialog('close');
             }
         },
         autoOpen: false,
