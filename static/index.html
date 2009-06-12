@@ -89,6 +89,52 @@
 
         
         $(document).ready(function() {
+            
+            $('#login-dialog').dialog({
+                buttons: {
+                    'Cancel': function() {
+                        $('#login-dialog').dialog('close');
+                    },
+                    'OK': function() {
+
+                        $('.ui-state-error').hide();
+
+                        var screen_name = jQuery.trim($('#screen_name').val());
+                        var password    = jQuery.trim($('#password').val());
+
+                        if (screen_name == '')
+                            $('#ename').show();
+
+                        if (password == '')
+                            $('#epass').show();
+
+                        if (screen_name == '' || password == '')
+                            return;
+
+                        phalanges.api.login(screen_name, password, function() {
+                            $('#login-dialog').hide().dialog('close');
+                            $('#tree').html('Loading data....');
+                            $('#main').show();
+                            phalanges.api.get_friends(function(results) {
+                                data = results;
+                                render_tree();
+                            });
+                        }, function() {
+                            $('#eauth').show();
+                        });
+                    }
+                },
+                autoOpen: false,
+                closeOnEscape: false,
+                modal: true,
+                resizable: false,
+                title: 'Login to Phalanges',
+                width: 350,
+                open: function() {
+                    setTimeout(function() {$('#screen_name').focus()}, 100);
+                }
+            });
+            
             $('#new-group-dialog').dialog({
                 buttons: {
                     'Cancel': function() {
@@ -223,54 +269,17 @@
             $('#btndelete').click(function() {
                 $('#delete-group-dialog').dialog('open');
             });
-
-            $('#login').dialog({
-                buttons: {
-                    'OK': function() {
-
-                        $('.ui-state-error').hide();
-
-                        var screen_name = jQuery.trim($('#screen_name').val());
-                        var password    = jQuery.trim($('#password').val());
-
-                        if (screen_name == '')
-                            $('#ename').show();
-
-                        if (password == '')
-                            $('#epass').show();
-
-                        if (screen_name == '' || password == '')
-                            return;
-
-                        phalanges.api.login(screen_name, password, function() {
-                            $('#login').hide().dialog('close');
-                            $('#tree').html('Loading data....');
-                            $('#main').show();
-                            phalanges.api.get_friends(function(results) {
-                                data = results;
-                                render_tree();
-                            });
-                        }, function() {
-                            $('#eauth').show();
-                        });
-                    }
-                },
-                closeOnEscape: false,
-                modal: true,
-                resizable: false,
-                title: 'Login to Phalanges',
-                width: 350,
-                open: function() {
-                    setTimeout(function() {$('#screen_name').focus()}, 100);
-                }
+            
+            $('#btnlogin').click(function(){
+                $('#login-dialog').dialog('open');    
             });
-
-
+                
         });
     </script>
 </head>
 <body>
-    <div id="login">
+    <div id="header-box" style="float:right"><button class="ui-state-default ui-corner-all command-button" type="button" id="btnlogin">Login</button></div>
+    <div id="login-dialog" style="display:none">
         <table>
             <tr>
                 <td>Twitter name: </td>
@@ -289,7 +298,7 @@
             </tr>
         </table>
     </div>
-
+    
     <div id="main" style="display:none">
         <div id="controls">
             <button class="ui-state-default ui-corner-all command-button" type="button" id="btncreate">Create group</button>
