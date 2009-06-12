@@ -34,7 +34,7 @@
                     '"method": "get_friends",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": ""\n'+
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
                     '    }\n' + 
                     '}\n';
         }
@@ -46,7 +46,7 @@
                     '"method": "new_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "",\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
                     '         "group_name": "group1"\n' +
                     '    }\n' + 
                     '}\n';
@@ -59,7 +59,7 @@
                     '"method": "delete_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "",\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
                     '         "group_name": "group1"\n' +
                     '    }\n' + 
                     '}\n';
@@ -72,7 +72,7 @@
                     '"method": "rename_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "",\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
                     '         "old_group_name": "group1",\n' +
                     '         "new_group_name": "group2"\n' +
                     '    }\n' + 
@@ -86,7 +86,7 @@
                     '"method": "move_friend",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "",\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
                     '         "screen_name": "",\n' +
                     '         "group_name": "group1"\n' +
                     '    }\n' + 
@@ -171,6 +171,9 @@
 <h2>API debugger</h2>
 
 <p>
+<form>
+Auth Token: <input id="auth_token" type="text" size="40"></input>
+</form>
 Methods: 
 <input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
 <input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
