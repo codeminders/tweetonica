@@ -69,6 +69,13 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         return { 'auth_token' : auth_token,
                  'auth_token_expires' : auth_token_expires.isoformat() }
 
+    def json_logout(self, auth_token=None):
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'logout\' invoked for user %s' % u.screen_name)
+        u.auth_token = None
+        u.auth_token_expires = None
+        u.put()
+
     def json_get_friends(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)

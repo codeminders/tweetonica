@@ -27,6 +27,18 @@
             return false;
         }
 
+        function getLogoutJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "logout",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
+
         function getGetFriendsJSON()
         {
             return '{\n' +
@@ -176,6 +188,7 @@ Auth Token: <input id="auth_token" type="text" size="40"></input>
 </form>
 Methods: 
 <input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
+<input type="submit" value="logout" onclick="document.getElementById('post_content').value = getLogoutJSON()"/>
 <input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
 <input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
 <input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
