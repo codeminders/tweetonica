@@ -149,7 +149,31 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     
     def json_delete_group(self, auth_token=None, group_name=None):
         """ Delete group """
-        pass
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'delete_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
+
+        if group_name==DEFAULT_GROUP_NAME:
+            raise json.JSONRPCError("Could not modify default group",
+                                    code=ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED)
+        #TODO: transacton
+        g = self._getGroupByName(group_name, u)
+        if g==None:
+            raise json.JSONRPCError("Group %s does not exists" % group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+
+        d = self._getDefaultGroup(u)
+
+        # Move all friends to default group
+        for f in self._groupMembers(g):
+            f.group = d
+            f.put()
+            # update status updates with new group
+            q = data.StatusUpdate.gql('WHERE from_friend = :1', f.key())
+            for s in q:
+                s.group = d
+                s.put()
+        g.delete()
+        
 
     def json_get_user_info(self, auth_token=None, screen_name=None):
         """ Get user info """
