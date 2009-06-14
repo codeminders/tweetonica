@@ -1,12 +1,60 @@
 """PyRSS2Gen - A Python library for generating RSS 2.0 feeds."""
 
 __name__ = "PyRSS2Gen"
-__version__ = (1, 0, 0)
+__version__ = (1, 0, 1)
 __author__ = "Andrew Dalke <dalke@dalkescientific.com>"
 
 _generator_name = __name__ + "-" + ".".join(map(str, __version__))
 
 import datetime
+
+class SyInfo:
+
+    HOURLY  = 'hourly'
+    DAILY   = 'daily'
+    WEEKLY  = 'weekly'
+    MONTHLY = 'monthly'
+    YEARLY  = 'yearly'
+    
+    """
+    Syndication RSS extension, as described:
+    
+    http://web.resource.org/rss/1.0/modules/syndication/
+
+    updatePeriod - Describes the period over which the channel format
+    is updated. Acceptable values are: hourly, daily, weekly, monthly,
+    yearly. If omitted, daily is assumed.
+
+    updateFrequency - Used to describe the frequency of updates in
+    relation to the update period. A positive integer indicates how
+    many times in that period the channel is updated. For example, an
+    updatePeriod of daily, and an updateFrequency of 2 indicates the
+    channel format is updated twice daily. If omitted a value of 1 is
+    assumed.
+
+    updateBase - Defines a base date to be used in concert with
+    updatePeriod and updateFrequency to calculate the publishing
+    schedule. The date format takes the form: yyyy-mm-ddThh:mm
+    """
+    def __init__(self,
+                 period=DAILY,
+                 frequency=1,
+                 base=datetime.datetime.now().isoformat()[:16]):
+        if period not in [SyInfo.HOURLY, SyInfo.DAILY, SyInfo.WEEKLY,
+                          SyInfo.MONTHLY, SyInfo.YEARLY]:
+            raise ValueError("Invalid period %r" % period)
+        self.period = period
+        if not isinstance(frequency,int):
+            raise TypeError("Invalid type of frequency parameter: %r" % frequency)
+        if frequency<=0:
+            raise ValueError("Invalid frequency %d" % frequency)
+        self.frequency = frequency
+        self.base = base
+        
+    def publish(self, handler):
+        _element(handler, "sy:updatePeriod", self.period, {})
+        _element(handler, "sy:updateFrequency", str(self.frequency), {})
+        _element(handler, "sy:updateBase", self.base, {})
 
 # Could make this the base class; will need to add 'publish'
 class WriteXmlMixin:
@@ -256,7 +304,8 @@ class RSS2(WriteXmlMixin):
     ".categories" and the RSS items under ".items".
     """
     
-    rss_attrs = {"version": "2.0"}
+    rss_attrs = {"version": "2.0",
+                 "xmlns:sy":"http://purl.org/rss/1.0/modules/syndication/"}
     element_attrs = {}
     def __init__(self,
                  title,
@@ -281,6 +330,8 @@ class RSS2(WriteXmlMixin):
                  textInput = None, # a TextInput
                  skipHours = None, # a SkipHours with a list of integers
                  skipDays = None,  # a SkipDays with a list of strings
+
+                 syInfo = None, # SyInfo instance
 
                  items = None,     # list of RSSItems
                  ):
@@ -307,7 +358,8 @@ class RSS2(WriteXmlMixin):
         self.textInput = textInput
         self.skipHours = skipHours
         self.skipDays = skipDays
-
+        self.syInfo = syInfo
+        
         if items is None:
             items = []
         self.items = items
@@ -362,6 +414,9 @@ class RSS2(WriteXmlMixin):
             self.skipHours.publish(handler)
         if self.skipDays is not None:
             self.skipDays.publish(handler)
+
+        if self.syInfo:
+            self.syInfo.publish(handler)
 
         for item in self.items:
             item.publish(handler)
