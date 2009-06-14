@@ -6,7 +6,7 @@ from urllib2 import HTTPError
 from uuid import uuid1
 
 from google.appengine.ext import webapp
-from google.appengine.ext.webapp import template, util
+from google.appengine.ext.webapp import util
 from google.appengine.ext import db
 
 import twitter
@@ -29,17 +29,38 @@ ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED = 107
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
-    def get(self):
-        self.response.set_status(405)
-        self.response.headers.add_header('Allow', 'POST')
-        
     def post(self):
         response, code = self.handleRequest(self.request.body, self.HTTP_POST)
         self.response.headers['Content-Type'] = 'application/json'
         self.response.set_status(code)
-        self.response.out.write(response)
+        self.response.out.write(API)
 
-    # -- API methods delegates below --
+    def get(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+
+    def put(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+
+    def head(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+
+    def options(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+
+    def delete(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+
+    def trace(self):
+        self.response.set_status(405)
+        self.response.headers.add_header('Allow', 'POST')
+        
+
+    # -- response methods delegates below --
 
     def json_login(self, screen_name=None, password=None):
         logging.debug('Method \'login\' invoked for user %s' % screen_name)
@@ -189,18 +210,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- implementation method below  ---
 
-    def _updateTimeLine(self,u,t):
-        # TODO: since
-        # TODO: paging back
-        try:
-            timeline = t.GetFriendsTimeline()
-        except Exception:
-            logging.exception("Error fetching friends timeline for %s" % u.screen_name)
-            raise json.JSONRPCError("Error fetching friends timeline",
-                                    code=ERR_TWITTER_COMM_ERROR)
-        for t in timeline:
-            logging.debug("Got timeline entry %s" % t)
-            pass
 
     def _groupMembers(self,g):
         q = data.Friend.gql('WHERE  group = :1', g.key())
