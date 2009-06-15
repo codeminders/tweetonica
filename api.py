@@ -34,7 +34,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         response, code = self.handleRequest(self.request.body, self.HTTP_POST)
         self.response.headers['Content-Type'] = 'application/json'
         self.response.set_status(code)
-        self.response.out.write(API)
+        self.response.out.write(response)
 
     def get(self):
         self.response.set_status(405)
@@ -103,7 +103,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         res = queries.loadGroups(u)
         for x in res.keys():
-            res[x]['rssurl']=self._groupRSS_URL(x)
+            res[x]['rssurl']=self._groupRSS_URL(u.screen_name, x)
         return res
 
     def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
@@ -145,7 +145,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': self._groupRSS_URL(g),
+            'rssurl': self._groupRSS_URL(u.screen_name, g.name),
             'users': []
         }               
         
@@ -190,7 +190,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         d = queries.getDefaultGroup(u)
 
         # Move all friends to default group
-        for f in self._groupMembers(g):
+        for f in queries.groupMembers(g):
             f.group = d
             f.put()
             # update status updates with new group
@@ -204,9 +204,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     # -- implementation method below  ---
 
 
-    def _groupRSS_URL(self,gname):
+    def _groupRSS_URL(self, screen_name, gname):
         #TODO implemnt
-        return "http://example.com/%s/%s" % (self.u.screen_name, gname)
+        return "http://example.com/%s/%s" % (screen_name, gname)
     
 
     def _verifyAuthToken(self, token):

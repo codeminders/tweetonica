@@ -9,7 +9,7 @@ class User(db.Model):
     auth_token_expires = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
     timeline_last_updated = db.DateTimeProperty()
-    timeline_max_id = db.IntegerProperty(required=False) 
+    timeline_max_id = db.IntegerProperty() 
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
