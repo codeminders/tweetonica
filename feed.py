@@ -25,11 +25,15 @@ class ATOMHandler(webapp.RequestHandler):
         if not u:
             self.response.headers['WWW-Authenticate'] = 'Basic realm=%s' % REALM
             self.response.set_status(401)
+            return
+
+        logging.debug("FEED with path '%s'" % self.request.path)
 
         t = twitter.Api(u.screen_name, u.password)
         # TODO: update frequency check
-        groups = queries.loadGroups(u)
-        self._updateTimeLine(u,t)
+        if True:
+            groups = queries.loadGroups(u)
+            self._updateTimeLine(u,t,groups)
         #TODO: extract group param
         #self._generateFeed(u)
     
@@ -95,6 +99,7 @@ class ATOMHandler(webapp.RequestHandler):
     def _updateTimeLine(self,u,t,groups):
         logging.debug("Updating timeline for user %s" % u.screen_name)
         page = 1
+        done = False
         while not done:
             try:
                 timeline = t.GetFriendsTimeline(since_id = u.timeline_max_id,\
