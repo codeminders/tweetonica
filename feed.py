@@ -9,6 +9,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
 
+import queries
 import twitter
 import data
 
@@ -27,7 +28,7 @@ class ATOMHandler(webapp.RequestHandler):
 
         t = twitter.Api(u.screen_name, u.password)
         # TODO: update frequency check
-        groups = self._loadGroups(u)
+        groups = queries.loadGroups(u)
         self._updateTimeLine(u,t)
         #TODO: extract group param
         #self._generateFeed(u)
@@ -90,24 +91,6 @@ class ATOMHandler(webapp.RequestHandler):
             return None
         
         return None
-
-    def _loadGroups(self, u):
-        q = data.Group.gql('WHERE user = :1', u.key())
-        res = {}
-        for g in q:
-            res[g.name]={
-                'name': g.name,
-                'rssurl': self._groupRSS_URL(g),
-                "users": [{'screen_name':f.screen_name,
-                           'real_name':f.real_name,
-                           'profile_image_url': f.profile_image_url} \
-                          for f in self._groupMembers(g)]
-                };
-        return res
-
-    def _groupMembers(self,g):
-        q = data.Friend.gql('WHERE  group = :1', g.key())
-        return q
         
     def _updateTimeLine(self,u,t,groups):
         logging.debug("Updating timeline for user %s" % u.screen_name)
