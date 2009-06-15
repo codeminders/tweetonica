@@ -14,6 +14,9 @@ import data
 
 REALM='phanalgesfeed'
 
+""" How many timeline entries to fetch. No more than 200! """
+FETCH_COUNT=100
+
 class ATOMHandler(webapp.RequestHandler):
 
     def get(self):
@@ -21,6 +24,13 @@ class ATOMHandler(webapp.RequestHandler):
         if not u:
             self.response.headers['WWW-Authenticate'] = 'Basic realm=%s' % REALM
             self.response.set_status(401)
+
+        t = twitter.Api(u.screen_name, u.password)
+        # TODO: update frequency check
+        groups = self._loadGroups(u)
+        self._updateTimeLine(u,t)
+        #TODO: extract group param
+        #self._generateFeed(u)
     
     def post(self):
         self.response.set_status(405)
@@ -81,20 +91,51 @@ class ATOMHandler(webapp.RequestHandler):
         
         return None
 
-    def _updateTimeLine(self,u,t):
-        # TODO: since
-        # TODO: paging back
-        try:
-            timeline = t.GetFriendsTimeline()
-        except Exception:
-            logging.exception("Error fetching friends timeline for %s" % u.screen_name)
-            raise json.JSONRPCError("Error fetching friends timeline",
-                                    code=ERR_TWITTER_COMM_ERROR)
-        for t in timeline:
-            logging.debug("Got timeline entry %s" % t)
-            pass
+    def _loadGroups(self, u):
+        q = data.Group.gql('WHERE user = :1', u.key())
+        res = {}
+        for g in q:
+            res[g.name]={
+                'name': g.name,
+                'rssurl': self._groupRSS_URL(g),
+                "users": [{'screen_name':f.screen_name,
+                           'real_name':f.real_name,
+                           'profile_image_url': f.profile_image_url} \
+                          for f in self._groupMembers(g)]
+                };
+        return res
 
+    def _groupMembers(self,g):
+        q = data.Friend.gql('WHERE  group = :1', g.key())
+        return q
+        
+    def _updateTimeLine(self,u,t,groups):
+        logging.debug("Updating timeline for user %s" % u.screen_name)
+        page = 1
+        while not done:
+            try:
+                timeline = t.GetFriendsTimeline(since_id = u.timeline_max_id,\
+                                                page=page, count=FETCH_COUNT)
+                page = page + 1
+            except Exception:
+                logging.exception("Error fetching friends timeline for %s" % u.screen_name)
+                raise json.JSONRPCError("Error fetching friends timeline",
+                                        code=ERR_TWITTER_COMM_ERROR)
+            if timeline==None or len(timeline)==0:
+                break
+            for e in timeline:
+                logging.debug("Got timeline entry %s" % e)
+                if e.id==u.timeline_max_id:
+                    done = True
+                    break
+                if e.id>u.timeline_max_id:
+                    u.timeline_max_id = e.id
+                    self._addTimeLineEntry(e,u)
+        u.update()
 
+    def _addTimeLineEntry(self,e,u):
+        # TODO
+        pass
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
