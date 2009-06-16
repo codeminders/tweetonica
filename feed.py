@@ -46,7 +46,7 @@ class ATOMHandler(webapp.RequestHandler):
         if not g:
             logging.warning("Request for non-existing group '%s' for user '%s'" % \
                             (g.name, u.screen_name))
-            self.response.set_status(400)
+            self.response.set_status(404)
             return
             
         self._generateFeed(u,g)
