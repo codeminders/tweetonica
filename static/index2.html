@@ -1,0 +1,99 @@
+<html>
+<head>
+    <link href="css/trontastic/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="css/style2.css" rel="stylesheet" type="text/css" media="screen"/>
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
+    <script type="text/javascript" src="js/api.js"></script>
+    <script type="text/javascript" src="js/scripts.js"></script>
+</head>
+<body>
+    <!-- header -->
+    <div id="header">
+        <div id="logo"></div>
+        <div id="loginbox">
+            <div id="loggedin" style="display:none">
+                <a href="javascript:;" id="currentuserurl" target="_new"><span id="currentuser"></span></a> | <a href="javascript:;" id="logoutbutton">Log out</a>
+            </div>
+            <div id="loggedout">
+                <a href="javascript:;" id="loginbutton">Log In</a>
+            </div>
+        </div>
+        <div id="menubar">
+            <div class="clear">
+                <a href="javascript:;" class="menu" id="mabout"><span>about</span></a>
+                <a href="javascript:;" class="menu" id="mmanage"><span>my groups</span></a>
+                <a href="javascript:;" class="menu" id="mfaq"><span>faq</span></a>
+                <a href="javascript:;" class="menu" id="mcontacts"><span>contacts</span></a>
+            </div>
+        </div>
+    </div>
+    <!-- content -->
+    <div id="content">
+        <div id="manage" class="page" style="display:none">
+            <div id="groups">                
+            </div>
+            <div id="details">
+                <div id="groupinfo">
+                    <input type="radio" name="viewstyle" value="f" checked="checked"/> text ands icons
+                    <input type="radio" name="viewstyle" value="s"/> icons only
+                    <dl>
+                        <dt>Name</dt>
+                        <dd id="info_groupname"></dd>
+                        <dt>RSS feed</dt>
+                        <dd><a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="28" height="28" alt="RSS feed"/></a></dd>
+                    </dl>
+                    <a href="javascript:;" id="delete-group">[Delete]</a>
+                    <a href="javascript:;" id="rename-group">[Rename]</a>
+                </div>
+                <div id="groupmembers">
+                    <ul></ul>
+                </div>
+            </div>
+        </div>
+        <div id="faq" class="page" style="display:none"></div>
+        <div id="about" class="page"></div>
+        <div id="contact" class="page" style="display:none"></div>
+    </div>
+    <!-- footer -->
+    <div id="footer">
+        Copyrights blah-blah-blah
+    </div>
+    <!-- dialogs -->
+    <div id="login-dialog" style="display:none">
+        <table>
+            <tr>
+                <td>Twitter name: </td>
+                <td>
+                    <input id="screen_name"/>
+                    <div class="error" id="ename" style="display:none">Please enter Twitter name</div>
+                    <div class="error" id="eauth" style="display:none">Invalid credentials are entered</div>
+                </td>
+             </tr>
+            <tr>
+                <td>Password: </td>
+                <td>
+                    <input id="password" type="password"/>
+                    <div class="error" id="epass" style="display:none">Please enter password</div>
+                </td>
+            </tr>
+        </table>
+    </div>
+
+    <div id="delete-confirm-dialog" style="display:none">
+        <input type="hidden" id="group-to-delete"/>
+        Please confirm deletion of group <span id="group-to-delete-name"></span>.<br/>
+        <i>Note: all your contacts from this group will be moved to &quot;Uncategorized&quot;</i>
+    </div>
+
+    <div id="move-dialog" style="display:none">
+        <input type="hidden" id="user-to-move"/>
+        Please choose destination group to move <span id="user-to-move-name"></span> to.<br/>
+        <select id="group-to-move">
+        </select>
+    </div>
+
+
+</body>
+</html>

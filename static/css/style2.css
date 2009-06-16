@@ -1,0 +1,135 @@
+img {border: none;}
+
+#header {
+    background-color: #000;
+    width: 100%;
+    height: 120px;
+    margin-bottom: 20px;
+}
+
+#logo {
+    position: relative;
+    top: 20px;
+    left: 20px;
+    background: transparent url('images/logo.png') no-repeat;
+    width: 317px;
+    height: 77px;
+}
+
+#menubar {
+    position: absolute;
+    right: 20px;
+    top: 80px;
+}
+
+#loginbox {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    color: #fff;
+    font: bold 16px arial, sans-serif;
+}
+
+#loginbox a, #loginbox a:hover, #loginbox a:visited, #loginbox a:active {
+    text-decoration: none;
+    color: #fff;
+    font: bold 16px arial, sans-serif;
+}
+
+.menu,.menu:hover,.menu:active,.menu:visited {
+    background: transparent url('images/menu-background.png') no-repeat bottom left;
+    color: #000;
+    display: block;
+    float: left;
+    font: normal 12px arial, sans-serif;
+    height: 28px;
+    margin-right: 6px;
+    text-decoration: none;
+    width: 100px;
+}
+
+.menu span {
+    line-height: 18px;
+    text-align: center;
+    display: block;
+    padding: 5px 0 5px 5px;
+}
+
+.menu:hover, .active {
+    background-position: top left;
+}
+
+.clear {
+    overflow: hidden;
+}
+
+a.groupopen, a.groupclosed {
+    color: #000;
+    display: block;
+    float: left;
+    font: normal 12px arial, sans-serif;
+    height: 29px;
+    margin-right: 6px;
+    text-decoration: none;
+    width: 300px;
+    margin-bottom: 3px;
+}
+
+a.groupopen {
+    background: transparent url('images/groupaopen.png') no-repeat scroll top right;
+    padding-right: 41px;
+}
+
+a.groupclosed {
+    background: transparent url('images/groupaclosed.png') no-repeat scroll top right;
+    padding-right: 5px;
+}
+
+a.groupopen span,a.groupclosed span {
+    background: transparent url('images/groupspan.png') no-repeat;
+    display: block;
+    line-height: 19px;
+    text-align: left;
+    padding: 5px 0 5px 5px;
+}
+
+/* TODO */
+.error {
+    color: red;
+}
+
+#groups {
+    width: 350px;
+}
+
+#details {
+}
+
+.short_details .userinfo_screenname, .short_details .userinfo_realname {
+    display: none;
+}
+
+#groupmembers ul {
+    overflow:hidden; 
+    margin:0; 
+    padding:0; 
+    list-style:none;
+}
+
+#groupmembers ul li { float:left; margin:0 2px 2px 0; padding:0; }
+
+
+.green {
+    color: #000;
+}
+
+.green .userinfo_pic {
+    background: transparent url('images/pic-background.png') no-repeat;
+    padding: 8px;    
+}
+
+
+.green a, .green a:hover, .green a:visited, .green a:active {
+    color: #000;
+}
+

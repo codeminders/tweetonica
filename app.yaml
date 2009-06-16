@@ -1,0 +1,24 @@
+application: phalanges-test
+version: 2
+runtime: python
+api_version: 1
+
+handlers:
+- url: /api
+  script: api.py
+
+- url: /feed
+  script: feed.py
+
+- url: /mockapi
+  script: mockapi.py
+
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
+
+- url: /
+  static_dir: static
+
+- url: /.*
+  script: not_found.py
