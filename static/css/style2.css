@@ -99,7 +99,7 @@ a.groupopen span,a.groupclosed span {
 }
 
 #groups {
-    width: 350px;
+    width: 30%;
 }
 
 #details {
@@ -133,3 +133,57 @@ a.groupopen span,a.groupclosed span {
     color: #000;
 }
 
+#group-box
+{
+	float:right;
+	width:70%;
+    background: transparent;
+    margin:0;
+}
+
+.gtop, .gbottom {disgbplay:block; background:transparent; font-size:1px;}
+.gb1, .gb2, .gb3, .gb4 {display:block; overflow:hidden;}
+.gb1, .gb2, .gb3 {height:1px;}
+.gb2, .gb3, .gb4 {background:#FFF; border-left:1px solid #bee486; border-right:1px solid #bee486;}
+.gb1 {margin:0 5px; background:#bee486;}
+.gb2 {margin:0 3px; border-width:0 2px;}
+.gb3 {margin:0 2px;}
+.gb4 {height:2px; margin:0 1px;}
+
+.group-box-content
+{
+    display: block;
+    background: #FFF;
+    border: 0 solid #bee486;
+    border-width: 0 1px;
+}
+
+.clear-div
+{
+	clear: both;  
+	height:1px;
+}
+
+.footer 
+{ 
+	position: absolute; 
+	bottom:0;
+	right:10px;
+}
+
+.copy { padding:0; margin:0 0 1em; color:#333; font: bold 14px/20px Arial, Helvetica, sans-serif; text-align:right;}
+.bmenu { padding:0 0 10px 0; margin:0 0 1em; font:bold 12px/20px Arial, Helvetica, sans-serif; text-align:right;}
+.bmenu a { color:#333; text-decoration:none;}
+.bmenu a:hover { text-decoration:underline;}
+
+.group-header
+{
+	float:left;
+	margin:0;
+}
+
+.radiobutton
+{
+	float:right;
+	margin:0 10px 0 0;
+}
