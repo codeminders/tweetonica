@@ -32,33 +32,58 @@
     <!-- content -->
     <div id="content">
         <div id="manage" class="page" style="display:none">
-            <div id="groups">                
-            </div>
+            <div id="groups" style="float:left; margin:0;">                
+            </div>         
+    <div id="group-box">
+        <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+        <div class="group-box-content"> 
             <div id="details">
-                <div id="groupinfo">
-                    <input type="radio" name="viewstyle" value="f" checked="checked"/> text ands icons
-                    <input type="radio" name="viewstyle" value="s"/> icons only
+                <div id="groupinfo" >
+                    <div class="radiobutton">
+                        <input type="radio" name="viewstyle" value="f" checked="checked"/> text ands icons
+                        <input type="radio" name="viewstyle" value="s"/> icons only
+                    </div>
+                    <div class="group-header">
+                        <span>Name</span> &nbsp;<a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="14" height="14" alt="RSS feed"/></a>
+                        <div id="info_groupname"></div>
+                        <a href="javascript:;" id="delete-group">[Delete]</a>
+                        <a href="javascript:;" id="rename-group">[Rename]</a>                                    
+                    </div>                       
+                    <!--
                     <dl>
                         <dt>Name</dt>
                         <dd id="info_groupname"></dd>
                         <dt>RSS feed</dt>
-                        <dd><a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="28" height="28" alt="RSS feed"/></a></dd>
+                        <dd><a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="14" height="14" alt="RSS feed"/></a></dd>
                     </dl>
-                    <a href="javascript:;" id="delete-group">[Delete]</a>
-                    <a href="javascript:;" id="rename-group">[Rename]</a>
+                    -->
+
                 </div>
                 <div id="groupmembers">
                     <ul></ul>
                 </div>
+                <div class="clear-div">&nbsp;</div>
             </div>
+        </div><!--group-box-content-->
+        <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
+    </div><!--group-box-->
+           
         </div>
+        
         <div id="faq" class="page" style="display:none"></div>
         <div id="about" class="page"></div>
         <div id="contact" class="page" style="display:none"></div>
     </div>
     <!-- footer -->
-    <div id="footer">
-        Copyrights blah-blah-blah
+    <div id="footer" class="footer">
+        <div class="copy">&copy; 2009 Codeminders. All rights reserved.</div>
+        <div class="bmenu">
+            <a href="/">About </a>&nbsp;&nbsp;|&nbsp;
+            <a href="/">My Groups </a>&nbsp;&nbsp;|&nbsp;            
+            <a href="http://twitter.com/phalanges">Follow Phalanges on Twitter</a>&nbsp;&nbsp;|&nbsp;
+            <a href="faq.html">FAQ</a>&nbsp;&nbsp;|&nbsp;
+            <a href="maito:support@codeminders.com">Contact Phalanges</a>
+        </div> 
     </div>
     <!-- dialogs -->
     <div id="login-dialog" style="display:none">
