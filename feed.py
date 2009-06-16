@@ -13,6 +13,7 @@ from google.appengine.ext import db
 import queries
 import twitter
 import data
+import constants
 
 REALM='phanalgesfeed'
 
@@ -41,7 +42,7 @@ class ATOMHandler(webapp.RequestHandler):
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
 
-        g = getGroupByName(group, u)
+        g = queries.getGroupByName(group, u)
         if not g:
             logging.warning("Request for non-existing group '%s' for user '%s'" % \
                             (g.name, u.screen_name))
@@ -112,18 +113,18 @@ class ATOMHandler(webapp.RequestHandler):
     def _updateTimeLine(self,u,t,groups):
         logging.debug("Updating timeline for user %s" % u.screen_name)
 
-        # build user->group index
-        gi = {}
-        for g in groups:
-            for gu in g['users']:
-                gi[gu['screen_name']]=g
-        # user index
+        # friend index index
         ui = {}
+        
         page = 1
         done = False
+        fetched = 0
+        since = u.timeline_max_id
         while not done:
             try:
-                timeline = t.GetFriendsTimeline(since_id = u.timeline_max_id,\
+                logging.debug("Fetching page %d of %s timeline" % \
+                              (page, u.screen_name))
+                timeline = t.GetFriendsTimeline(since_id = since,\
                                                 page=page, count=FETCH_COUNT)
                 page = page + 1
             except Exception:
@@ -134,37 +135,41 @@ class ATOMHandler(webapp.RequestHandler):
             if timeline==None or len(timeline)==0:
                 break
             for e in timeline:
-                logging.debug("Got timeline entry %s" % e)
-                if e.id==u.timeline_max_id:
+                logging.debug("Got timeline entry %d" % e.id)
+                if e.id==since:
                     done = True
                     break
-                if e.id>u.timeline_max_id:
+                if e.id>since:
                     u.timeline_max_id = e.id
-                    eg = gi.get(e.user.screen_name, None)
-                    if eg == None:
-                        logging.error("Timeline entry from non-friend %s!" % \
-                                      e.user.screen_name)
-                        continue
                     eu = ui.get(e.user.screen_name, None)
                     if eu == None:
-                        eu = queries.getUserByScreenName(e.user.screen_name)
+                        eu = queries.getFriendByName(e.user.screen_name,u)
                         if eu == None:
                             logging.error("Timeline entry from unknown friend %s!" % \
                                           e.user.screen_name)
                             continue
-                    self._addTimeLineEntry(e,u,eg,eu)
+                        else:
+                             ui[e.user.screen_name]=eu
+                    self._addTimeLineEntry(e,u,eu)
+                    fetched = fetched+1
+                else:
+                    logging.debug("Old entry %d>%d" % (e.id,since))
         u.timeline_last_updated=datetime.datetime.now()
-        u.update()
+        u.put()
+        logging.debug("Fetced  %d timeline entries for %s" % \
+                      (fetched, u.screen_name))
 
-    def _addTimeLineEntry(self,e,u,group,friend):
+    def _addTimeLineEntry(self,e,u,friend):
+        logging.debug("Adding timeline entry %s" % e)
+        ts = datetime.datetime.utcfromtimestamp(e.GetCreatedAtInSeconds())
         s = data.StatusUpdate(id = e.id,
                               text = e.text,
-                              created_at = e.created_at,
+                              created_at = ts,
                               truncated = False, #TODO
                               in_reply_to_status_id = -1, #TODO
                               in_reply_to_user_id = -1, #TODO
                               in_reply_to_screen_name = None, #TODO
-                              group = group.key(),
+                              group = friend.group.key(),
                               from_friend = friend.key())
         s.put()
 
