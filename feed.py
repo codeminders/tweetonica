@@ -19,6 +19,7 @@ REALM='phanalgesfeed'
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
+MAX_PAGES_TO_FETCH=3
 
 class ATOMHandler(webapp.RequestHandler):
 
@@ -120,10 +121,10 @@ class ATOMHandler(webapp.RequestHandler):
         done = False
         fetched = 0
         since = u.timeline_max_id
-        while not done:
+        while not done and page<=MAX_PAGES_TO_FETCH:
             try:
-                logging.debug("Fetching page %d of %s timeline" % \
-                              (page, u.screen_name))
+                logging.debug("Fetching page %d of %s timeline (since %d)" % \
+                              (page, u.screen_name, since))
                 timeline = t.GetFriendsTimeline(since_id = since,\
                                                 page=page, count=FETCH_COUNT)
                 page = page + 1
@@ -136,31 +137,31 @@ class ATOMHandler(webapp.RequestHandler):
                 break
             for e in timeline:
                 logging.debug("Got timeline entry %d" % e.id)
-                if e.id==since:
+                if e.id<=since:
                     done = True
                     break
-                if e.id>since:
+
+                if u.timeline_max_id < e.id:
                     u.timeline_max_id = e.id
-                    eu = ui.get(e.user.screen_name, None)
+                eu = ui.get(e.user.screen_name, None)
+                if eu == None:
+                    eu = queries.getFriendByName(e.user.screen_name,u)
                     if eu == None:
-                        eu = queries.getFriendByName(e.user.screen_name,u)
-                        if eu == None:
-                            logging.error("Timeline entry from unknown friend %s!" % \
-                                          e.user.screen_name)
-                            continue
-                        else:
-                             ui[e.user.screen_name]=eu
-                    self._addTimeLineEntry(e,u,eu)
-                    fetched = fetched+1
-                else:
-                    logging.debug("Old entry %d>%d" % (e.id,since))
+                        logging.error("Timeline entry from unknown friend %s!" % \
+                                      e.user.screen_name)
+                        continue
+                    else:
+                         ui[e.user.screen_name]=eu
+                self._addTimeLineEntry(e,u,eu)
+                fetched = fetched+1
+                
         u.timeline_last_updated=datetime.datetime.now()
         u.put()
         logging.debug("Fetced  %d timeline entries for %s" % \
                       (fetched, u.screen_name))
 
     def _addTimeLineEntry(self,e,u,friend):
-        logging.debug("Adding timeline entry %s" % e)
+        logging.debug("Adding timeline entry %d" % e.id)
         ts = datetime.datetime.utcfromtimestamp(e.GetCreatedAtInSeconds())
         s = data.StatusUpdate(id = e.id,
                               text = e.text,
