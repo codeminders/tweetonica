@@ -4,6 +4,7 @@ import datetime
 import logging
 from uuid import uuid1
 from base64 import b64decode
+from cgi import parse_qs
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -21,13 +22,15 @@ FETCH_COUNT=100
 class ATOMHandler(webapp.RequestHandler):
 
     def get(self):
+        params = parse_qs(self.request.query_string)
+        logging.debug("FEED with path '%s'" % params)
+        
         u = self._HTTP_authenticate()
         if not u:
             self.response.headers['WWW-Authenticate'] = 'Basic realm=%s' % REALM
             self.response.set_status(401)
             return
 
-        logging.debug("FEED with path '%s'" % self.request.path)
 
         t = twitter.Api(u.screen_name, u.password)
         # TODO: update frequency check
