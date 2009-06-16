@@ -23,7 +23,11 @@ class ATOMHandler(webapp.RequestHandler):
 
     def get(self):
         params = parse_qs(self.request.query_string)
-        logging.debug("FEED with path '%s'" % params)
+
+        if params.has_key('group'):
+            group = params['group'][0]
+        else:
+            group = constants.DEFAULT_GROUP_NAME
         
         u = self._HTTP_authenticate()
         if not u:
@@ -31,14 +35,21 @@ class ATOMHandler(webapp.RequestHandler):
             self.response.set_status(401)
             return
 
-
         t = twitter.Api(u.screen_name, u.password)
         # TODO: update frequency check
-        if True:
+        if False:
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
-        #TODO: extract group param
-        #self._generateFeed(u)
+
+
+        g = getGroupByName(group, u)
+        if not g:
+            logging.warning("Request for non-existing group '%s' for user '%s'" % \
+                            (g.name, u.screen_name))
+            self.response.set_status(400)
+            return
+            
+        self._generateFeed(u,g)
     
     def post(self):
         self.response.set_status(405)
@@ -127,6 +138,11 @@ class ATOMHandler(webapp.RequestHandler):
     def _addTimeLineEntry(self,e,u):
         # TODO
         pass
+
+    def _generateFeed(self,u,g):
+        # TODO:
+        pass
+
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
