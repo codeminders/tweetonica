@@ -37,10 +37,9 @@ class ATOMHandler(webapp.RequestHandler):
 
         t = twitter.Api(u.screen_name, u.password)
         # TODO: update frequency check
-        if False:
+        if True:
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
-
 
         g = getGroupByName(group, u)
         if not g:
@@ -112,6 +111,14 @@ class ATOMHandler(webapp.RequestHandler):
         
     def _updateTimeLine(self,u,t,groups):
         logging.debug("Updating timeline for user %s" % u.screen_name)
+
+        # build user->group index
+        gi = {}
+        for g in groups:
+            for gu in g['users']:
+                gi[gu['screen_name']]=g
+        # user index
+        ui = {}
         page = 1
         done = False
         while not done:
@@ -120,7 +127,8 @@ class ATOMHandler(webapp.RequestHandler):
                                                 page=page, count=FETCH_COUNT)
                 page = page + 1
             except Exception:
-                logging.exception("Error fetching friends timeline for %s" % u.screen_name)
+                logging.exception("Error fetching friends timeline for %s" % \
+                                  u.screen_name)
                 raise json.JSONRPCError("Error fetching friends timeline",
                                         code=ERR_TWITTER_COMM_ERROR)
             if timeline==None or len(timeline)==0:
@@ -132,12 +140,33 @@ class ATOMHandler(webapp.RequestHandler):
                     break
                 if e.id>u.timeline_max_id:
                     u.timeline_max_id = e.id
-                    self._addTimeLineEntry(e,u)
+                    eg = gi.get(e.user.screen_name, None)
+                    if eg == None:
+                        logging.error("Timeline entry from non-friend %s!" % \
+                                      e.user.screen_name)
+                        continue
+                    eu = ui.get(e.user.screen_name, None)
+                    if eu == None:
+                        eu = queries.getUserByScreenName(e.user.screen_name)
+                        if eu == None:
+                            logging.error("Timeline entry from unknown friend %s!" % \
+                                          e.user.screen_name)
+                            continue
+                    self._addTimeLineEntry(e,u,eg,eu)
+        u.timeline_last_updated=datetime.datetime.now()
         u.update()
 
-    def _addTimeLineEntry(self,e,u):
-        # TODO
-        pass
+    def _addTimeLineEntry(self,e,u,group,friend):
+        s = data.StatusUpdate(id = e.id,
+                              text = e.text,
+                              created_at = e.created_at,
+                              truncated = False, #TODO
+                              in_reply_to_status_id = -1, #TODO
+                              in_reply_to_user_id = -1, #TODO
+                              in_reply_to_screen_name = None, #TODO
+                              group = group.key(),
+                              from_friend = friend.key())
+        s.put()
 
     def _generateFeed(self,u,g):
         # TODO:
