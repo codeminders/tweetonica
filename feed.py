@@ -122,10 +122,7 @@ class ATOMHandler(webapp.RequestHandler):
         
     def _updateTimeLine(self,u,t,groups):
         logging.debug("Updating timeline for user %s" % u.screen_name)
-
-        # friend index index
-        ui = {}
-        
+        ui = {} # friend index index
         page = 1
         done = False
         fetched = 0
