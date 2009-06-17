@@ -7,7 +7,7 @@ handlers:
 - url: /api
   script: api.py
 
-- url: /feed
+- url: /feed(/.*)?
   script: feed.py
 
 - url: /mockapi

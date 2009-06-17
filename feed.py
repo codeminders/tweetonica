@@ -4,7 +4,6 @@ import datetime
 import logging
 from uuid import uuid1
 from base64 import b64decode
-from cgi import parse_qs
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -29,13 +28,17 @@ MAX_PAGES_TO_FETCH=3
 
 class ATOMHandler(webapp.RequestHandler):
 
-    def get(self):
-        params = parse_qs(self.request.query_string)
-
-        if params.has_key('group'):
-            group = params['group'][0]
+    def get(self, *args):
+        if self.request.path.startswith(constants.FEED_PATH_PREFIX):
+            if len(self.request.path) == len(constants.FEED_PATH_PREFIX) or \
+                self.request.path == "%s/"%constants.FEED_PATH_PREFIX:
+                    group = constants.DEFAULT_GROUP_NAME
+            else:
+                group = self.request.path[len(constants.FEED_PATH_PREFIX)+1:]
         else:
-            group = constants.DEFAULT_GROUP_NAME
+            raise Exception("Invalid path '%s'" % self.request.path)
+
+        logging.debug("Requested group '%s'" % group)
         
         u = self._HTTP_authenticate()
         if not u:
@@ -45,7 +48,8 @@ class ATOMHandler(webapp.RequestHandler):
 
         t = twitter.Api(u.screen_name, u.password)
         if u.timeline_last_updated==None or \
-               (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < datetime.datetime.now():
+               (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < \
+               datetime.datetime.now():
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
         else:
@@ -53,7 +57,7 @@ class ATOMHandler(webapp.RequestHandler):
 
         g = queries.getGroupByName(group, u)
         if not g:
-            logging.warning("Request for non-existing group '%s' for user '%s'" % \
+            logging.warning("Req. non-existing group '%s' for user '%s'" % \
                             (g.name, u.screen_name))
             self.response.set_status(404)
             return
@@ -153,7 +157,7 @@ class ATOMHandler(webapp.RequestHandler):
                 if eu == None:
                     eu = queries.getFriendByName(e.user.screen_name,u)
                     if eu == None:
-                        logging.error("Timeline entry from unknown friend %s!" % \
+                        logging.error("Entry from unknown friend %s!" % \
                                       e.user.screen_name)
                         continue
                     else:
@@ -186,7 +190,8 @@ class ATOMHandler(webapp.RequestHandler):
         rss = RSS2(
             title = "Timeline for user %s group %s" % (u.screen_name, g.name),
             link = misc.groupRSS_URL(u.screen_name, g.name),
-            description = "Timeline for user %s group %s" % (u.screen_name, g.name),
+            description = "Timeline for user %s group %s" % (u.screen_name, \
+                                                             g.name),
             language = 'en-us',
             managingEditor = 'lord+phalanges@crocodile.org (Vadim Zaliva)',
             lastBuildDate = datetime.datetime.now(),
@@ -210,7 +215,8 @@ class ATOMHandler(webapp.RequestHandler):
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
     logging.debug("Starting")
-    app = webapp.WSGIApplication([('/feed', ATOMHandler)], debug=True)
+    app = webapp.WSGIApplication([("%s(/.*)?"%constants.FEED_PATH_PREFIX, \
+                                   ATOMHandler)], debug=True)
     util.run_wsgi_app(app)
 
 if __name__ == '__main__':
