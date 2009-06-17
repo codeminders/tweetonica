@@ -10,10 +10,13 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
 
+from PyRSS2Gen import RSS2, SyInfo, RSSItem, Guid
+
 import queries
 import twitter
 import data
 import constants
+import misc
 
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -182,8 +185,35 @@ class ATOMHandler(webapp.RequestHandler):
 
     def _generateFeed(self,u,g):
         timeline = queries.getGroupTimeline(g)
+        
+        rss = RSS2(
+            title = "Timeline for user %s group %s" % (u.screen_name, g.name),
+            link = misc.groupRSS_URL(u.screen_name, g.name),
+            description = "Timeline for user %s group %s" % (u.screen_name, g.name),
+            language = 'en-us',
+            managingEditor = 'lord+phalanges@crocodile.org (Vadim Zaliva)',
+            lastBuildDate = datetime.datetime.now(),
+            syInfo = SyInfo(SyInfo.HOURLY,1,"1901-01-01T00:00+00:00")
+            )
+        
         for e in timeline:
-            print "%d" % e.id
+            # TODO: nice text formatting with links to @ and #, etc.
+            link = "http://twitter.com/%s/status/%d" % \
+                   (e.from_friend.screen_name, e.id)
+            
+            rss.items.append(RSSItem(title = e.text,
+                                     link = link,
+                                     guid = Guid(link),
+                                     description = e.text))
+
+        self.response.headers['Content-Type'] = 'application/rss+xml'
+        rss.write_xml(self.response.out)
+        #self.response.out.write(response)
+
+        #bodybuf = StringIO.StringIO()
+        #rss.write_xml(bodybuf)
+        #body = bodybuf.getvalue()
+        #bodybuf.close()
 
 
 def main():

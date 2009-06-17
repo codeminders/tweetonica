@@ -1,1 +1,2 @@
 . Auto-provision users on RSS req.
+. etag/modified-since headers handling
