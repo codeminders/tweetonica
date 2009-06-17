@@ -208,12 +208,6 @@ class ATOMHandler(webapp.RequestHandler):
 
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
-        #self.response.out.write(response)
-
-        #bodybuf = StringIO.StringIO()
-        #rss.write_xml(bodybuf)
-        #body = bodybuf.getvalue()
-        #bodybuf.close()
 
 
 def main():
