@@ -14,6 +14,7 @@ import json
 import data
 import queries
 import constants
+import misc
 
 
 # for how long auth token is valid ( 1day+1sec)
@@ -103,7 +104,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         res = queries.loadGroups(u)
         for x in res.keys():
-            res[x]['rssurl']=self._groupRSS_URL(u.screen_name, x)
+            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name, x)
         return res
 
     def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
@@ -145,7 +146,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': self._groupRSS_URL(u.screen_name, g.name),
+            'rssurl': misc.groupRSS_URL(u.screen_name, g.name),
             'users': []
         }               
         
@@ -203,11 +204,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- implementation method below  ---
 
-
-    def _groupRSS_URL(self, screen_name, gname):
-        #TODO implemnt
-        return "http://example.com/%s/%s" % (screen_name, gname)
-    
 
     def _verifyAuthToken(self, token):
         """ Verify user, returns screen name or None for invalid token"""
