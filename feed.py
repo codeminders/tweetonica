@@ -15,6 +15,9 @@ import twitter
 import data
 import constants
 
+""" Timeline update frequency. Update no more often than this """
+TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
+
 REALM='phanalgesfeed'
 
 """ How many timeline entries to fetch. No more than 200! """
@@ -38,8 +41,8 @@ class ATOMHandler(webapp.RequestHandler):
             return
 
         t = twitter.Api(u.screen_name, u.password)
-        # TODO: update frequency check
-        if True:
+        if u.timeline_last_updated==None or \
+               (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < datetime.datetime.now():
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
 
