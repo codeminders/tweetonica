@@ -59,6 +59,7 @@ def getDefaultGroup(u):
     groups = q.fetch(1)
     return groups[0]
 
+
 def getGroupByName(group_name, u):
     q = data.Group.gql('WHERE name = :1 and user=:2', group_name, u.key())
     groups = q.fetch(1)
@@ -66,6 +67,7 @@ def getGroupByName(group_name, u):
         return groups[0]
     else:
         return None
+
 
 def getFriendByName(screen_name, u):
     q = data.Friend.gql('WHERE screen_name = :1 and user=:2',
@@ -77,6 +79,7 @@ def getFriendByName(screen_name, u):
     else:
         return None
 
+
 def addNewFriend(u,f,g):
     logging.debug("Adding friend %s to %s" % (f.screen_name, u.screen_name))
     fo = data.Friend(id = f.id,
@@ -87,3 +90,10 @@ def addNewFriend(u,f,g):
                      group = g,
                      parent=u)
     fo.put()
+
+
+def getGroupTimeline(g, howmany=20):
+    q = data.StatusUpdate.gql("WHERE group = :1 ORDER BY id DESC LIMIT %d" % howmany,\
+                              g.key())
+    return q
+
