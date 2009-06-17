@@ -45,6 +45,8 @@ class ATOMHandler(webapp.RequestHandler):
                (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < datetime.datetime.now():
             groups = queries.loadGroups(u)
             self._updateTimeLine(u,t,groups)
+        else:
+            logging.debug("Timeline for %s is up to date" % u.screen_name)
 
         g = queries.getGroupByName(group, u)
         if not g:
@@ -100,7 +102,7 @@ class ATOMHandler(webapp.RequestHandler):
             logging.warning("Error parsing auth string '%s'" % ahd)
             return None
         (username,password) = ahds
-        logging.debug("Authenticatin user '%s' with password '%s'" % \
+        logging.debug("Authenticating user '%s' with password '%s'" % \
                       (username,password))
 
         q = data.User.gql('WHERE screen_name = :1 and password=:2', \
@@ -110,6 +112,7 @@ class ATOMHandler(webapp.RequestHandler):
             logging.debug("User '%s' authenticated" % username)
             return users[0]
         else:
+            logging.debug("No user of bad pass for %s" % username)
             return None
         
         return None
@@ -178,8 +181,9 @@ class ATOMHandler(webapp.RequestHandler):
         s.put()
 
     def _generateFeed(self,u,g):
-        # TODO:
-        pass
+        timeline = queries.getGroupTimeline(g)
+        for e in timeline:
+            print "%d" % e.id
 
 
 def main():
