@@ -7,7 +7,7 @@ var phalanges = {
         ERR_INTERNAL:       3,
         ERR_AUTH_REQUIRED:  101,
 
-        endpoint: '/mockapi',
+        endpoint: '/api',
         seqid: 0,
 
         token: null,

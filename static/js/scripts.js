@@ -9,19 +9,50 @@ $(document).ready(function() {
     }
 
     var render_group = function(g) {
-        var container = $('<div>').addClass('clear');
-        var node = $('<a>').attr({href: 'javascript:;', groupname:g.name}).addClass('groupclosed').click(function(e) {
+
+        var container = $('<div class="group-background groupentry">').droppable({
+            accept: '.userinfo_pic', 
+            drop: function(event, ui) {
+                var src  = ui.draggable;
+                var dest = $('a', this).attr('groupname');
+                move_user(src.get(0).id.substring(5), dest);
+            }
+        });
+
+        var node = $('<a>').attr({
+            href: 'javascript:;', 
+            groupname:g.name, 
+            class: 'grclosed green-sm'
+        }).click(function(e) {
             open_group($(this));
             e.stopPropagation();
             e.preventDefault();
         });
+
         var span = $('<span>').text(display_group_name(g.name));
-        container.droppable({accept: '.userinfo_pic', drop: function(event, ui) {
-            var src  = ui.draggable;
-            var dest = $('a', this).attr('groupname');
-            move_user(src.get(0).id.substring(5), dest);
-        }});
-        $('#groups').append(container.append(node.append(span)));
+
+        container.append(node.append(span));
+
+        if (g.name != '__ALL__') {
+            var buttons = $('<div class="group-button">');
+            var editbutton = $('<a href="javascript:;">').click(function(e) {
+                $('#old-group-name').val(g.name);
+                $('#new-group-name').val('');
+                $('#rename-dialog').dialog('open');
+                e.stopPropagation();
+                e.preventDefault();
+            }).append($('<img src="images/edit.png" alt="Rename"/>'));
+
+            var delbutton = $('<a href="javascript:;">').click(function(e) {
+                delete_group(g.name);
+                e.stopPropagation();
+                e.preventDefault();
+            }).append($('<img src="images/delete.png" alt="Delete"/>'));
+
+            container.append(buttons.append(editbutton).append(delbutton));
+        }
+
+        $('#last-group').before(container);        
     };
 
     var render_user = function(u) {
@@ -129,25 +160,12 @@ $(document).ready(function() {
     }
 
     var open_group = function(e) {
-        $('#groups a').removeClass('groupopen').addClass('groupclosed');
-        e.removeClass('groupclosed').addClass('groupopen');
+        $('a.gropen').attr('class', 'grclosed green-sm');
+        e.attr('class', 'gropen green-bg');
 
         var g = cache[e.attr('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
-
-        $('#delete-group').unbind('click').click(function(e) {
-            delete_group(g.name);
-            e.stopPropagation();
-            e.preventDefault();
-        });
-
-        $('#rename-group').unbind('click').click(function(e) {
-            rename_group(g.name, 'new ' + g.name);
-            e.stopPropagation();
-            e.preventDefault();
-        });
-
 
         $('#groupmembers ul').empty();
         for (var i = 0; i< g.users.length; i++) {
@@ -193,12 +211,13 @@ $(document).ready(function() {
                 });
                 cache = [];
 
-                $('#groups').empty();
+                $('.groupentry').remove();
                 for (var i = 0; i < groups.length; i++) {
                     var group = groups[i];
                     render_group(group);
                     cache[group.name] = group;
                 }
+
                 open_group($('#groups a[groupname=__ALL__]'));
                 open_page('manage');
             }, function(error) {
@@ -255,7 +274,7 @@ $(document).ready(function() {
                     $('#groups a').each(function() {
                         var o = $(this);
                         if (o.attr('groupname') == name) {
-                            o.remove();
+                            o.parent().remove();
                         }
                     });
                     open_group($('#groups a[groupname=__ALL__]'));
@@ -289,14 +308,98 @@ $(document).ready(function() {
         width: 350
     });
 
+    var rename_dialog_callback = function() {
+        $('.error').hide();
+        var old_name = $('#old-group-name').val();
+        var new_name  = jQuery.trim($('#new-group-name').val());
+        if (!new_name) {
+            $('#eemptyname').show();
+        } else {
+            if (old_name == new_name) {
+                $('#rename-dialog').dialog('close');
+                return;
+            }
+            for (var g in cache) {
+                if (g == new_name) {
+                    $('#eduplicatename').show();
+                    return;
+                }
+            }
+            rename_group(old_name, new_name);
+            $('#rename-dialog').dialog('close');
+        }
+    };
+
+    $('#rename-dialog').dialog({
+        buttons: {
+            'Cancel': function() {
+                $('#rename-dialog').dialog('close');
+            },
+            'OK': rename_dialog_callback
+        },
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        title: 'Please enter new group name',
+        width: 350,
+        open: function() {
+            setTimeout(function() {$('#new-group-name').focus()}, 100);
+        }
+    });
+
+    $('#new-group-name').keypress(function(e) {
+        if (e.which == 13) {
+            rename_dialog_callback();
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+
+
+    var create_dialog_callback = function() {
+        $('.error').hide();
+        var name  = jQuery.trim($('#create-group-name').val());
+        if (!name) {
+            $('#eemptyname2').show();
+        } else {
+            for (var g in cache) {
+                if (g == name) {
+                    $('#eduplicatename2').show();
+                    return;
+                }
+            }
+            create_group(name);
+            $('#create-dialog').dialog('close');
+        }
+    };
+
+    $('#create-dialog').dialog({
+        buttons: {
+            'Cancel': function() {
+                $('#create-dialog').dialog('close');
+            },
+            'OK': create_dialog_callback
+        },
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        title: 'Please enter new group name',
+        width: 350,
+        open: function() {
+            setTimeout(function() {$('#create-group-name').focus()}, 100);
+        }
+    });
+
+    $('#create-group-name').keypress(function(e) {
+        if (e.which == 13) {
+            create_dialog_callback();
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+
 
     // handlers
-
-    $('#groups a').click(function(e) {
-        $(this).toggleClass('groupopen').toggleClass('groupclosed');
-        e.stopPropagation();
-        e.preventDefault();
-    });
 
     $('.menu').click(function(e) {
         var pageid = this.id.substring(1);
@@ -335,6 +438,15 @@ $(document).ready(function() {
         else
             $('.userinfo').removeClass('short_details');
     });
+
+    $('#last-group a').click(function(e) {
+        $('#create-group-name').val('');
+        $('#create-dialog').dialog('open');
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+
 
     open_page('about');
 
