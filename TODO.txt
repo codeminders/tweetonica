@@ -1,2 +1,6 @@
 . Auto-provision users on RSS req.
 . etag/modified-since headers handling
+. Data store indices
+. OPML generation
+. TTL/caching for static files
+
