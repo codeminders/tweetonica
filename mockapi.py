@@ -40,7 +40,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_get_friends(self, auth_token=None):
         """"""
         res = {}
-        numgroups = random.randint(1, 20)
+        numgroups = random.randint(1, 2)
 
         group = {
             'name': DEFAULT_GROUP_NAME,
@@ -76,6 +76,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def json_new_group(self, auth_token=None, group_name=None):
         """"""
+        group = {
+            'name' : group_name,
+            'rssurl' : 'http://rss.com/%s' % group_name
+        }
+        return group
         
     def json_rename_group(self, auth_token=None,
                           old_group_name=None,

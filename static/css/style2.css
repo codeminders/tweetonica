@@ -1,31 +1,28 @@
-img {border: none;}
+html, body { height:100%; margin:0; padding:0;}
+body { background:#FFF; color:#222222; font:normal 14px/18px Arial, Helvetica, sans-serif;}
+form, body, iframe { margin:0; padding:0;}
+img, table, iframe { border:0;}
+p { margin:0; margin-bottom:15px;}
+.layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
 
 #header {
     background-color: #000;
-    width: 100%;
     height: 120px;
     margin-bottom: 20px;
+    position:relative;
 }
 
-#logo {
-    position: relative;
-    top: 20px;
-    left: 20px;
-    background: transparent url('images/logo.png') no-repeat;
-    width: 317px;
-    height: 77px;
-}
+.logo a { display:block; width:337px; height:97px; background:url(images/logo.png) no-repeat 20px 20px; overflow:hidden; text-indent:-999px;}
 
 #menubar {
-    position: absolute;
-    right: 20px;
-    top: 80px;
+    position:absolute;
+    right:10px;
+    bottom:0;
 }
 
 #loginbox {
-    position: absolute;
-    right: 20px;
-    top: 20px;
+    float:right;
+    margin:20px 20px 0 0;
     color: #fff;
     font: bold 16px arial, sans-serif;
 }
@@ -63,34 +60,81 @@ img {border: none;}
     overflow: hidden;
 }
 
-a.groupopen, a.groupclosed {
+/*  button for Group */
+
+a.gropen, a.grclosed {
+    position:relative;
     color: #000;
     display: block;
     float: left;
     font: normal 12px arial, sans-serif;
     height: 29px;
-    margin-right: 6px;
     text-decoration: none;
-    width: 300px;
     margin-bottom: 3px;
+    text-align:center;
 }
 
-a.groupopen {
-    background: transparent url('images/groupaopen.png') no-repeat scroll top right;
-    padding-right: 41px;
+a.gropen span, a.grclosed span
+{
+    line-height:29px;
 }
 
-a.groupclosed {
-    background: transparent url('images/groupaclosed.png') no-repeat scroll top right;
-    padding-right: 5px;
+a.gropen {
+    background: transparent url('images/groupeopen.png') no-repeat top left;
+    width: 254px;   
 }
 
-a.groupopen span,a.groupclosed span {
-    background: transparent url('images/groupspan.png') no-repeat;
-    display: block;
-    line-height: 19px;
-    text-align: left;
-    padding: 5px 0 5px 5px;
+a.grclosed {
+    background: transparent url('images/groupeclosed.png') no-repeat top left;
+    width: 219px;   
+}
+
+.green-bg, .green-sm
+{
+    background-position: 0 0;
+}
+
+.green-bg:hover
+{
+    background-position: -254px 0;
+}
+
+.green-sm:hover
+{
+    background-position: -219px 0;
+}
+
+.group-background
+{
+    position:relative;
+    float:left;
+}
+
+
+.group-button
+{
+    position:absolute;
+    top:7px;
+    left:5px;
+}
+
+
+.group-button a
+{
+        background-color:transparent;
+        height:12px;
+        display:block;
+        float:left;
+        margin-left:2px;
+
+}
+.group-button a:hover
+{
+        background-color:#FFF;
+        filter:alpha(opacity=70);
+        -khtml-opacity: 0.7;
+        -moz-opacity: 0.7;
+        opacity:0.7;
 }
 
 /* TODO */
@@ -99,7 +143,8 @@ a.groupopen span,a.groupclosed span {
 }
 
 #groups {
-    width: 30%;
+    width: 219px;
+    padding-top:5px;
 }
 
 #details {
@@ -135,13 +180,13 @@ a.groupopen span,a.groupclosed span {
 
 #group-box
 {
-	float:right;
-	width:70%;
+    float:right;
+    width:761px;
     background: transparent;
-    margin:0;
+    margin:0 0 0 20px;
 }
 
-.gtop, .gbottom {disgbplay:block; background:transparent; font-size:1px;}
+.gtop, .gbottom {display:block; background:transparent; font-size:1px;}
 .gb1, .gb2, .gb3, .gb4 {display:block; overflow:hidden;}
 .gb1, .gb2, .gb3 {height:1px;}
 .gb2, .gb3, .gb4 {background:#FFF; border-left:1px solid #bee486; border-right:1px solid #bee486;}
@@ -156,19 +201,20 @@ a.groupopen span,a.groupclosed span {
     background: #FFF;
     border: 0 solid #bee486;
     border-width: 0 1px;
+    padding:5px 5px 5px 40px;
 }
 
 .clear-div
 {
-	clear: both;  
-	height:1px;
+    clear: both;  
+    height:1px;
 }
 
 .footer 
 { 
-	position: absolute; 
-	bottom:0;
-	right:10px;
+    position: absolute; 
+    bottom:0;
+    right:10px;
 }
 
 .copy { padding:0; margin:0 0 1em; color:#333; font: bold 14px/20px Arial, Helvetica, sans-serif; text-align:right;}
@@ -178,12 +224,12 @@ a.groupopen span,a.groupclosed span {
 
 .group-header
 {
-	float:left;
-	margin:0;
+    float:left;
+    margin:0;
 }
 
 .radiobutton
 {
-	float:right;
-	margin:0 10px 0 0;
+    float:right;
+    margin:0 10px 0 0;
 }
