@@ -1,4 +1,6 @@
 var cache = [];
+var COLORS = [ 'green', 'orange', 'yellow', 'blue', 'purple'];
+var COLOR = 0;
 
 $(document).ready(function() {
     
@@ -19,10 +21,12 @@ $(document).ready(function() {
             }
         });
 
-        var node = $('<a>').attr({
-            href: 'javascript:;', 
-            groupname:g.name, 
-            class: 'grclosed green-sm'
+        var c = COLORS[COLOR++];
+        if (COLOR >= COLORS.length)
+            COLOR = 0;
+        var node = $('<a href="javascript:;" class="grclosed ' + c + '-sm">').attr({
+            groupname:g.name,
+            colorname: c
         }).click(function(e) {
             open_group($(this));
             e.stopPropagation();
@@ -55,30 +59,38 @@ $(document).ready(function() {
         $('#last-group').before(container);        
     };
 
-    var render_user = function(u) {
-        var container   = $('<li class="userinfo green' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
+    var render_user = function(u, g) {
+        var container   = $('<li class="userinfo' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
         var picture     = $('<div class="userinfo_pic" id="user_' + u.screen_name + '">')
             .append('<img src="' + u.profile_image_url + '" alt="' + u.screen_name + '" width="48" height="48"/>')
             .draggable({appendTo : 'body',helper:'clone'});
         var screen_name = $('<div class="userinfo_screenname">').html('<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>');
-        var controls = $('<a href="javascript:;">[<-->]</a>').click(function(e) {
-            $('#user-to-move').val(u.screen_name);
-            $('#user-to-move-name').text(u.real_name);
-            var groups = $('#group-to-move');
-            groups.empty();
-            for (var g in cache) {
-                if (g != $('#info_groupname').text()) {
-                    groups.append($('<option>').attr('value', g).text(display_group_name(g)));
-                }
-            }
-            $('#move-dialog').dialog('open');
-            e.stopPropagation();
-            e.preventDefault();
-        });
+
         container.append(picture).append(screen_name);
         if (u.real_name && u.real_name != '')
             container.append($('<div>').addClass('userinfo_realname').text(u.real_name));
-        container.append(controls);
+
+        var numgroups = 0;
+        for (var i in cache) {
+            numgroups++;
+        }
+        if (numgroups > 1) {
+            var controls = $('<a href="javascript:;">[<-->]</a>').click(function(e) {
+                $('#user-to-move').val(u.screen_name);
+                $('#user-to-move-name').text(u.real_name);
+                var groups = $('#group-to-move');
+                groups.empty();
+                for (var g in cache) {
+                    if (g != $('#info_groupname').text()) {
+                        groups.append($('<option>').attr('value', g).text(display_group_name(g)));
+                    }
+                }
+                $('#move-dialog').dialog('open');
+                e.stopPropagation();
+                e.preventDefault();
+            });
+            container.append(controls);
+        }
         $('#groupmembers ul').append(container);
     }
 
@@ -160,8 +172,10 @@ $(document).ready(function() {
     }
 
     var open_group = function(e) {
-        $('a.gropen').attr('class', 'grclosed green-sm');
-        e.attr('class', 'gropen green-bg');
+        $('a.gropen').each(function() {
+            $(this).attr('class', 'grclosed ' + $(this).attr('colorname') + '-sm');
+        });
+        e.attr('class', 'gropen ' + e.attr('colorname') + '-bg');
 
         var g = cache[e.attr('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
@@ -169,7 +183,7 @@ $(document).ready(function() {
 
         $('#groupmembers ul').empty();
         for (var i = 0; i< g.users.length; i++) {
-            render_user(g.users[i]);    
+            render_user(g.users[i], g);
         }
     }
 
