@@ -81,12 +81,14 @@ a.gropen span, a.grclosed span
 
 a.gropen {
     background-image: url('images/groupeopen.png');
+    background-repeat: no-repeat;
     width: 254px; 
 }
 
 
 a.grclosed {
     background-image: url('images/groupeclosed.png');
+    background-repeat: no-repeat;
     width: 219px; 
 }
 
@@ -108,7 +110,7 @@ a.grclosed {
 .purple-sm:hover {background-position: -219px -116px;}
 .grey-bg, .grey-sm {background-position: 0 -145px;}
 .grey-bg:hover {background-position: -254px -145px;}
-.grey-sm:hover {background-position: -219px -14
+.grey-sm:hover {background-position: -219px -145px;}
 
 .group-background
 {
@@ -156,34 +158,63 @@ a.grclosed {
 #details {
 }
 
+/*- User info styles -*/
+.userinfo
+{
+    float:left;
+    width:150px;
+    margin:10px 10px 0 10px;
+}
+
+.userinfo a
+{
+    float:left;
+    margin:7px 0 0 5px;
+}
+
+.userinfo_pic
+{
+    float:left;
+    width:58px;
+    height:52px;    
+}
+
+/*- Userpic info border styles -*/
+
+.utop, .ubottom {display:block; background:transparent; font-size:1px;}
+.ub1, .ub2, .ub3, .ub4 {display:block; overflow:hidden;}
+.ub1, .ub2, .ub3 {height:1px;}
+.ub2, .ub3, .ub4 {background:#bee486; border-left:1px solid #bee486; border-right:1px solid #bee486;}
+.ub1 {margin:0 5px; background:#bee486;}
+.ub2 {margin:0 3px; border-width:0 2px;}
+.ub3 {margin:0 2px;}
+.ub4 {height:2px; margin:0 1px;}
+
+.userpic-box-content
+{
+    display: block;
+    background: #bee486;
+    border: 0 solid #bee486;
+    border-width: 0 1px;
+    padding:2px 2px 2px 4px;
+}
+
+.userinfo_screenname, .userinfo_realname
+{
+    float:right;
+    margin:5px 0 3px 0;
+    text-align:left;    
+}
+
+.short_details {
+    width: 50px;
+}
+
 .short_details .userinfo_screenname, .short_details .userinfo_realname {
-    display: none;
+   display: none;
 }
 
-#groupmembers ul {
-    overflow:hidden; 
-    margin:0; 
-    padding:0; 
-    list-style:none;
-}
-
-#groupmembers ul li { float:left; margin:0 2px 2px 0; padding:0; }
-
-
-.green {
-    color: #000;
-}
-
-.green .userinfo_pic {
-    background: transparent url('images/pic-background.png') no-repeat;
-    padding: 8px;    
-}
-
-
-.green a, .green a:hover, .green a:visited, .green a:active {
-    color: #000;
-}
-
+/*- Group info border styles -*/
 #group-box
 {
     float:right;
