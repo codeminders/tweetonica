@@ -10,6 +10,9 @@ handlers:
 - url: /feed(/.*)?
   script: feed.py
 
+- url: /opml
+  script: opml.py
+
 - url: /mockapi
   script: mockapi.py
 
