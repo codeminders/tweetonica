@@ -13,11 +13,10 @@ $(document).ready(function() {
     var render_group = function(g) {
 
         var container = $('<div class="group-background groupentry">').droppable({
-            accept: '.userinfo_pic', 
+            accept: '.userinfo', 
             drop: function(event, ui) {
-                var src  = ui.draggable;
                 var dest = $('a', this).attr('groupname');
-                move_user(src.get(0).id.substring(5), dest);
+                move_user(ui.draggable.get(0).id.substring(5), dest);
             }
         });
 
@@ -60,22 +59,31 @@ $(document).ready(function() {
     };
 
     var render_user = function(u, g) {
-        var container   = $('<li class="userinfo' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
-        var picture     = $('<div class="userinfo_pic" id="user_' + u.screen_name + '">')
-            .append('<img src="' + u.profile_image_url + '" alt="' + u.screen_name + '" width="48" height="48"/>')
-            .draggable({appendTo : 'body',helper:'clone'});
-        var screen_name = $('<div class="userinfo_screenname">').html('<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>');
 
-        container.append(picture).append(screen_name);
-        if (u.real_name && u.real_name != '')
-            container.append($('<div>').addClass('userinfo_realname').text(u.real_name));
+        var picturebox = '<div class="userinfo_pic">' +
+            '<b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>' +
+            '<div class="userpic-box-content">' +
+            '<img src="' + u.profile_image_url + '" alt="' + u.screen_name + '" width="48" height="48"/>' +
+            '</div>' +
+            '<b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>' +
+            '</div>';
+
+        var linkbox = '<div class="userinfo_screenname">' +
+            '<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>' +
+            '</div>';
+
+        var namebox = '<div class="userinfo_realname">' + u.real_name + '</div>';
+
+        var container   = $('<div id="user_' + u.screen_name + '" class="userinfo' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
+        container.append(picturebox).append(linkbox).append(namebox).append('<div class="clear-div">&nbsp;</div>');
 
         var numgroups = 0;
         for (var i in cache) {
             numgroups++;
         }
+
         if (numgroups > 1) {
-            var controls = $('<a href="javascript:;">[<-->]</a>').click(function(e) {
+            var controls = $('<a href="javascript:;"><img src="images/move.png" alt="Move"></a>').click(function(e) {
                 $('#user-to-move').val(u.screen_name);
                 $('#user-to-move-name').text(u.real_name);
                 var groups = $('#group-to-move');
@@ -91,7 +99,9 @@ $(document).ready(function() {
             });
             container.append(controls);
         }
-        $('#groupmembers ul').append(container);
+
+        container.draggable({appendTo : 'body',helper:'clone'});
+        $('#groupmembers').append(container);
     }
 
     var open_page = function(id) {
@@ -131,7 +141,7 @@ $(document).ready(function() {
             if (destg && src) {
                 destg.users.push(src);
                 if (destg.name != srcg.name)
-                    $('#user_' + screen_name).parent().remove();
+                    $('#user_' + screen_name).remove();
             }});
     };
 
@@ -181,7 +191,7 @@ $(document).ready(function() {
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
 
-        $('#groupmembers ul').empty();
+        $('#groupmembers').empty();
         for (var i = 0; i< g.users.length; i++) {
             render_user(g.users[i], g);
         }
