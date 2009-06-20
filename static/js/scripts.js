@@ -229,6 +229,8 @@ $(document).ready(function() {
                 groups.sort(function(a, b) {
                     if (a.name == '__ALL__')
                         return -1;
+                    if (b.name == '__ALL__')
+                        return 1;
                     var k1 = a.name.toLowerCase();
                     var k2 = b.name.toLowerCase();
                     return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
@@ -431,6 +433,14 @@ $(document).ready(function() {
         e.stopPropagation();
         e.preventDefault();
     });
+
+    $('.menulink').click(function(e) {
+        var pageid = this.id.substring(2);
+        $('#m' + pageid).click();
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
 
     $('#logoutbutton').click(function(e) {
         $('#loggedin').hide();

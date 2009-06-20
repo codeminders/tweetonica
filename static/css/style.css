@@ -159,24 +159,30 @@ a.grclosed {
 }
 
 /*- User info styles -*/
-.userinfo
-{
+.userinfo {
     float:left;
     width:150px;
     margin:10px 10px 0 10px;
 }
 
-.userinfo a
-{
-    float:left;
-    margin:7px 0 0 5px;
+
+.userinfo a {
+    margin:0 0 0 5px;
 }
 
-.userinfo_pic
-{
+
+.userinfo_pic {
     float:left;
     width:58px;
-    height:52px;    
+    height:52px;
+    margin-bottom:15px; 
+}
+
+
+.userinfo_screenname, .userinfo_realname {
+    float:right;
+    margin:0 0 3px 5px;
+    width:80px; 
 }
 
 /*- Userpic info border styles -*/
@@ -197,13 +203,6 @@ a.grclosed {
     border: 0 solid #bee486;
     border-width: 0 1px;
     padding:2px 2px 2px 4px;
-}
-
-.userinfo_screenname, .userinfo_realname
-{
-    float:right;
-    margin:5px 0 3px 0;
-    text-align:left;    
 }
 
 .userinfo_screenname a {
