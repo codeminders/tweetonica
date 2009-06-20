@@ -206,6 +206,10 @@ a.grclosed {
     text-align:left;    
 }
 
+.userinfo_screenname a {
+    margin: 0;
+}
+
 .short_details {
     width: 50px;
 }

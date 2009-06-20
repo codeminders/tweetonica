@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-    <link href="css/trontastic/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="css/ui/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
     <link href="css/style.css" rel="stylesheet" type="text/css" media="screen"/>
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
@@ -84,9 +84,9 @@
     <div id="login-dialog" style="display:none">
         <table>
             <tr>
-                <td>Twitter name: </td>
+                <td>Twitter&nbsp;name:</td>
                 <td>
-                    <input id="screen_name"/>
+                    <input id="screen_name" style="width:220px"/>
                     <div class="error" id="ename" style="display:none">Please enter Twitter name</div>
                     <div class="error" id="eauth" style="display:none">Invalid credentials are entered</div>
                 </td>
@@ -94,7 +94,7 @@
             <tr>
                 <td>Password: </td>
                 <td>
-                    <input id="password" type="password"/>
+                    <input id="password" type="password" style="width:220px"/>
                     <div class="error" id="epass" style="display:none">Please enter password</div>
                 </td>
             </tr>
@@ -116,13 +116,13 @@
 
     <div id="rename-dialog" style="display:none">
         <input type="hidden" id="old-group-name"/>
-        <input type="text" id="new-group-name"/>
+        <input type="text" id="new-group-name" style="width:320px"/>
         <div class="error" id="eemptyname" style="display:none">Please enter new group name</div>
         <div class="error" id="eduplicatename" style="display:none">Group with specified name already exists</div>
     </div>
 
     <div id="create-dialog" style="display:none">
-        <input type="text" id="create-group-name"/>
+        <input type="text" id="create-group-name" style="width:320px"/>
         <div class="error" id="eemptyname2" style="display:none">Please enter new group name</div>
         <div class="error" id="eduplicatename2" style="display:none">Group with specified name already exists</div>
     </div>
