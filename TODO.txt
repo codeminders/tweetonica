@@ -1,6 +1,11 @@
-. Auto-provision users on RSS req.
+
+Backend:
+. Auto-provision users on RSS/OPML req.
 . etag/modified-since headers handling
 . Data store indices
 . OPML generation
 . TTL/caching for static files
 
+Frontend:
+. Review text for home page, FAQ, etc.
+. OPML download (need backend support)
