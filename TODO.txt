@@ -9,3 +9,11 @@ Backend:
 Frontend:
 . Review text for home page, FAQ, etc.
 . OPML download (need backend support)
+
+Bugs:
+. scroll bar in login dialogue
+. missing icons under avatars
+
+Features:
+. Switch to OAUth in UI
+
