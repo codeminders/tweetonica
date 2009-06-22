@@ -279,7 +279,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Login to Phalanges',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#screen_name').focus()}, 100);
         },
@@ -323,7 +323,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Please confirm group deletion',
-        width: 350
+        width: 360
     });
 
     $('#move-dialog').dialog({
@@ -342,7 +342,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Please select destination',
-        width: 350
+        width: 360
     });
 
     var rename_dialog_callback = function() {
@@ -378,7 +378,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Rename group',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#new-group-name').focus()}, 100);
         }
@@ -421,7 +421,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Create group',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#create-group-name').focus()}, 100);
         }
