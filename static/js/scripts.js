@@ -17,6 +17,16 @@ $(document).ready(function() {
             drop: function(event, ui) {
                 var dest = $('a', this).attr('groupname');
                 move_user(ui.draggable.get(0).id.substring(5), dest);
+                $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
+                $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
+            },
+            over: function() {
+                $('a.grclosed', $(this)).removeClass('grclosed').addClass('grclosed-hl');
+                $('a.gropen', $(this)).removeClass('gropen').addClass('gropen-hl');
+            },
+            out: function() {
+                $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
+                $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
             }
         });
 
@@ -40,7 +50,7 @@ $(document).ready(function() {
             var buttons = $('<div class="group-button">');
             var editbutton = $('<a href="javascript:;">').click(function(e) {
                 $('#old-group-name').val(g.name);
-                $('#new-group-name').val('');
+                $('#new-group-name').val(g.name);
                 $('#rename-dialog').dialog('open');
                 e.stopPropagation();
                 e.preventDefault();
@@ -115,6 +125,7 @@ $(document).ready(function() {
             p.show();
         }
         else {
+            $('.error').hide();
             $('#login-dialog').dialog('open');
         }
     };
@@ -366,7 +377,7 @@ $(document).ready(function() {
         autoOpen: false,
         modal: true,
         resizable: false,
-        title: 'Please enter new group name',
+        title: 'Rename group',
         width: 350,
         open: function() {
             setTimeout(function() {$('#new-group-name').focus()}, 100);
@@ -409,7 +420,7 @@ $(document).ready(function() {
         autoOpen: false,
         modal: true,
         resizable: false,
-        title: 'Please enter new group name',
+        title: 'Create group',
         width: 350,
         open: function() {
             setTimeout(function() {$('#create-group-name').focus()}, 100);
@@ -453,6 +464,7 @@ $(document).ready(function() {
     });
 
     $('#loginbutton').click(function(e) {
+        $('.error').hide();
         $('#login-dialog').dialog('open');
         e.stopPropagation();
         e.preventDefault();

@@ -62,31 +62,39 @@ p { margin:0; margin-bottom:15px;}
 
 /*  button for Group */
 
-a.gropen, a.grclosed {
+a.gropen, a.grclosed, a.gropen-hl, a.grclosed-hl {
     position:relative;
-    color: #000;
     display: block;
     float: left;
-    font: normal 12px arial, sans-serif;
     height: 29px;
     text-decoration: none;
     margin-bottom: 3px;
     text-align:center;
 }
 
-a.gropen span, a.grclosed span
+a.gropen, a.grclosed {
+    color: #000;
+    font: normal 12px arial, sans-serif;
+}
+
+a.gropen-hl, a.grclosed-hl {
+    color: #fff;
+    font: bold 12px arial, sans-serif;
+}
+
+a.gropen span, a.grclosed span, a.gropen-hl span, a.grclosed-hl span
 {
     line-height:29px;
 }
 
-a.gropen {
+a.gropen, a.gropen-hl {
     background-image: url('images/groupeopen.png');
     background-repeat: no-repeat;
     width: 254px; 
 }
 
 
-a.grclosed {
+a.grclosed, a.grclosed-hl {
     background-image: url('images/groupeclosed.png');
     background-repeat: no-repeat;
     width: 219px; 
@@ -252,9 +260,13 @@ a.grclosed {
 
 .footer 
 { 
+/*
     position: absolute; 
     bottom:0;
     right:10px;
+*/
+    clear: both;
+    padding-top: 20px;
 }
 
 .copy { padding:0; margin:0 0 1em; color:#333; font: bold 14px/20px Arial, Helvetica, sans-serif; text-align:right;}
@@ -272,4 +284,10 @@ a.grclosed {
 {
     float:right;
     margin:0 10px 0 0;
+}
+
+.faqentry, .faqentry:visited, .faqentry:hover, .faqentry:active {
+    color: #000;
+    text-decoration: none;
+    font: bold 14px arial, sans-serif;
 }
