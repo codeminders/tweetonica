@@ -6,8 +6,11 @@ $(document).ready(function() {
     
     // aux functions 
 
-    var display_group_name = function(name) {
-        return name == '__ALL__' ? 'Uncategorized' : name;
+    var display_group_name = function(name, trim) {
+        name = name == '__ALL__' ? 'Uncategorized' : name;
+        if (trim && name.length > 14)
+            name = name.substring(0, 14) + '..';
+        return name;
     }
 
     var render_group = function(g) {
@@ -42,7 +45,7 @@ $(document).ready(function() {
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name(g.name));
+        var span = $('<span>').text(display_group_name(g.name, true));
 
         container.append(node.append(span));
 
@@ -167,6 +170,7 @@ $(document).ready(function() {
             var g = {name: name, users: [], rssurl: results.rssurl};
             cache[name] = g;
             render_group(g);
+            open_group($('#groups a.gropen'));
         });
     }
 
@@ -185,7 +189,7 @@ $(document).ready(function() {
                 var o = $(this);
                 if (o.attr('groupname') == old_name) {
                     o.attr('groupname', new_name);
-                    $('span', o).text(new_name);
+                    $('span', o).text(display_group_name(new_name, true));
                     open_group(o);
                 }
             });
@@ -279,7 +283,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Login to Phalanges',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#screen_name').focus()}, 100);
         },
@@ -304,7 +308,7 @@ $(document).ready(function() {
                     var tmp = [];
                     for (var g in cache) {
                         var info = cache[g];
-                        if (g.name != name)
+                        if (info.name != name)
                             tmp[g] = info;                
                     }
                     cache = tmp;
@@ -323,7 +327,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Please confirm group deletion',
-        width: 350
+        width: 360
     });
 
     $('#move-dialog').dialog({
@@ -342,7 +346,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Please select destination',
-        width: 350
+        width: 360
     });
 
     var rename_dialog_callback = function() {
@@ -378,7 +382,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Rename group',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#new-group-name').focus()}, 100);
         }
@@ -421,7 +425,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Create group',
-        width: 350,
+        width: 360,
         open: function() {
             setTimeout(function() {$('#create-group-name').focus()}, 100);
         }
