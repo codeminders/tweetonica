@@ -8,8 +8,8 @@ $(document).ready(function() {
 
     var display_group_name = function(name, trim) {
         name = name == '__ALL__' ? 'Uncategorized' : name;
-        if (trim && name.length > 30)
-            name = name.substring(0, 30);
+        if (trim && name.length > 14)
+            name = name.substring(0, 14) + '..';
         return name;
     }
 
