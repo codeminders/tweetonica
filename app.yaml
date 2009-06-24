@@ -1,4 +1,4 @@
-application: phalanges-test
+application: tweetonica
 version: 2
 runtime: python
 api_version: 1
