@@ -11,7 +11,7 @@ handlers:
   script: feed.py
 
 - url: /opml
-  script: opml.py
+  script: opmlfeed.py
 
 - url: /mockapi
   script: mockapi.py
