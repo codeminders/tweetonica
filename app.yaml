@@ -13,6 +13,9 @@ handlers:
 - url: /opml
   script: opmlfeed.py
 
+- url: /oauth/(.*)/(.*)
+  script: oauth.py
+
 - url: /mockapi
   script: mockapi.py
 

@@ -16,7 +16,7 @@ from urllib import urlencode, quote as urlquote
 from uuid import uuid4
 from wsgiref.handlers import CGIHandler
 
-from demjson import decode as decode_json
+from simplejson import loads as decode_json
 
 from google.appengine.api.urlfetch import fetch as urlfetch, GET, POST
 from google.appengine.ext import db
