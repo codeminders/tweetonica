@@ -1,22 +1,5 @@
 """
 Twitter OAuth Support for Google App Engine Apps.
-
-Using this in your app should be relatively straightforward:
-
-* Edit the configuration section below with the CONSUMER_KEY and CONSUMER_SECRET
-  from Twitter.
-
-* Modify to reflect your App's domain and set the callback URL on Twitter to:
-
-    http://your-app-name.appspot.com/oauth/twitter/callback
-
-* Use the demo in ``MainHandler`` as a starting guide to implementing your app.
-
-Note: You need to be running at least version 1.1.9 of the App Engine SDK.
-
--- 
-I hope you find this useful, tav
-
 """
 
 # Released into the Public Domain by tav@espians.com
@@ -33,54 +16,16 @@ from urllib import urlencode, quote as urlquote
 from uuid import uuid4
 from wsgiref.handlers import CGIHandler
 
-sys.path.insert(0, join_path(dirname(__file__), 'lib')) # extend sys.path
-
 from demjson import decode as decode_json
 
 from google.appengine.api.urlfetch import fetch as urlfetch, GET, POST
 from google.appengine.ext import db
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 
-# ------------------------------------------------------------------------------
-# configuration -- SET THESE TO SUIT YOUR APP!!
-# ------------------------------------------------------------------------------
-
-OAUTH_APP_SETTINGS = {
-
-    'twitter': {
-
-        'consumer_key': '',
-        'consumer_secret': '',
-
-        'request_token_url': 'https://twitter.com/oauth/request_token',
-        'access_token_url': 'https://twitter.com/oauth/access_token',
-        'user_auth_url': 'http://twitter.com/oauth/authorize',
-
-        'default_api_prefix': 'http://twitter.com',
-        'default_api_suffix': '.json',
-
-        },
-
-    'google': {
-
-        'consumer_key': '',
-        'consumer_secret': '',
-
-        'request_token_url': 'https://www.google.com/accounts/OAuthGetRequestToken',
-        'access_token_url': 'https://www.google.com/accounts/OAuthGetAccessToken',
-        'user_auth_url': 'https://www.google.com/accounts/OAuthAuthorizeToken',
-
-        },
-
-    }
-
 CLEANUP_BATCH_SIZE = 100
 EXPIRATION_WINDOW = timedelta(seconds=60*60*1) # 1 hour
 
-try:
-    from config import OAUTH_APP_SETTINGS
-except:
-    pass
+from constants import OAUTH_APP_SETTINGS
 
 STATIC_OAUTH_TIMESTAMP = 12345 # a workaround for clock skew/network lag
 
@@ -374,8 +319,6 @@ class MainHandler(RequestHandler):
     def get(self):
 
         client = OAuthClient('twitter', self)
-        gdata = OAuthClient('google', self, scope='http://www.google.com/calendar/feeds')
-
         write = self.response.out.write; write(HEADER)
 
         if not client.get_cookie():
