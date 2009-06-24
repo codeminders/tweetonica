@@ -11,9 +11,8 @@ Frontend:
 . OPML download (need backend support)
 
 Bugs:
-. scroll bar in login dialogue
-. missing icons under avatars
 
 Features:
 . Switch to OAUth in UI
+. Rename to reflect new site name
 
