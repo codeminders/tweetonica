@@ -277,7 +277,7 @@ $(document).ready(function() {
             },
             'Login': function() {
                 do_login();                        
-            },
+            }
         },
         autoOpen: false,
         modal: true,
