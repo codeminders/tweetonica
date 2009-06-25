@@ -282,7 +282,7 @@ $(document).ready(function() {
         autoOpen: false,
         modal: true,
         resizable: false,
-        title: 'Login to Phalanges',
+        title: 'Login to Tweetonica',
         width: 360,
         open: function() {
             setTimeout(function() {$('#screen_name').focus()}, 100);
