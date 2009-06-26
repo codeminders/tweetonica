@@ -193,6 +193,7 @@ class OAuthClient(object):
             db.delete(old)
 
         self.token.put()
+        oauth_token.delete()
         self.set_cookie(key_name)
         self.handler.redirect(return_to)
 
