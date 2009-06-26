@@ -39,3 +39,9 @@ class StatusUpdate(db.Model):
     group = db.ReferenceProperty(Group)
     from_friend = db.ReferenceProperty(Friend)
 
+class OAuthRequestToken(db.Model):
+    """OAuth Request Token."""
+    oauth_token = db.StringProperty()
+    oauth_token_secret = db.StringProperty()
+    created = db.DateTimeProperty(auto_now_add=True)
+
