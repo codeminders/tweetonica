@@ -38,8 +38,8 @@ def encode(text):
     return urlquote(str(text), '')
 
 class FakeToken(object):
-    token.oauth_token = None
-    token.oauth_token_secret = None
+    oauth_token = None
+    oauth_token_secret = None
 
 class OAuthClient(object):
 
@@ -112,6 +112,7 @@ class OAuthClient(object):
         return self.get_request_token()
 
     def logout(self, return_to='/'):
+        queries.logout(self.get_cookie())
         self.expire_cookie()
         self.handler.redirect(self.handler.request.get("return_to", return_to))
 

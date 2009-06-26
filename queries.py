@@ -42,6 +42,13 @@ def getUserByCookie(cookie):
     else:
         return None
 
+def logout(cookie):
+    if cookie:
+        u = getUserByCookie(cookie)
+        if u:
+            u.cookie = None
+            u.put()
+
 def createOrUpdateUser(screen_name,
                        id,
                        oauth_token,
@@ -56,6 +63,7 @@ def createOrUpdateUser(screen_name,
         u.put()
         return u
     else:
+        logging.debug('Creating new user %s' % screen_name)
         u = data.User(screen_name = screen_name,
                       id = id,
                       oauth_token = oauth_token,
