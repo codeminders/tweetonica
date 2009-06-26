@@ -1,0 +1,216 @@
+<!-- test login page -->
+<html>
+<head>
+    <title>POST test</title>
+    <script type="text/javascript">
+        var current_id = 1;
+        var URL = '/api';
+        var CONTENT_TYPE = 'application/json'
+    
+        function createHTTP()
+        {
+            if (window.XMLHttpRequest) {
+                try {
+                    return new XMLHttpRequest();
+                } catch(e) {}
+            }
+            if (window.ActiveXObject) {
+                try {
+                    return new ActiveXObject("Msxml2.XMLHTTP");
+                } catch(e) { }
+
+                try {
+                    return new ActiveXObject("Microsoft.XMLHTTP");
+                } catch(e) { }
+            }
+
+            return false;
+        }
+
+        function getLogoutJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "logout",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getGetFriendsJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "get_friends",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getNewGroupJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "new_group",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "group_name": "group1"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getDelGroupJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "delete_group",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "group_name": "group1"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getRenameGroupJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "rename_group",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "old_group_name": "group1",\n' +
+                    '         "new_group_name": "group2"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getMoveFriendJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "move_friend",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "screen_name": "",\n' +
+                    '         "group_name": "group1"\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getLoginJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "login",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "screen_name": "vzalivatest",\n' +
+                    '         "password": ""\n' +
+                    '    }\n' + 
+                    '}\n';
+        }
+
+        function getHttpResult(http)
+        {
+            var result = '';
+            result += http.status + " " + http.statusText + "\n";
+            result += http.getAllResponseHeaders();
+            result += "\n";
+            result += http.responseText;
+            return result;
+        }
+
+        function doSubmitPostTest()
+        {
+            var responseText = document.getElementById("responseText");
+            var http = createHTTP();
+            if (!http)
+            {
+                responseText.value = "Cannot create HTTP request.";
+                return;
+            }
+
+            responseText.value = "--- Starting...\n";
+
+            var content = document.getElementById("post_content").value;
+
+            http.onreadystatechange = function() {
+                responseText.value += "-- State: " + http.readyState + "\n";
+
+                if (http.readyState == 4)
+                    responseText.value += "-- Result:\n" + getHttpResult(http);
+            }
+            http.open("POST", URL, true);
+            http.setRequestHeader('Content-Type', CONTENT_TYPE);
+            http.send(content);
+        }
+
+        function doSubmitOtherTest(method)
+        {
+            var responseText = document.getElementById("responseText");
+            var http = createHTTP();
+            if (!http)
+            {
+                responseText.value = "Cannot create HTTP request.";
+                return;
+            }
+
+            responseText.value = "--- Starting...\n";
+
+            http.onreadystatechange = function() {
+                responseText.value += "-- State: " + http.readyState + "\n";
+
+                if (http.readyState == 4)
+                    responseText.value += "-- Result:\n" + getHttpResult(http);
+            }
+
+            http.open(method, URL, true);
+            http.send(null);
+        }
+    </script>
+</head>
+
+<body>
+
+<h2>API debugger</h2>
+
+<p>
+<form>
+Auth Token: <input id="auth_token" type="text" size="40"></input>
+</form>
+Methods: 
+<input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
+<input type="submit" value="logout" onclick="document.getElementById('post_content').value = getLogoutJSON()"/>
+<input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
+<input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
+<input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
+<input type="submit" value="delete_group" onclick="document.getElementById('post_content').value = getDelGroupJSON()"/>
+<input type="submit" value="move_friend" onclick="document.getElementById('post_content').value = getMoveFriendJSON()"/>
+<br/>
+<textarea id="post_content" rows="10" cols="125"></textarea>
+</p>
+
+<p>
+<input type="submit" value="Send POST" onclick="doSubmitPostTest()"/>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<!--
+<input type="submit" value="Send GET" onclick="doSubmitOtherTest('GET')"/>
+<input type="submit" value="Send DELETE" onclick="doSubmitOtherTest('DELETE')"/>
+--!>
+
+</p>
+
+
+<h2>Response text</h2>
+<textarea id="responseText" rows="30" cols="125"></textarea>
+
+</body>
+</html>
