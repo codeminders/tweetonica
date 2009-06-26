@@ -15,3 +15,5 @@ Features:
 . Switch to OAUth in UI
 . Rename to reflect new site name
 
+Deployement/Production:
+. Redirect www.tweetonica.com to tweetonica.com (bird)
