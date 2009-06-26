@@ -15,6 +15,7 @@ import data
 import queries
 import constants
 import misc
+from oauth import OAuthClient
 
 
 # for how long auth token is valid ( 1day+1sec)
