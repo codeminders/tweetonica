@@ -69,7 +69,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'logout\' invoked for user %s' % u.screen_name)
         u.cookie = None
-        u.cookie_expires = None
         u.put()
 
     def json_get_friends(self, auth_token=None):
@@ -188,12 +187,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
         else:
-            if users[0].auth_token_expires < datetime.datetime.now():
-                logging.warning("Expired auth token %s" % token)
-                raise json.JSONRPCError("Expired auth token",
-                                        code=ERR_BAD_AUTH_TOKEN)
-            else:
-                return users[0]
+            return users[0]
 
     def _buildAuthToken(self, me):
         return (str(uuid1()),
