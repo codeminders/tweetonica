@@ -1,6 +1,5 @@
 
 Backend:
-. Auto-provision users on RSS/OPML req.
 . etag/modified-since headers handling
 . Data store indices
 . OPML generation
