@@ -9,7 +9,6 @@ class User(db.Model):
     oauth_token_secret = db.StringProperty()
     # our auth cookie
     cookie = db.StringProperty()
-    cookie_expires = db.DateTimeProperty()
 
     user_created = db.DateTimeProperty(auto_now_add=True)
     id = db.IntegerProperty(required=True) 
