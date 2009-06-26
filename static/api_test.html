@@ -6,6 +6,22 @@
         var current_id = 1;
         var URL = '/api';
         var CONTENT_TYPE = 'application/json'
+
+        function getCookie(c_name)
+        {
+        if (document.cookie.length>0)
+          {
+          c_start=document.cookie.indexOf(c_name + "=");
+          if (c_start!=-1)
+            {
+            c_start=c_start + c_name.length+1;
+            c_end=document.cookie.indexOf(";",c_start);
+            if (c_end==-1) c_end=document.cookie.length;
+            return unescape(document.cookie.substring(c_start,c_end));
+            }
+          }
+        return "";
+        }
     
         function createHTTP()
         {
@@ -27,18 +43,6 @@
             return false;
         }
 
-        function getLogoutJSON()
-        {
-            return '{\n' +
-                    '"id": '+ (current_id++) +',\n' +
-                    '"method": "logout",\n' +
-                    '"params":\n' + 
-                    '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
-                    '    }\n' + 
-                    '}\n';
-        }
-
         function getGetFriendsJSON()
         {
             return '{\n' +
@@ -46,7 +50,7 @@
                     '"method": "get_friends",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '"\n'+
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '"\n'+
                     '    }\n' + 
                     '}\n';
         }
@@ -58,7 +62,7 @@
                     '"method": "new_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '",\n'+
                     '         "group_name": "group1"\n' +
                     '    }\n' + 
                     '}\n';
@@ -71,7 +75,7 @@
                     '"method": "delete_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '",\n'+
                     '         "group_name": "group1"\n' +
                     '    }\n' + 
                     '}\n';
@@ -84,7 +88,7 @@
                     '"method": "rename_group",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '",\n'+
                     '         "old_group_name": "group1",\n' +
                     '         "new_group_name": "group2"\n' +
                     '    }\n' + 
@@ -98,22 +102,9 @@
                     '"method": "move_friend",\n' +
                     '"params":\n' + 
                     '    {\n' +
-                    '         "auth_token": "' + document.getElementById('auth_token').value + '",\n'+
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '",\n'+
                     '         "screen_name": "",\n' +
                     '         "group_name": "group1"\n' +
-                    '    }\n' + 
-                    '}\n';
-        }
-
-        function getLoginJSON()
-        {
-            return '{\n' +
-                    '"id": '+ (current_id++) +',\n' +
-                    '"method": "login",\n' +
-                    '"params":\n' + 
-                    '    {\n' +
-                    '         "screen_name": "vzalivatest",\n' +
-                    '         "password": ""\n' +
                     '    }\n' + 
                     '}\n';
         }
@@ -183,12 +174,6 @@
 <h2>API debugger</h2>
 
 <p>
-<form>
-Auth Token: <input id="auth_token" type="text" size="40"></input>
-</form>
-Methods: 
-<input type="submit" value="login" onclick="document.getElementById('post_content').value = getLoginJSON()"/>
-<input type="submit" value="logout" onclick="document.getElementById('post_content').value = getLogoutJSON()"/>
 <input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
 <input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
 <input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
