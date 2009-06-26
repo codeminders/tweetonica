@@ -1,4 +1,4 @@
-application: phalanges-test
+application: tweetonica
 version: 2
 runtime: python
 api_version: 1
@@ -12,6 +12,9 @@ handlers:
 
 - url: /opml
   script: opmlfeed.py
+
+- url: /oauth/(.*)/(.*)
+  script: oauth.py
 
 - url: /mockapi
   script: mockapi.py

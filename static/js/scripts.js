@@ -277,7 +277,7 @@ $(document).ready(function() {
             },
             'Login': function() {
                 do_login();                        
-            },
+            }
         },
         autoOpen: false,
         modal: true,
@@ -321,7 +321,7 @@ $(document).ready(function() {
                     open_group($('#groups a[groupname=__ALL__]'));
                 });
                 $('#delete-confirm-dialog').dialog('close');
-            },
+            }
         },
         autoOpen: false,
         modal: true,
