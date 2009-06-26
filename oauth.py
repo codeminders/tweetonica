@@ -45,7 +45,7 @@ def encode(text):
 def twitter_specifier_handler(client):
     return client.get('/account/verify_credentials')['screen_name']
 
-OAUTH_APP_SETTINGS['twitter']['specifier_handler'] = twitter_specifier_handler
+OAUTH_APP_SETTINGS['specifier_handler'] = twitter_specifier_handler
 
 # ------------------------------------------------------------------------------
 # db entities
