@@ -4,10 +4,14 @@ from google.appengine.ext import db
 
 class User(db.Model):
     screen_name = db.StringProperty(required=True) # primary key
-    access_token = db.StringProperty(required=True)
-    access_token_secret = db.StringProperty(required=True)
-    auth_token = db.StringProperty()
-    auth_token_expires = db.DateTimeProperty()
+    # OAuth 'access_token'
+    oauth_token = db.StringProperty()
+    oauth_token_secret = db.StringProperty()
+    # our auth cookie
+    cookie = db.StringProperty()
+    cookie_expires = db.DateTimeProperty()
+
+    user_created = db.DateTimeProperty(auto_now_add=True)
     id = db.IntegerProperty(required=True) 
     timeline_last_updated = db.DateTimeProperty()
     timeline_max_id = db.IntegerProperty() 

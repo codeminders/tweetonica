@@ -65,39 +65,11 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- response methods delegates below --
 
-    def json_login(self, screen_name=None, password=None):
-        logging.debug('Method \'login\' invoked for user %s' % screen_name)
-        t = twitter.Api(screen_name, password)
-        try:
-            me =  t.verifyCredentials()
-        except HTTPError, e:
-            if e.code==401:
-                raise json.JSONRPCError("Twitter authentication failed",
-                                    code=ERR_TWITTER_AUTH_FAILED)
-            else:
-                logging.exception("Error talking to twitter %s" % screen_name)
-                raise json.JSONRPCError("Error talking to twiter",
-                                    code=ERR_TWITTER_COMM_ERROR)
-                
-
-        u = queries.getUserByScreenName(screen_name)
-        if u:
-            self._updateUser(me, password, u)
-        else:
-            u = queries.newUser(me, password)
-        self._updateFriends(t,u)
-        (auth_token, auth_token_expires)  = self._buildAuthToken(me)
-        u.auth_token = auth_token
-        u.auth_token_expires = auth_token_expires
-        u.put()
-        return { 'auth_token' : auth_token,
-                 'auth_token_expires' : auth_token_expires.isoformat() }
-
     def json_logout(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'logout\' invoked for user %s' % u.screen_name)
-        u.auth_token = None
-        u.auth_token_expires = None
+        u.cookie = None
+        u.cookie_expires = None
         u.put()
 
     def json_get_friends(self, auth_token=None):

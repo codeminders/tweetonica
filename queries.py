@@ -34,22 +34,46 @@ def getUserByScreenName(screen_name):
     else:
         return None
 
+def getUserByCookie(cookie):
+    q = data.User.gql('WHERE cookie = :1', cookie)
+    users = q.fetch(1)
+    if len(users)==1:
+        return users[0]
+    else:
+        return None
+
+def createOrUpdateUser(screen_name,
+                       id,
+                       oauth_token,
+                       oauth_token_secret,
+                       cookie):
+    u = getUserByScreenName(screen_name)
+    if u:
+        u.id = id
+        u.oauth_token = oauth_token
+        u.oauth_token_secret = oauth_token_secret
+        u.cookie = cookie
+        u.put()
+        return u
+    else:
+        u = data.User(screen_name = screen_name,
+                      id = id,
+                      oauth_token = oauth_token,
+                      oauth_token_secret = oauth_token_secret,
+                      cookie = cookie,
+                      timeline_last_updated = None,
+                      timeline_max_id=-1)
+        u.put()
+        g = data.Group(name=constants.DEFAULT_GROUP_NAME,
+                       memberships_last_updated=datetime.datetime.now(),
+                       user=u,
+                       parent=u)
+        g.put()
+        return u
 
 def newUser(me, password):
     """ Creates new user record with empty default group """
     logging.debug('creating user %s' % me.screen_name)
-    u = data.User(screen_name = me.screen_name,
-                  password = password,
-                  id = me.id,
-                  timeline_last_updated = None,
-                  timeline_max_id=-1)
-    u.put()
-    g = data.Group(name=constants.DEFAULT_GROUP_NAME,
-                   memberships_last_updated=datetime.datetime.now(),
-                   user=u,
-                   parent=u)
-    g.put()
-    return u
 
 
 def getDefaultGroup(u):

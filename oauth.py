@@ -24,6 +24,7 @@ EXPIRATION_WINDOW = timedelta(seconds=60*60*1) # 1 hour
 
 from constants import OAUTH_APP_SETTINGS
 from data import OAuthRequestToken
+import queries
 
 STATIC_OAUTH_TIMESTAMP = 12345 # a workaround for clock skew/network lag
 
@@ -36,17 +37,9 @@ def create_uuid():
 def encode(text):
     return urlquote(str(text), '')
 
-def twitter_specifier_handler(client):
-    return client.get('/account/verify_credentials')['screen_name']
-
-OAUTH_APP_SETTINGS['specifier_handler'] = twitter_specifier_handler
-
-class OAuthAccessToken(db.Model):
-    """OAuth Access Token."""
-    specifier = db.StringProperty()
-    oauth_token = db.StringProperty()
-    oauth_token_secret = db.StringProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
+class FakeToken(object):
+    token.oauth_token = None
+    token.oauth_token_secret = None
 
 class OAuthClient(object):
 
@@ -71,7 +64,7 @@ class OAuthClient(object):
                 )
 
         if self.token is None:
-            self.token = OAuthAccessToken.get_by_key_name(self.get_cookie())
+            self.token = queries.getUserByCookie(self.get_cookie())
 
         fetch = urlfetch(self.get_signed_url(
             api_method, self.token, http_method, **extra_params
@@ -94,7 +87,7 @@ class OAuthClient(object):
                 )
 
         if self.token is None:
-            self.token = OAuthAccessToken.get_by_key_name(self.get_cookie())
+            self.token = queries.getUserByCookie(self.get_cookie())
 
         fetch = urlfetch(url=api_method, payload=self.get_signed_body(
             api_method, self.token, http_method, **extra_params
@@ -159,22 +152,23 @@ class OAuthClient(object):
             self.service_info['access_token_url'], oauth_token
             )
 
-        key_name = create_uuid()
+        cookie = create_uuid()
 
-        self.token = OAuthAccessToken(
-            key_name=key_name, 
-            **dict(token.split('=') for token in token_info.split('&'))
-            )
+        p = dict(token.split('=') for token in token_info.split('&'))
+        self.token = FakeToken()
+        self.token.oauth_token = p['oauth_token']
+        self.token.oauth_token_secret = p['oauth_token_secret']
+        
+        cred = self.get('/account/verify_credentials')
 
-        if 'specifier_handler' in self.service_info:
-            specifier = self.token.specifier = self.service_info['specifier_handler'](self)
-            old = OAuthAccessToken.all().filter(
-                'specifier =', specifier)
-            db.delete(old)
+        queries.createOrUpdateUser(cred['screen_name'],
+                                   cred['id'],
+                                   p['oauth_token'],
+                                   p['oauth_token_secret'],
+                                   cookie)
 
-        self.token.put()
         oauth_token.delete()
-        self.set_cookie(key_name)
+        self.set_cookie(cookie)
         self.handler.redirect(return_to)
 
     def cleanup(self):
