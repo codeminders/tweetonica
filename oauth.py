@@ -33,10 +33,10 @@ STATIC_OAUTH_TIMESTAMP = 12345 # a workaround for clock skew/network lag
 # utility functions
 # ------------------------------------------------------------------------------
 
-def get_service_key(service, cache={}):
-    if service in cache: return cache[service]
+def get_service_key(cache={}):
+    if "twitter" in cache: return cache["twitter"]
     return cache.setdefault(
-        service, "%s&" % encode(OAUTH_APP_SETTINGS[service]['consumer_secret'])
+        "twitter", "%s&" % encode(OAUTH_APP_SETTINGS['consumer_secret'])
         )
 
 def create_uuid():
@@ -56,16 +56,12 @@ OAUTH_APP_SETTINGS['twitter']['specifier_handler'] = twitter_specifier_handler
 
 class OAuthRequestToken(db.Model):
     """OAuth Request Token."""
-
-    service = db.StringProperty()
     oauth_token = db.StringProperty()
     oauth_token_secret = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
 
 class OAuthAccessToken(db.Model):
     """OAuth Access Token."""
-
-    service = db.StringProperty()
     specifier = db.StringProperty()
     oauth_token = db.StringProperty()
     oauth_token_secret = db.StringProperty()
@@ -79,9 +75,8 @@ class OAuthClient(object):
 
     __public__ = ('callback', 'cleanup', 'login', 'logout')
 
-    def __init__(self, service, handler, oauth_callback=None, **request_params):
-        self.service = service
-        self.service_info = OAUTH_APP_SETTINGS[service]
+    def __init__(self, handler, oauth_callback=None, **request_params):
+        self.service_info = OAUTH_APP_SETTINGS
         self.service_key = None
         self.handler = handler
         self.request_params = request_params
@@ -159,7 +154,6 @@ class OAuthClient(object):
             )
 
         token = OAuthRequestToken(
-            service=self.service,
             **dict(token.split('=') for token in token_info.split('&'))
             )
 
@@ -182,8 +176,7 @@ class OAuthClient(object):
             return get_request_token()
 
         oauth_token = OAuthRequestToken.all().filter(
-            'oauth_token =', oauth_token).filter(
-            'service =', self.service).fetch(1)[0]
+            'oauth_token =', oauth_token).fetch(1)[0]
 
         token_info = self.get_data_from_signed_url(
             self.service_info['access_token_url'], oauth_token
@@ -192,15 +185,14 @@ class OAuthClient(object):
         key_name = create_uuid()
 
         self.token = OAuthAccessToken(
-            key_name=key_name, service=self.service,
+            key_name=key_name, 
             **dict(token.split('=') for token in token_info.split('&'))
             )
 
         if 'specifier_handler' in self.service_info:
             specifier = self.token.specifier = self.service_info['specifier_handler'](self)
             old = OAuthAccessToken.all().filter(
-                'specifier =', specifier).filter(
-                'service =', self.service)
+                'specifier =', specifier)
             db.delete(old)
 
         self.token.put()
@@ -240,7 +232,7 @@ class OAuthClient(object):
         kwargs.update(extra_params)
 
         if self.service_key is None:
-            self.service_key = get_service_key(self.service)
+            self.service_key = get_service_key()
 
         if __token is not None:
             kwargs['oauth_token'] = __token.oauth_token
@@ -264,21 +256,21 @@ class OAuthClient(object):
 
     def get_cookie(self):
         return self.handler.request.cookies.get(
-            'oauth.%s' % self.service, ''
+            'oauth.twitter', ''
             )
 
     def set_cookie(self, value, path='/'):
         self.handler.response.headers.add_header(
             'Set-Cookie', 
             '%s=%s; path=%s; expires="Fri, 31-Dec-2021 23:59:59 GMT"' %
-            ('oauth.%s' % self.service, value, path)
+            ('oauth.twitter', value, path)
             )
 
     def expire_cookie(self, path='/'):
         self.handler.response.headers.add_header(
             'Set-Cookie', 
             '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
-            ('oauth.%s' % self.service, path)
+            ('oauth.twitter', path)
             )
 
 # ------------------------------------------------------------------------------
@@ -287,57 +279,14 @@ class OAuthClient(object):
 
 class OAuthHandler(RequestHandler):
 
-    def get(self, service, action=''):
+    def get(self, action=''):
 
-        if service not in OAUTH_APP_SETTINGS:
-            return self.response.out.write(
-                "Unknown OAuth Service Provider: %r" % service
-                )
-
-        client = OAuthClient(service, self)
+        client = OAuthClient(self)
 
         if action in client.__public__:
             self.response.out.write(getattr(client, action)())
         else:
             self.response.out.write(client.login())
-
-# ------------------------------------------------------------------------------
-# modify this demo MainHandler to suit your needs
-# ------------------------------------------------------------------------------
-
-HEADER = """
-  <html><head><title>Twitter OAuth Demo</title>
-  </head><body>
-  <h1>Twitter OAuth Demo App</h1>
-  """
-
-FOOTER = "</body></html>"
-
-class MainHandler(RequestHandler):
-    """Demo Twitter App."""
-
-    def get(self):
-
-        client = OAuthClient('twitter', self)
-        write = self.response.out.write; write(HEADER)
-
-        if not client.get_cookie():
-            write('<a href="/oauth/twitter/login">Login via Twitter</a>')
-            write(FOOTER)
-            return
-
-        write('<a href="/oauth/twitter/logout">Logout from Twitter</a><br /><br />')
-
-        info = client.get('/account/verify_credentials')
-
-        write("<strong>Screen Name:</strong> %s<br />" % info['screen_name'])
-        write("<strong>Location:</strong> %s<br />" % info['location'])
-
-        rate_info = client.get('/account/rate_limit_status')
-
-        write("<strong>API Rate Limit Status:</strong> %r" % rate_info)
-
-        write(FOOTER)
 
 # ------------------------------------------------------------------------------
 # self runner -- gae cached main() function
@@ -346,8 +295,7 @@ class MainHandler(RequestHandler):
 def main():
 
     application = WSGIApplication([
-       ('/oauth/(.*)/(.*)', OAuthHandler),
-       ('/', MainHandler)
+       ('/oauth/(.*)', OAuthHandler)
        ], debug=True)
 
     CGIHandler().run(application)
