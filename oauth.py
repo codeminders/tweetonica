@@ -34,10 +34,7 @@ STATIC_OAUTH_TIMESTAMP = 12345 # a workaround for clock skew/network lag
 # ------------------------------------------------------------------------------
 
 def get_service_key(cache={}):
-    if "twitter" in cache: return cache["twitter"]
-    return cache.setdefault(
-        "twitter", "%s&" % encode(OAUTH_APP_SETTINGS['consumer_secret'])
-        )
+    return "%s&" % encode(OAUTH_APP_SETTINGS['consumer_secret'])
 
 def create_uuid():
     return 'id-%s' % uuid4()
