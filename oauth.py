@@ -2,14 +2,11 @@
 Twitter OAuth Support for Google App Engine Apps.
 """
 
-# Released into the Public Domain by tav@espians.com
-
 import sys
 
 from datetime import datetime, timedelta
 from hashlib import sha1
 from hmac import new as hmac
-from os.path import dirname, join as join_path
 from random import getrandbits
 from time import time
 from urllib import urlencode, quote as urlquote
@@ -26,12 +23,9 @@ CLEANUP_BATCH_SIZE = 100
 EXPIRATION_WINDOW = timedelta(seconds=60*60*1) # 1 hour
 
 from constants import OAUTH_APP_SETTINGS
+from data import OAuthRequestToken
 
 STATIC_OAUTH_TIMESTAMP = 12345 # a workaround for clock skew/network lag
-
-# ------------------------------------------------------------------------------
-# utility functions
-# ------------------------------------------------------------------------------
 
 def get_service_key(cache={}):
     return "%s&" % encode(OAUTH_APP_SETTINGS['consumer_secret'])
@@ -47,26 +41,12 @@ def twitter_specifier_handler(client):
 
 OAUTH_APP_SETTINGS['specifier_handler'] = twitter_specifier_handler
 
-# ------------------------------------------------------------------------------
-# db entities
-# ------------------------------------------------------------------------------
-
-class OAuthRequestToken(db.Model):
-    """OAuth Request Token."""
-    oauth_token = db.StringProperty()
-    oauth_token_secret = db.StringProperty()
-    created = db.DateTimeProperty(auto_now_add=True)
-
 class OAuthAccessToken(db.Model):
     """OAuth Access Token."""
     specifier = db.StringProperty()
     oauth_token = db.StringProperty()
     oauth_token_secret = db.StringProperty()
     created = db.DateTimeProperty(auto_now_add=True)
-
-# ------------------------------------------------------------------------------
-# oauth client
-# ------------------------------------------------------------------------------
 
 class OAuthClient(object):
 
@@ -271,10 +251,6 @@ class OAuthClient(object):
             ('oauth.twitter', path)
             )
 
-# ------------------------------------------------------------------------------
-# oauth handler
-# ------------------------------------------------------------------------------
-
 class OAuthHandler(RequestHandler):
 
     def get(self, action=''):
@@ -285,10 +261,6 @@ class OAuthHandler(RequestHandler):
             self.response.out.write(getattr(client, action)())
         else:
             self.response.out.write(client.login())
-
-# ------------------------------------------------------------------------------
-# self runner -- gae cached main() function
-# ------------------------------------------------------------------------------
 
 def main():
 
