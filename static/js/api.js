@@ -12,18 +12,16 @@ var tweetonica = {
 
         token: null,
 
-        login: function(screen_name, password, success, error) {
-            this.jsonrpc('login', 
+        get_screen_name: function(success, error) {
+            this.jsonrpc('get_screen_name', 
                 {
-                    screen_name: screen_name, 
-                    password: password
+                    auth_token: this.token
                 }, 
 
                 function(o) {
                     if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
-                    tweetonica.api.token = o.result.auth_token;
                     if (success)                    
                         success(o.result);
                 }, 

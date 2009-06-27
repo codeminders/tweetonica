@@ -400,52 +400,52 @@ $(document).ready(function() {
     var cookie = $.cookie('oauth.twitter');
     if (cookie) {
 
-        // TODO
-        var screen_name = 'todouser';
-        
-        $('#currentuser').html(screen_name);
-        $('#currentuserurl').attr('href', 'http://twitter.com/' + screen_name);
-        $('#loggedin').show();
-        $('#loggedout').hide();
-
         tweetonica.api.token = cookie;
+        tweetonica.api.get_screen_name(function(results) {
+             $('#currentuser').html(results);
+             $('#currentuserurl').attr('href', 'http://twitter.com/' + results);
+             $('#loggedin').show();
+             $('#loggedout').hide();
 
-        tweetonica.api.get_friends(function(results) {
+             tweetonica.api.get_friends(function(results) {
 
-            var groups = [];
-            for (var g in results) {
-                groups.push(results[g]);
-            }
+                 var groups = [];
+                 for (var g in results) {
+                     groups.push(results[g]);
+                 }
 
-            groups.sort(function(a, b) {
-                if (a.name == '__ALL__')
-                    return -1;
-                if (b.name == '__ALL__')
-                    return 1;
-                var k1 = a.name.toLowerCase();
-                var k2 = b.name.toLowerCase();
-                return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
-            });
-            cache = [];
+                 groups.sort(function(a, b) {
+                     if (a.name == '__ALL__')
+                         return -1;
+                     if (b.name == '__ALL__')
+                         return 1;
+                     var k1 = a.name.toLowerCase();
+                     var k2 = b.name.toLowerCase();
+                     return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
+                 });
+                 cache = [];
 
-            $('.groupentry').remove();
-            for (var i = 0; i < groups.length; i++) {
-                var group = groups[i];
-                render_group(group);
-                cache[group.name] = group;
-            }
+                 $('.groupentry').remove();
+                 for (var i = 0; i < groups.length; i++) {
+                     var group = groups[i];
+                     render_group(group);
+                     cache[group.name] = group;
+                 }
 
-            open_group($('#groups a[groupname=__ALL__]'));
-            open_page('manage');
+                 open_group($('#groups a[groupname=__ALL__]'));
+                 open_page('manage');
+             }, function(error) {
+                 $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+                 $('#currentuser').html('');
+                 $('#currentuserurl').attr('href', 'javascript:;');
+                 $('#loggedin').hide();
+                 $('#loggedout').show();
+                 tweetonica.api.token = null;
+
+             });
+
         }, function(error) {
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('#currentuser').html('');
-            $('#currentuserurl').attr('href', 'javascript:;');
-            $('#loggedin').hide();
-            $('#loggedout').show();
-
-            tweetonica.api.token = null;
-
         });
     }
     else
