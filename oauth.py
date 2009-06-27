@@ -55,7 +55,7 @@ class OAuthClient(object):
 
     # public methods
 
-    def get(self, api_method, http_method=GET, expected_status=(200,), , raw=False, **extra_params):
+    def get(self, api_method, http_method=GET, expected_status=(200,), raw=False, **extra_params):
 
         if not (api_method.startswith('http://') or api_method.startswith('https://')):
             api_method = '%s%s%s' % (
