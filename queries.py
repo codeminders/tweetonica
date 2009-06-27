@@ -69,6 +69,7 @@ def createOrUpdateUser(screen_name,
                       oauth_token = oauth_token,
                       oauth_token_secret = oauth_token_secret,
                       cookie = cookie,
+                      friendlist_last_updated = None,
                       timeline_last_updated = None,
                       timeline_max_id=-1)
         u.put()

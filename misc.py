@@ -14,8 +14,6 @@ def groupRSS_URL(screen_name, gname):
     else:
         return "http://example.com/%s/%s/%s" % \
                (constants.FEED_PATH_PREFIX, screen_name, gname)
-    
-
 
 def HTTP_authenticate():
     if not os.environ.has_key('HTTP_AUTHORIZATION'):
