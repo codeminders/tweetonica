@@ -1388,7 +1388,7 @@ class Api(object):
 
     Args:
       url: The URL to retrieve
-      data: A dict of (str, unicode) key value pairs.  If set, POST will be used.
+      post_data: A dict of (str, unicode) key value pairs.  If set, POST will be used.
       parameters: A dict of key/value pairs that should added to
                   the query string. [OPTIONAL]
       username: A HTTP Basic Auth username for this request
@@ -1397,14 +1397,20 @@ class Api(object):
     Returns:
       A string containing the body of the response.
     """
-    # Add key/value parameters to the query string of the url
-    url = self._BuildUrl(url, extra_params=parameters)
 
-    # Get a url opener that can handle basic auth
-    opener = self._GetOpener(url, username=self._username, password=self._password)
-
-    encoded_post_data = self._EncodePostData(post_data)
-
-    url_data = opener.open(url, encoded_post_data).read()
-    return url_data
-
+    if self._username:
+      # Using HTTP Basic Auth
+      
+      # Add key/value parameters to the query string of the url
+      url = self._BuildUrl(url, extra_params=parameters)
+      # Get a url opener that can handle basic auth
+      opener = self._GetOpener(url, username=self._username, password=self._password)
+      encoded_post_data = self._EncodePostData(post_data)
+      url_data = opener.open(url, encoded_post_data).read()
+      return url_data
+    else:
+      # Using OAuth
+      if post_data:
+        return self._oauth.post(url, raw=True, **post_data)
+      else:
+        return self._oauth.get(url, raw=True, **parameters)
