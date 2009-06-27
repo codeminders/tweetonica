@@ -13,7 +13,10 @@ Bugs:
 
 Features:
 . Switch to OAUth in UI
-. Rename to reflect new site name
+  - login and logout are working
+  - API (server side) should be changed to work with cookies
+  - API needs new method to retrieve current user's properties
+. Rename to reflect new site name (only logo is left)
 
 Deployement/Production:
 . Redirect www.tweetonica.com to tweetonica.com (bird)

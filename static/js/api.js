@@ -1,4 +1,4 @@
-var phalanges = {
+var tweetonica = {
     api: {
 
         ERR_HTTP:           0,
@@ -20,15 +20,15 @@ var phalanges = {
                 }, 
 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
-                    phalanges.api.token = o.result.auth_token;
+                    tweetonica.api.token = o.result.auth_token;
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -44,14 +44,14 @@ var phalanges = {
                     auth_token: this.token
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -69,14 +69,14 @@ var phalanges = {
                     group_name: group_name
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -93,14 +93,14 @@ var phalanges = {
                     group_name: group_name
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -118,14 +118,14 @@ var phalanges = {
                     new_group_name: new_group_name
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -142,14 +142,14 @@ var phalanges = {
                     group_name: group_name
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 
@@ -166,14 +166,14 @@ var phalanges = {
                     screen_name: screen_name
                 }, 
                 function(o) {
-                    if (phalanges.api.handle_jsonrpc_error(o, error)) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
                         return;
                     }
                     if (success)                    
                         success(o.result);
                 }, 
                 function(o, status, thrown) {
-                    phalanges.api.handle_request_error(o, status, thrown, error);
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
 

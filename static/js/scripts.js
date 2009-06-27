@@ -118,7 +118,7 @@ $(document).ready(function() {
     }
 
     var open_page = function(id) {
-        if (id != 'manage' || phalanges.api.token) {
+        if (id != 'manage' || tweetonica.api.token) {
             $('.menu').removeClass('active');
             $('#m' + id).addClass('active');
             $('.page').hide();
@@ -128,13 +128,12 @@ $(document).ready(function() {
             p.show();
         }
         else {
-            $('.error').hide();
-            $('#login-dialog').dialog('open');
+            document.location.href = '/oauth/login';
         }
     };
 
     var move_user = function(screen_name, group_name) {
-        phalanges.api.move_friend(screen_name, group_name, function(results) {
+        tweetonica.api.move_friend(screen_name, group_name, function(results) {
             var src = null;
             var destg = null;
             var srcg = null;
@@ -166,7 +165,7 @@ $(document).ready(function() {
     }
 
     var create_group = function(name) {
-        phalanges.api.new_group(name, function(results) {
+        tweetonica.api.new_group(name, function(results) {
             var g = {name: name, users: [], rssurl: results.rssurl};
             cache[name] = g;
             render_group(g);
@@ -175,7 +174,7 @@ $(document).ready(function() {
     }
 
     var rename_group = function(old_name, new_name) {
-        phalanges.api.rename_group(old_name, new_name, function(results) {
+        tweetonica.api.rename_group(old_name, new_name, function(results) {
             var tmp = [];
             for (var g in cache) {
                 var info = cache[g];
@@ -212,87 +211,6 @@ $(document).ready(function() {
         }
     }
 
-    var do_login = function() {
-        $('.error').hide();
-
-        var screen_name = jQuery.trim($('#screen_name').val());
-        var password    = jQuery.trim($('#password').val());
-
-        if (screen_name == '')
-            $('#ename').show();
-
-        if (password == '')
-            $('#epass').show();
-
-        if (screen_name == '' || password == '')
-            return;
-
-        phalanges.api.login(screen_name, password, function() {
-            $('#login-dialog').dialog('close');
-            $('#currentuser').html(screen_name);
-            $('#currentuserurl').attr('href', 'http://twitter.com/' + screen_name);
-            $('#loggedin').show();
-            $('#loggedout').hide();
-
-            phalanges.api.get_friends(function(results) {
-
-                var groups = [];
-                for (var g in results) {
-                    groups.push(results[g]);
-                }
-
-                groups.sort(function(a, b) {
-                    if (a.name == '__ALL__')
-                        return -1;
-                    if (b.name == '__ALL__')
-                        return 1;
-                    var k1 = a.name.toLowerCase();
-                    var k2 = b.name.toLowerCase();
-                    return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
-                });
-                cache = [];
-
-                $('.groupentry').remove();
-                for (var i = 0; i < groups.length; i++) {
-                    var group = groups[i];
-                    render_group(group);
-                    cache[group.name] = group;
-                }
-
-                open_group($('#groups a[groupname=__ALL__]'));
-                open_page('manage');
-            }, function(error) {
-                open_page('manage');
-            });
-        },  function() {
-            $('#eauth').show();
-        });
-    };
-
-    // UI initialization
-    $('#login-dialog').dialog({
-        buttons: {
-            'Cancel': function() {
-                $('#login-dialog').dialog('close');
-            },
-            'Login': function() {
-                do_login();                        
-            }
-        },
-        autoOpen: false,
-        modal: true,
-        resizable: false,
-        title: 'Login to Tweetonica',
-        width: 360,
-        open: function() {
-            setTimeout(function() {$('#screen_name').focus()}, 100);
-        },
-        close: function() {
-            $('#screen_name').val('');
-            $('#password').val('');
-        }
-    });
-
     $('#delete-confirm-dialog').dialog({
         buttons: {
             'Cancel': function() {
@@ -300,7 +218,7 @@ $(document).ready(function() {
             },
             'OK': function() {
                 var name = $('#group-to-delete').val();
-                phalanges.api.delete_group(name, function(results) {
+                tweetonica.api.delete_group(name, function(results) {
                     var src = cache[name];
                     for (var i = 0; i < src.users.length; i++)
                         cache['__ALL__'].users.push(src.users[i]);                        
@@ -458,28 +376,11 @@ $(document).ready(function() {
 
 
     $('#logoutbutton').click(function(e) {
-        $('#loggedin').hide();
-        $('#loggedout').show();
-        phalanges.api.token = null;
-        cache = [];
-        open_page('about');
-        e.stopPropagation();
-        e.preventDefault();
+        document.location.href = '/oauth/logout';
     });
 
     $('#loginbutton').click(function(e) {
-        $('.error').hide();
-        $('#login-dialog').dialog('open');
-        e.stopPropagation();
-        e.preventDefault();
-    });
-
-    $('#screen_name,#password').keypress(function(e) {
-        if (e.which == 13) {
-            do_login();
-            e.preventDefault();
-            e.stopPropagation();
-        }
+        document.location.href = '/oauth/login';
     });
 
     $(':radio[name=viewstyle]').click(function() {
@@ -496,9 +397,59 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
+    var cookie = $.cookie('oauth.twitter');
+    if (cookie) {
 
+        // TODO
+        var screen_name = 'todouser';
+        
+        $('#currentuser').html(screen_name);
+        $('#currentuserurl').attr('href', 'http://twitter.com/' + screen_name);
+        $('#loggedin').show();
+        $('#loggedout').hide();
 
-    open_page('about');
+        tweetonica.api.token = cookie;
+
+        tweetonica.api.get_friends(function(results) {
+
+            var groups = [];
+            for (var g in results) {
+                groups.push(results[g]);
+            }
+
+            groups.sort(function(a, b) {
+                if (a.name == '__ALL__')
+                    return -1;
+                if (b.name == '__ALL__')
+                    return 1;
+                var k1 = a.name.toLowerCase();
+                var k2 = b.name.toLowerCase();
+                return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
+            });
+            cache = [];
+
+            $('.groupentry').remove();
+            for (var i = 0; i < groups.length; i++) {
+                var group = groups[i];
+                render_group(group);
+                cache[group.name] = group;
+            }
+
+            open_group($('#groups a[groupname=__ALL__]'));
+            open_page('manage');
+        }, function(error) {
+            $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+            $('#currentuser').html('');
+            $('#currentuserurl').attr('href', 'javascript:;');
+            $('#loggedin').hide();
+            $('#loggedout').show();
+
+            tweetonica.api.token = null;
+
+        });
+    }
+    else
+        open_page('about');
 
 
 
