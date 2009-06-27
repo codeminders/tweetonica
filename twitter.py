@@ -1052,7 +1052,7 @@ class Api(object):
     Returns:
       A twitter.Status instance representing the message posted
     """
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     if len(text) > 140:
       raise TwitterError("Text must be less than or equal to 140 characters.")
@@ -1071,7 +1071,7 @@ class Api(object):
       A sequence of twitter.Status instances, one for each reply to the user.
     """
     url = 'http://twitter.com/statuses/replies.json'
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
@@ -1089,7 +1089,7 @@ class Api(object):
     Returns:
       A sequence of twitter.User instances, one for each friend
     """
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("twitter.Api instance must be authenticated")
     if user:
       url = 'http://twitter.com/statuses/friends/%s.json' % user
@@ -1107,7 +1107,7 @@ class Api(object):
     Returns:
       A sequence of twitter.User instances, one for each follower
     """
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("twitter.Api instance must be authenticated")
     url = 'http://twitter.com/statuses/followers.json'
     json = self._FetchUrl(url)
@@ -1157,7 +1157,7 @@ class Api(object):
       A sequence of twitter.DirectMessage instances
     """
     url = 'http://twitter.com/direct_messages.json'
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     parameters = {}
     if since:
@@ -1178,7 +1178,7 @@ class Api(object):
     Returns:
       A twitter.DirectMessage instance representing the message posted
     """
-    if not self._username or self._oauth):
+    if (not self._username) and (not self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     url = 'http://twitter.com/direct_messages/new.json'
     data = {'text': text, 'user': user}

@@ -55,7 +55,7 @@ class OAuthClient(object):
 
     # public methods
 
-    def get(self, api_method, http_method=GET, expected_status=(200,), raw=False, **extra_params):
+    def get(self, api_method, http_method='GET', expected_status=(200,), raw=False, **extra_params):
 
         if not (api_method.startswith('http://') or api_method.startswith('https://')):
             api_method = '%s%s%s' % (
@@ -81,7 +81,7 @@ class OAuthClient(object):
         else:
             return decode_json(fetch.content)
 
-    def post(self, api_method, http_method=POST, expected_status=(200,), raw=False, **extra_params):
+    def post(self, api_method, http_method='POST', expected_status=(200,), raw=False, **extra_params):
 
         if not (api_method.startswith('http://') or api_method.startswith('https://')):
             api_method = '%s%s%s' % (
@@ -188,15 +188,15 @@ class OAuthClient(object):
 
     # request marshalling
 
-    def get_data_from_signed_url(self, __url, __token=None, __meth=GET, **extra_params):
+    def get_data_from_signed_url(self, __url, __token=None, __meth='GET', **extra_params):
         return urlfetch(self.get_signed_url(
             __url, __token, __meth, **extra_params
             )).content
 
-    def get_signed_url(self, __url, __token=None, __meth=GET,**extra_params):
+    def get_signed_url(self, __url, __token=None, __meth='GET',**extra_params):
         return '%s?%s'%(__url, self.get_signed_body(__url, __token, __meth, **extra_params))
 
-    def get_signed_body(self, __url, __token=None, __meth=GET, **extra_params):
+    def get_signed_body(self, __url, __token=None, __meth='GET', **extra_params):
 
         service_info = self.service_info
 

@@ -187,7 +187,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _verifyAuthToken(self, auth_token):
         """ Verify user, returns screen name or None for invalid token"""
-        u = queries.getUserByCookie(token)
+        u = queries.getUserByCookie(auth_token)
         if u:
             return u
         else:
@@ -196,7 +196,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _updateFriends(self, u):
         oa = OAuthClient(handler=None,token=u)
-        t = twitter.Api(screen_name, oauth=oa)
+        t = twitter.Api(oauth=oa)
         try:
             friends = t.GetFriends()
         except Exception:
