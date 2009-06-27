@@ -1,0 +1,22 @@
+
+Backend:
+. etag/modified-since headers handling
+. Data store indices
+. OPML generation
+. TTL/caching for static files
+
+Frontend:
+. Review text for home page, FAQ, etc.
+. OPML download (need backend support)
+
+Bugs:
+
+Features:
+. Switch to OAUth in UI
+  - login and logout are working
+  - API (server side) should be changed to work with cookies
+  - API needs new method to retrieve current user's properties
+. Rename to reflect new site name (only logo is left)
+
+Deployement/Production:
+. Redirect www.tweetonica.com to tweetonica.com (bird)
