@@ -19,10 +19,6 @@ import urllib
 import urllib2
 import urlparse
 import twitter
-try:
-  from google.appengine.api import memcache
-except ImportError:
-  memcache = None
 
 class TwitterError(Exception):
   """Base class for Twitter errors"""
@@ -828,8 +824,6 @@ class DirectMessage(object):
 class Api(object):
   """A python interface into the Twitter API
 
-  By default, the Api caches results for 1 minute.
-
   Example usage:
 
     To create an instance of the twitter.Api class, with no authentication:
@@ -884,8 +878,6 @@ class Api(object):
       >>> api.CreateFriendship(user)
   """
 
-  DEFAULT_CACHE_TIMEOUT = 60 # cache for 1 minute
-
   _API_REALM = 'Twitter API'
 
   def __init__(self,
@@ -903,13 +895,7 @@ class Api(object):
       input_encoding: The encoding used to encode input strings. [optional]
       request_header: A dictionary of additional HTTP request headers. [optional]
     """
-    try:
-      self._cache = _FileCache()
-    except:
-      if memcache:
-        self._cache = _MemCache()
     self._urllib = urllib2
-    self._cache_timeout = Api.DEFAULT_CACHE_TIMEOUT
     self._InitializeRequestHeaders(request_headers)
     self._InitializeUserAgent()
     self._input_encoding = input_encoding
@@ -1276,14 +1262,6 @@ class Api(object):
     self._username = None
     self._password = None
 
-  def SetCache(self, cache):
-    """Override the default cache.  Set to None to prevent caching.
-
-    Args:
-      cache: an instance that supports the same API as the  twitter._FileCache
-    """
-    self._cache = cache
-
   def SetUrllib(self, urllib):
     """Override the default urllib implementation.
 
@@ -1291,14 +1269,6 @@ class Api(object):
       urllib: an instance that supports the same API as the urllib2 module
     """
     self._urllib = urllib
-
-  def SetCacheTimeout(self, cache_timeout):
-    """Override the default cache timeout.
-
-    Args:
-      cache_timeout: time, in seconds, that responses should be reused.
-    """
-    self._cache_timeout = cache_timeout
 
   def SetUserAgent(self, user_agent):
     """Override the default user agent
@@ -1426,9 +1396,8 @@ class Api(object):
   def _FetchUrl(self,
                 url,
                 post_data=None,
-                parameters=None,
-                no_cache=None):
-    """Fetch a URL, optionally caching for a specified time.
+                parameters=None):
+    """Fetch a URL,
 
     Args:
       url: The URL to retrieve
@@ -1437,7 +1406,6 @@ class Api(object):
                   the query string. [OPTIONAL]
       username: A HTTP Basic Auth username for this request
       username: A HTTP Basic Auth password for this request
-      no_cache: If true, overrides the cache on the current request
 
     Returns:
       A string containing the body of the response.
@@ -1450,134 +1418,6 @@ class Api(object):
 
     encoded_post_data = self._EncodePostData(post_data)
 
-    # Open and return the URL immediately if we're not going to cache
-    if encoded_post_data or no_cache or not self._cache or not self._cache_timeout:
-      url_data = opener.open(url, encoded_post_data).read()
-    else:
-      # Unique keys are a combination of the url and the username
-      if self._username:
-        key = self._username + ':' + url
-      else:
-        key = url
-
-      # See if it has been cached before
-      last_cached = self._cache.GetCachedTime(key)
-
-      # If the cached version is outdated then fetch another and store it
-      if not last_cached or time.time() >= last_cached + self._cache_timeout:
-        url_data = opener.open(url, encoded_post_data).read()
-        self._cache.Set(key, url_data)
-      else:
-        url_data = self._cache.Get(key)
-
-    # Always return the latest version
+    url_data = opener.open(url, encoded_post_data).read()
     return url_data
 
-class _FileCacheError(Exception):
-  """Base exception class for FileCache related errors"""
-
-class _FileCache(object):
-
-  DEPTH = 3
-
-  def __init__(self,root_directory=None):
-    self._InitializeRootDirectory(root_directory)
-
-  def Get(self,key):
-    path = self._GetPath(key)
-    if os.path.exists(path):
-      return open(path).read()
-    else:
-      return None
-
-  def Set(self,key,data):
-    path = self._GetPath(key)
-    directory = os.path.dirname(path)
-    if not os.path.exists(directory):
-      os.makedirs(directory)
-    if not os.path.isdir(directory):
-      raise _FileCacheError('%s exists but is not a directory' % directory)
-    temp_fd, temp_path = tempfile.mkstemp()
-    temp_fp = os.fdopen(temp_fd, 'w')
-    temp_fp.write(data)
-    temp_fp.close()
-    if not path.startswith(self._root_directory):
-      raise _FileCacheError('%s does not appear to live under %s' %
-                            (path, self._root_directory))
-    if os.path.exists(path):
-      os.remove(path)
-    os.rename(temp_path, path)
-
-  def Remove(self,key):
-    path = self._GetPath(key)
-    if not path.startswith(self._root_directory):
-      raise _FileCacheError('%s does not appear to live under %s' %
-                            (path, self._root_directory ))
-    if os.path.exists(path):
-      os.remove(path)
-
-  def GetCachedTime(self,key):
-    path = self._GetPath(key)
-    if os.path.exists(path):
-      return os.path.getmtime(path)
-    else:
-      return None
-
-  def _GetUsername(self):
-    """Attempt to find the username in a cross-platform fashion."""
-    return os.getenv('USER') or \
-        os.getenv('LOGNAME') or \
-        os.getenv('USERNAME') or \
-        os.getlogin() or \
-        'nobody'
-
-  def _GetTmpCachePath(self):
-    username = self._GetUsername()
-    cache_directory = 'python.cache_' + username
-    return os.path.join(tempfile.gettempdir(), cache_directory)
-
-  def _InitializeRootDirectory(self, root_directory):
-    if not root_directory:
-      root_directory = self._GetTmpCachePath()
-    root_directory = os.path.abspath(root_directory)
-    if not os.path.exists(root_directory):
-      os.mkdir(root_directory)
-    if not os.path.isdir(root_directory):
-      raise _FileCacheError('%s exists but is not a directory' %
-                            root_directory)
-    self._root_directory = root_directory
-
-  def _GetPath(self,key):
-    hashed_key = md5.new(key).hexdigest()
-    return os.path.join(self._root_directory,
-                        self._GetPrefix(hashed_key),
-                        hashed_key)
-
-  def _GetPrefix(self,hashed_key):
-    return os.path.sep.join(hashed_key[0:_FileCache.DEPTH])
-
-
-class _MemCache(object):
-  """A cache implementation that uses memcache"""
-  
-  def _GetCacheKey(self, key):
-    return 'twitter_' + key
-
-  def Get(self, key):
-    data = memcache.get(self._GetCacheKey(key))
-    if data is not None:
-      return data[0]
-    return None
-
-  def Set(self, key, data):
-    data = (data, time.time())
-    memcache.set(self._GetCacheKey(key), data)
-
-  def Remove(self, key):
-    memcache.delete(self._GetCacheKey(key))
-
-  def GetCachedTime(self,key):
-    data = memcache.get(self._GetCacheKey(key))
-    if data is not None:
-      return data[1]
-    return None
