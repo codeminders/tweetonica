@@ -45,13 +45,13 @@ class OAuthClient(object):
 
     __public__ = ('callback', 'cleanup', 'login', 'logout')
 
-    def __init__(self, handler, oauth_callback=None, **request_params):
+    def __init__(self, handler, oauth_callback=None, token=None, **request_params):
         self.service_info = OAUTH_APP_SETTINGS
         self.service_key = None
         self.handler = handler
         self.request_params = request_params
         self.oauth_callback = oauth_callback
-        self.token = None
+        self.token = token
 
     # public methods
 
