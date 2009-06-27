@@ -65,6 +65,14 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- response methods delegates below --
 
+    def json_get_screen_name(self, auth_token=None):
+        """ Get screen name for current user (by auth_token).
+        Returns screen name or error if auth token is invalid
+        """
+        logging.debug('Method \'get_screen_name\' invoked for cookie %s' % auth_token)
+        u = self._verifyAuthToken(auth_token)
+        return u.screen_name
+
     def json_logout(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'logout\' invoked for user %s' % u.screen_name)
@@ -179,15 +187,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _verifyAuthToken(self, token):
         """ Verify user, returns screen name or None for invalid token"""
-
-        q = data.User.gql('WHERE auth_token = :1', token)
-        users = q.fetch(1)
-        if len(users)!=1:
-            logging.warning("Bad auth token %s" % token)
+        u = queries.getUserByCookie(auth_token)
+        if u:
+            return u
+        else:
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
-        else:
-            return users[0]
 
     def _buildAuthToken(self, me):
         return (str(uuid1()),
