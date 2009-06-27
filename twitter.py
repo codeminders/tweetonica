@@ -895,11 +895,13 @@ class Api(object):
       input_encoding: The encoding used to encode input strings. [optional]
       request_header: A dictionary of additional HTTP request headers. [optional]
     """
+    self._oauth = oauth
     self._urllib = urllib2
     self._InitializeRequestHeaders(request_headers)
     self._InitializeUserAgent()
     self._input_encoding = input_encoding
-    self.SetCredentials(username, password)
+    self._username = username
+    self._password = password
 
   def GetPublicTimeline(self, since_id=None):
     """Fetch the sequnce of public twitter.Status message for all users.
@@ -942,7 +944,7 @@ class Api(object):
     """
     if user:
       url = 'http://twitter.com/statuses/friends_timeline/%s.json' % user
-    elif not user and not self._username:
+    elif not user and not (self._username or self._oauth):
       raise TwitterError("User must be specified if API is not authenticated.")
     else:
       url = 'http://twitter.com/statuses/friends_timeline.json'
@@ -988,7 +990,7 @@ class Api(object):
       parameters['since'] = since
     if user:
       url = 'http://twitter.com/statuses/user_timeline/%s.json' % user
-    elif not user and not self._username:
+    elif not user and not (self._username or self._oauth):
       raise TwitterError("User must be specified if API is not authenticated.")
     else:
       url = 'http://twitter.com/statuses/user_timeline.json'
@@ -1050,7 +1052,7 @@ class Api(object):
     Returns:
       A twitter.Status instance representing the message posted
     """
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     if len(text) > 140:
       raise TwitterError("Text must be less than or equal to 140 characters.")
@@ -1069,7 +1071,7 @@ class Api(object):
       A sequence of twitter.Status instances, one for each reply to the user.
     """
     url = 'http://twitter.com/statuses/replies.json'
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     json = self._FetchUrl(url)
     data = simplejson.loads(json)
@@ -1087,7 +1089,7 @@ class Api(object):
     Returns:
       A sequence of twitter.User instances, one for each friend
     """
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("twitter.Api instance must be authenticated")
     if user:
       url = 'http://twitter.com/statuses/friends/%s.json' % user
@@ -1105,7 +1107,7 @@ class Api(object):
     Returns:
       A sequence of twitter.User instances, one for each follower
     """
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("twitter.Api instance must be authenticated")
     url = 'http://twitter.com/statuses/followers.json'
     json = self._FetchUrl(url)
@@ -1155,7 +1157,7 @@ class Api(object):
       A sequence of twitter.DirectMessage instances
     """
     url = 'http://twitter.com/direct_messages.json'
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     parameters = {}
     if since:
@@ -1176,7 +1178,7 @@ class Api(object):
     Returns:
       A twitter.DirectMessage instance representing the message posted
     """
-    if not self._username:
+    if not self._username or self._oauth):
       raise TwitterError("The twitter.Api instance must be authenticated.")
     url = 'http://twitter.com/direct_messages/new.json'
     data = {'text': text, 'user': user}
@@ -1246,21 +1248,6 @@ class Api(object):
     data = simplejson.loads(json)
     return User.NewFromJsonDict(data)
 
-  def SetCredentials(self, username, password):
-    """Set the username and password for this instance
-
-    Args:
-      username: The twitter username.
-      password: The twitter password.
-    """
-    self._username = username
-    self._password = password
-
-  def ClearCredentials(self):
-    """Clear the username and password for this instance
-    """
-    self._username = None
-    self._password = None
 
   def SetUrllib(self, urllib):
     """Override the default urllib implementation.
