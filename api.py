@@ -18,9 +18,6 @@ import misc
 from oauth import OAuthClient
 
 
-# for how long auth token is valid ( 1day+1sec)
-AUTH_TOKEN_LIFESPAN = datetime.timedelta(1,1)
-
 # JSON-RPC Error Codes (101=999)
 ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
@@ -185,7 +182,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     # -- implementation method below  ---
 
 
-    def _verifyAuthToken(self, token):
+    def _verifyAuthToken(self, auth_token):
         """ Verify user, returns screen name or None for invalid token"""
         u = queries.getUserByCookie(auth_token)
         if u:
@@ -194,11 +191,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
 
-    def _buildAuthToken(self, me):
-        return (str(uuid1()),
-                datetime.datetime.now()+AUTH_TOKEN_LIFESPAN)
-    
-    
     def _updateUser(self, me, password, u):
         logging.debug('updating user %s' % me.screen_name)
         changed = False
