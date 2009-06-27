@@ -195,7 +195,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                     code=ERR_BAD_AUTH_TOKEN)
 
     def _updateFriends(self, u):
-        t = twitter.Api(screen_name, password)
+        oa = OAuthClient(handler=None,token=u)
+        t = twitter.Api(screen_name, oauth=oa)
         try:
             friends = t.GetFriends()
         except Exception:
