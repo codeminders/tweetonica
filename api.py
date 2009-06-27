@@ -184,7 +184,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _verifyAuthToken(self, auth_token):
         """ Verify user, returns screen name or None for invalid token"""
-        u = queries.getUserByCookie(auth_token)
+        u = queries.getUserByCookie(token)
         if u:
             return u
         else:
