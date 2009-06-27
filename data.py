@@ -9,8 +9,8 @@ class User(db.Model):
     oauth_token_secret = db.StringProperty()
     # our auth cookie
     cookie = db.StringProperty()
-
     user_created = db.DateTimeProperty(auto_now_add=True)
+    friendlist_last_updated = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
     timeline_last_updated = db.DateTimeProperty()
     timeline_max_id = db.IntegerProperty() 

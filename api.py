@@ -81,6 +81,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_get_friends(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
+        self._updateFriends(u)
         res = queries.loadGroups(u)
         for x in res.keys():
             res[x]['rssurl']=misc.groupRSS_URL(u.screen_name, x)
@@ -193,7 +194,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
 
-    def _updateFriends(self, t, u):
+    def _updateFriends(self, u):
+        t = twitter.Api(screen_name, password)
         try:
             friends = t.GetFriends()
         except Exception:
@@ -218,8 +220,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 f.delete()
             else:
                 n = n+1
+        u.friendlist_last_updated=datetime.datetime.now()
+        u.put()
         logging.debug("User %s have %d friends" % (u.screen_name, n))
-                
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
