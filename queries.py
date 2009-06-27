@@ -79,11 +79,6 @@ def createOrUpdateUser(screen_name,
         g.put()
         return u
 
-def newUser(me, password):
-    """ Creates new user record with empty default group """
-    logging.debug('creating user %s' % me.screen_name)
-
-
 def getDefaultGroup(u):
     q = data.Group.gql('WHERE name = :1 and user=:2',
                        constants.DEFAULT_GROUP_NAME,

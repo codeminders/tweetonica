@@ -71,6 +71,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         return u.screen_name
 
     def json_logout(self, auth_token=None):
+        """ Invalidates user cookie
+        """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'logout\' invoked for user %s' % u.screen_name)
         u.cookie = None
@@ -190,15 +192,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         else:
             raise json.JSONRPCError("Invalid auth token",
                                     code=ERR_BAD_AUTH_TOKEN)
-
-    def _updateUser(self, me, password, u):
-        logging.debug('updating user %s' % me.screen_name)
-        changed = False
-        if u.password != password:
-            u.password = password
-            changed = True
-        if changed:
-            u.put()
 
     def _updateFriends(self, t, u):
         try:
