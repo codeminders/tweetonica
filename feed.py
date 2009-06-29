@@ -155,7 +155,8 @@ class ATOMHandler(webapp.RequestHandler):
         
         rss = RSS2(
             title = "Timeline for user %s group %s" % (u.screen_name, g.name),
-            link = misc.groupRSS_URL(u.screen_name, u.rss_token, g.name),
+            link = misc.groupRSS_URL(u.screen_name, u.rss_token, \
+                                     g.name, u.use_HTTP_auth),
             description = "Timeline for user %s group %s" % (u.screen_name, \
                                                              g.name),
             language = 'en-us',

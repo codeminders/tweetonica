@@ -84,7 +84,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         self._updateFriends(u)
         res = queries.loadGroups(u)
         for x in res.keys():
-            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name, u.rss_token, x)
+            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name,
+                                               u.rss_token,
+                                               x, u.use_HTTP_auth)
         return res
 
     def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
@@ -126,7 +128,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': misc.groupRSS_URL(u.screen_name, u.rss_token, g.name),
+            'rssurl': misc.groupRSS_URL(u.screen_name,
+                                        u.rss_token, g.name,
+                                        u.use_HTTP_auth),
             'users': []
         }               
         
