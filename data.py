@@ -11,6 +11,7 @@ class User(db.Model):
     cookie = db.StringProperty()
     # our token used to authenticate RSS users
     rss_token = db.StringProperty()
+    use_HTTP_auth =  db.BooleanProperty()
     user_created = db.DateTimeProperty(auto_now_add=True)
     friendlist_last_updated = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 

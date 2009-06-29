@@ -5,12 +5,18 @@ from base64 import b64decode
 
 import data
 import constants
+import queries
 
-def groupRSS_URL(screen_name, rss_token, group_name):
-    return "http://example.com/%s/%s/%s?%s=%s" % \
-           (constants.FEED_PATH_PREFIX,
-            screen_name, group_name,
-            constants.TOKEN_PARAM_NAME, rss_token)
+def groupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
+    if use_HTTP_auth:
+        return "http://example.com/%s/%s/%s" % \
+               (constants.FEED_PATH_PREFIX,
+                screen_name, group_name)
+    else:
+        return "http://example.com/%s/%s/%s?%s=%s" % \
+               (constants.FEED_PATH_PREFIX,
+                screen_name, group_name,
+                constants.TOKEN_PARAM_NAME, rss_token)
 
 def HTTP_authenticate():
     if not os.environ.has_key('HTTP_AUTHORIZATION'):
@@ -32,15 +38,4 @@ def HTTP_authenticate():
     (username,password) = ahds
     logging.debug("Authenticating user '%s' with password '%s'" % \
                   (username,password))
-
-    q = data.User.gql('WHERE screen_name = :1 and rss_token=:2', \
-                      username,password)
-    users = q.fetch(1)
-    if len(users)==1:
-        logging.debug("User '%s' authenticated" % username)
-        return users[0]
-    else:
-        logging.debug("No user of bad pass for %s" % username)
-        return None
-
-    return None
+    return queries.getUserByScreenNameAndRSSTOken(username, password)

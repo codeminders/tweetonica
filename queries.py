@@ -51,6 +51,15 @@ def getUserByRSSToken(rss_token):
     else:
         return None
 
+def getUserByScreenNameAndRSSTOken(screen_name, rss_token):
+    q = data.User.gql('WHERE screen_name = :1 and rss_token = :2', \
+                      screen_name, rss_token)
+    users = q.fetch(1)
+    if len(users)==1:
+        return users[0]
+    else:
+        return None
+
 def logout(cookie):
     if cookie:
         u = getUserByCookie(cookie)
@@ -79,6 +88,7 @@ def createOrUpdateUser(screen_name,
                       oauth_token_secret = oauth_token_secret,
                       cookie = cookie,
                       rss_token = str(uuid4()),
+                      use_HTTP_auth = False,
                       friendlist_last_updated = None,
                       timeline_last_updated = None,
                       timeline_max_id=-1)
