@@ -14,6 +14,7 @@ import twitter
 import data
 import constants
 import misc
+from oauth import OAuthClient
 
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -42,7 +43,7 @@ class ATOMHandler(webapp.RequestHandler):
         else:
             u = self._token_authenticate()
             if not u:
-                self.response.set_status(40r)
+                self.response.set_status(403)
                 return
 
         t = twitter.Api(oauth=OAuthClient(handler=None,token=u))

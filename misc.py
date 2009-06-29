@@ -9,12 +9,14 @@ import queries
 
 def groupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
     if use_HTTP_auth:
-        return "http://example.com/%s/%s/%s" % \
-               (constants.FEED_PATH_PREFIX,
+        return "http://%s%s/%s/%s" % \
+               (constants.DOMAIN,
+                constants.FEED_PATH_PREFIX,
                 screen_name, group_name)
     else:
-        return "http://example.com/%s/%s/%s?%s=%s" % \
-               (constants.FEED_PATH_PREFIX,
+        return "http://%s%s/%s/%s?%s=%s" % \
+               (constants.DOMAIN,
+                constants.FEED_PATH_PREFIX,
                 screen_name, group_name,
                 constants.TOKEN_PARAM_NAME, rss_token)
 
@@ -38,4 +40,6 @@ def HTTP_authenticate():
     (username,password) = ahds
     logging.debug("Authenticating user '%s' with password '%s'" % \
                   (username,password))
-    return queries.getUserByScreenNameAndRSSTOken(username, password)
+    
+    u = queries.getUserByScreenNameAndRSSTOken(username, password)
+    return u
