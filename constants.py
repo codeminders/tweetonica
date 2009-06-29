@@ -14,6 +14,9 @@ TOKEN_PARAM_NAME = "secret"
 """ Name of RSS feed URL parameter which specify what auth to use """
 AUTH_PARAM_NAME = "auth"
 
+""" App domain. Used in generated URLs """
+DOMAIN = "www.tweetonica.com"
+
 OAUTH_APP_SETTINGS = {
     'consumer_key': 'rKrFecGChYpzIwINWbPtg',
     'consumer_secret': 'Qvch2jppHeUlkUiiWsTP3VY4mpPNAx773j7rruAI2I',
