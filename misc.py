@@ -6,9 +6,11 @@ from base64 import b64decode
 import data
 import constants
 
-def groupRSS_URL(screen_name, gname):
-    return "http://example.com/%s/%s/%s" % \
-           (constants.FEED_PATH_PREFIX, screen_name, gname)
+def groupRSS_URL(screen_name, rss_token, group_name):
+    return "http://example.com/%s/%s/%s?%s=%s" % \
+           (constants.FEED_PATH_PREFIX,
+            screen_name, group_name,
+            constants.TOKEN_PARAM_NAME, rss_token)
 
 def HTTP_authenticate():
     if not os.environ.has_key('HTTP_AUTHORIZATION'):
@@ -31,7 +33,7 @@ def HTTP_authenticate():
     logging.debug("Authenticating user '%s' with password '%s'" % \
                   (username,password))
 
-    q = data.User.gql('WHERE screen_name = :1 and password=:2', \
+    q = data.User.gql('WHERE screen_name = :1 and rss_token=:2', \
                       username,password)
     users = q.fetch(1)
     if len(users)==1:

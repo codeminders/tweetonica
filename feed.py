@@ -29,14 +29,23 @@ class ATOMHandler(webapp.RequestHandler):
     def get(self, username, group=constants.DEFAULT_GROUP_NAME):
 
         logging.debug("Requested group '%s'" % group)
-        
-        u = misc.HTTP_authenticate()
-        if not u:
-            self.response.headers['WWW-Authenticate'] = 'Basic realm=%s' % REALM
-            self.response.set_status(401)
-            return
 
-        t = twitter.Api(u.screen_name, u.password)
+        use_auth = self.request.get(constants.AUTH_PARAM_NAME)
+        
+        if use_auth=='basic':
+            u = misc.HTTP_authenticate()
+            if not u:
+                self.response.headers['WWW-Authenticate'] = \
+                        'Basic realm=%s' % REALM
+                self.response.set_status(401)
+                return
+        else:
+            u = self._token_authenticate()
+            if not u:
+                self.response.set_status(40r)
+                return
+
+        t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
         if u.timeline_last_updated==None or \
                (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < \
                datetime.datetime.now():
@@ -146,7 +155,7 @@ class ATOMHandler(webapp.RequestHandler):
         
         rss = RSS2(
             title = "Timeline for user %s group %s" % (u.screen_name, g.name),
-            link = misc.groupRSS_URL(u.screen_name, g.name),
+            link = misc.groupRSS_URL(u.screen_name, u.rss_token, g.name),
             description = "Timeline for user %s group %s" % (u.screen_name, \
                                                              g.name),
             language = 'en-us',
@@ -168,6 +177,13 @@ class ATOMHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
+    def _token_authenticate(self):
+        rss_token = self.request.get(constants.TOKEN_PARAM_NAME,
+                                     default_value=None)
+        if not rss_token:
+            return None
+        else:
+            return queries.getUserByRSSToken(rss_token)
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)

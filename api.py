@@ -84,7 +84,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         self._updateFriends(u)
         res = queries.loadGroups(u)
         for x in res.keys():
-            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name, x)
+            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name, u.rss_token, x)
         return res
 
     def json_move_friend(self, auth_token=None, screen_name=None, group_name=None):
@@ -126,7 +126,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': misc.groupRSS_URL(u.screen_name, g.name),
+            'rssurl': misc.groupRSS_URL(u.screen_name, u.rss_token, g.name),
             'users': []
         }               
         
@@ -195,8 +195,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                     code=ERR_BAD_AUTH_TOKEN)
 
     def _updateFriends(self, u):
-        oa = OAuthClient(handler=None,token=u)
-        t = twitter.Api(oauth=oa)
+        t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
         try:
             friends = t.GetFriends()
         except Exception:

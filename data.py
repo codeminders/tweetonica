@@ -9,6 +9,8 @@ class User(db.Model):
     oauth_token_secret = db.StringProperty()
     # our auth cookie
     cookie = db.StringProperty()
+    # our token used to authenticate RSS users
+    rss_token = db.StringProperty()
     user_created = db.DateTimeProperty(auto_now_add=True)
     friendlist_last_updated = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
