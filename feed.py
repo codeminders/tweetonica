@@ -26,15 +26,7 @@ MAX_PAGES_TO_FETCH=3
 
 class ATOMHandler(webapp.RequestHandler):
 
-    def get(self, *args):
-        if self.request.path.startswith(constants.FEED_PATH_PREFIX):
-            if len(self.request.path) == len(constants.FEED_PATH_PREFIX) or \
-                self.request.path == "%s/"%constants.FEED_PATH_PREFIX:
-                    group = constants.DEFAULT_GROUP_NAME
-            else:
-                group = self.request.path[len(constants.FEED_PATH_PREFIX)+1:]
-        else:
-            raise Exception("Invalid path '%s'" % self.request.path)
+    def get(self, username, group=constants.DEFAULT_GROUP_NAME):
 
         logging.debug("Requested group '%s'" % group)
         
@@ -180,7 +172,7 @@ class ATOMHandler(webapp.RequestHandler):
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
     logging.debug("Starting")
-    app = webapp.WSGIApplication([("%s(/.*)?"%constants.FEED_PATH_PREFIX, \
+    app = webapp.WSGIApplication([("%s/(.+)/(.+)"%constants.FEED_PATH_PREFIX, \
                                    ATOMHandler)], debug=True)
     util.run_wsgi_app(app)
 
