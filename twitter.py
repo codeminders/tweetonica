@@ -1383,7 +1383,7 @@ class Api(object):
   def _FetchUrl(self,
                 url,
                 post_data=None,
-                parameters=None):
+                parameters={}):
     """Fetch a URL,
 
     Args:
