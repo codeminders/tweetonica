@@ -2,6 +2,7 @@
 
 import logging
 import datetime
+from uuid import uuid4
 
 from google.appengine.ext import db
 
@@ -42,6 +43,14 @@ def getUserByCookie(cookie):
     else:
         return None
 
+def getUserByRSSToken(rss_token):
+    q = data.User.gql('WHERE rss_token = :1', rss_token)
+    users = q.fetch(1)
+    if len(users)==1:
+        return users[0]
+    else:
+        return None
+
 def logout(cookie):
     if cookie:
         u = getUserByCookie(cookie)
@@ -69,6 +78,7 @@ def createOrUpdateUser(screen_name,
                       oauth_token = oauth_token,
                       oauth_token_secret = oauth_token_secret,
                       cookie = cookie,
+                      rss_token = str(uuid4()),
                       friendlist_last_updated = None,
                       timeline_last_updated = None,
                       timeline_max_id=-1)
