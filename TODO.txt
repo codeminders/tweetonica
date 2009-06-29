@@ -12,10 +12,6 @@ Frontend:
 Bugs:
 
 Features:
-. Switch to OAUth in UI
-  - login and logout are working
-  - API (server side) should be changed to work with cookies
-  - API needs new method to retrieve current user's properties
 . Rename to reflect new site name (only logo is left)
 
 Deployement/Production:
