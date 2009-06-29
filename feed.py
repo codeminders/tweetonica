@@ -19,7 +19,7 @@ from oauth import OAuthClient
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
 
-REALM='phanalgesfeed'
+REALM='www.tweetonica.com/feed'
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
@@ -31,9 +31,10 @@ class ATOMHandler(webapp.RequestHandler):
 
         logging.debug("Requested group '%s'" % group)
 
-        use_auth = self.request.get(constants.AUTH_PARAM_NAME)
-        
-        if use_auth=='basic':
+        rss_token = self.request.get(constants.TOKEN_PARAM_NAME,
+                                     default_value=None)
+         
+        if not rss_token:
             u = misc.HTTP_authenticate()
             if not u:
                 self.response.headers['WWW-Authenticate'] = \
@@ -41,7 +42,7 @@ class ATOMHandler(webapp.RequestHandler):
                 self.response.set_status(401)
                 return
         else:
-            u = self._token_authenticate()
+            u = queries.getUserByRSSToken(rss_token)
             if not u:
                 self.response.set_status(403)
                 return
@@ -179,13 +180,6 @@ class ATOMHandler(webapp.RequestHandler):
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
-    def _token_authenticate(self):
-        rss_token = self.request.get(constants.TOKEN_PARAM_NAME,
-                                     default_value=None)
-        if not rss_token:
-            return None
-        else:
-            return queries.getUserByRSSToken(rss_token)
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)

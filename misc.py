@@ -41,5 +41,4 @@ def HTTP_authenticate():
     logging.debug("Authenticating user '%s' with password '%s'" % \
                   (username,password))
     
-    u = queries.getUserByScreenNameAndRSSTOken(username, password)
-    return u
+    return queries.getUserByScreenNameAndRSSTOken(username, password)
