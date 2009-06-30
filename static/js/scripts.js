@@ -112,7 +112,14 @@ $(document).ready(function() {
         }
         container.append($('<a href="http://twitter.com/' + u.screen_name + '" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
 
-        container.draggable({appendTo : 'body',helper:'clone'});
+        container.draggable({appendTo : 'body',helper:'clone', start: function() {
+                $('#tt').hide();
+                $('.userinfo_pic').die('mouseover');        
+            }, stop: function() {
+                $('.userinfo_pic').live('mouseover', function(e) {
+                show_tooltip(e, $(this));
+            })
+        }});
         $('#groupmembers').append(container);
     }
 
@@ -203,6 +210,7 @@ $(document).ready(function() {
         var g = cache[e.attr('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
+        $('#info_groupfeed_text').val(g.rssurl);
 
         $('#groupmembers').empty();
         for (var i = 0; i< g.users.length; i++) {
@@ -455,6 +463,28 @@ $(document).ready(function() {
         e.stopPropagation();
         e.preventDefault();
     });
+
+    var show_tooltip = function(e, o) {
+        if ($(':radio[name=viewstyle]:checked').val() != 's')
+            return;
+        $('#tt-screen').text($('.userinfo_screenname', o.parent()).text());
+        $('#tt-real').text($('.userinfo_realname', o.parent()).text());
+        var offset = o.offset();
+        $('#tt').css('display','block').css('left', offset.left + o.width() / 2).css('top', offset.top - 30);
+        e.stopPropagation();
+        e.preventDefault();
+    }
+
+    $('.userinfo_pic').live('mouseover', function(e) {
+        show_tooltip(e, $(this));
+    }).live('mouseout', function(e) {
+        $('#tt').css('display','none');
+    });
+
+    $('input[readonly]').click(function() {
+        $(this).focus().select();
+    });
+
 
 
 });

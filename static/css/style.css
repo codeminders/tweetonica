@@ -2,8 +2,11 @@ html, body { height:100%; margin:0; padding:0;}
 body { background:#FFF; color:#222222; font:normal 14px/18px Arial, Helvetica, sans-serif;}
 form, body, iframe { margin:0; padding:0;}
 img, table, iframe { border:0;}
-p { margin:0; margin-bottom:15px;}
+p {margin:0; margin-bottom:15px;}
+a {color:#360; text-decoration:none; }
+a:hover { color:#690; text-decoration:underline; }
 .layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
+.left {float:left;} 
 
 #header {
     background-color: #000;
@@ -157,19 +160,8 @@ a.grclosed, a.grclosed-hl {
    text-align:center;          
    font-weight:bold;
 }
-.add-group a
-{
-   padding:0 15px 0 0; 
-   *padding:0 30px 0 0;        
-   color:#360;
-   text-decoration:none;
-}
 
-.add-group a:hover
-{
-   color:#690;
-   text-decoration:underline;  
-}
+.add-group a { padding:0 15px 0 0; *padding:0 30px 0 0;  }
 
 /* TODO */
 .error {
@@ -205,6 +197,10 @@ a.grclosed, a.grclosed-hl {
     height:52px;
     margin-bottom:15px; 
 }
+
+.icon-details { position:absolute; left:-1000px; top:-1000px; display:none; z-index:100; width: 200px;}
+.transparent09 { background-color:#FFF; filter:alpha(opacity=90); -khtml-opacity: 0.9; -moz-opacity: 0.9; opacity:0.9;}
+
 
 
 .userinfo_screenname, .userinfo_realname {
@@ -244,6 +240,8 @@ a.grclosed, a.grclosed-hl {
 .short_details .userinfo_screenname, .short_details .userinfo_realname {
    display: none;
 }
+
+.input-field {font-size: 14px; line-height:120%; border: 1px solid #bee486; -moz-border-radius: 5px; -webkit-border-radius: 5px; width:250px; margin:5px 0 5px 5px; background:#bee486;}
 
 /*- Group info border styles -*/
 #group-box
