@@ -43,6 +43,20 @@
             return false;
         }
 
+
+        function getCreateFriendshipJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "create_friendship",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '",\n'+
+                    '         "screen_name":"tweetonica"\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
+
         function getGetFriendsJSON()
         {
             return '{\n' +
@@ -179,6 +193,7 @@
 <input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
 <input type="submit" value="delete_group" onclick="document.getElementById('post_content').value = getDelGroupJSON()"/>
 <input type="submit" value="move_friend" onclick="document.getElementById('post_content').value = getMoveFriendJSON()"/>
+<input type="submit" value="create_friendship" onclick="document.getElementById('post_content').value = getCreateFriendshipJSON()"/>
 <br/>
 <textarea id="post_content" rows="10" cols="125"></textarea>
 </p>

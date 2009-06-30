@@ -15,8 +15,8 @@ TOKEN_PARAM_NAME = "secret"
 DOMAIN = "www.tweetonica.com"
 
 OAUTH_APP_SETTINGS = {
-    'consumer_key': 'rKrFecGChYpzIwINWbPtg',
-    'consumer_secret': 'Qvch2jppHeUlkUiiWsTP3VY4mpPNAx773j7rruAI2I',
+    'consumer_key': 'Jfhz20pXgCsg282eIdbg',
+    'consumer_secret': 'elCnqrCy2IfGl1KaRde9cOLxjPPpvkFDo2WRNPOzKA',
     
     'request_token_url': 'http://twitter.com/oauth/request_token',
     'access_token_url': 'http://twitter.com/oauth/access_token',
