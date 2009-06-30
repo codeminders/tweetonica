@@ -24,13 +24,11 @@ p { margin:0; margin-bottom:15px;}
     float:right;
     margin:20px 20px 0 0;
     color: #fff;
-    font: bold 16px arial, sans-serif;
 }
 
 #loginbox a, #loginbox a:hover, #loginbox a:visited, #loginbox a:active {
     text-decoration: none;
     color: #fff;
-    font: bold 16px arial, sans-serif;
 }
 
 .menu,.menu:hover,.menu:active,.menu:visited {
@@ -38,7 +36,6 @@ p { margin:0; margin-bottom:15px;}
     color: #000;
     display: block;
     float: left;
-    font: normal 12px arial, sans-serif;
     height: 28px;
     margin-right: 6px;
     text-decoration: none;
@@ -50,6 +47,7 @@ p { margin:0; margin-bottom:15px;}
     text-align: center;
     display: block;
     padding: 5px 0 5px 5px;
+    line-height: 150%;
 }
 
 .menu:hover, .active {
@@ -74,12 +72,10 @@ a.gropen, a.grclosed, a.gropen-hl, a.grclosed-hl {
 
 a.gropen, a.grclosed {
     color: #000;
-    font: normal 12px arial, sans-serif;
 }
 
 a.gropen-hl, a.grclosed-hl {
     color: #fff;
-    font: bold 12px arial, sans-serif;
 }
 
 a.gropen span, a.grclosed span, a.gropen-hl span, a.grclosed-hl span
@@ -159,7 +155,7 @@ a.grclosed, a.grclosed-hl {
    margin:10px auto;
    padding:0;
    text-align:center;          
-   font:bold 14px Arial, Helvetica, sans-serif;    
+   font-weight:bold;
 }
 .add-group a
 {
