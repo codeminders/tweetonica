@@ -81,7 +81,7 @@
         <div class="bmenu">
             <a class="menulink" id="m_about" href="javascript:;">About </a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_manage" href="javascript:;">My Groups </a>&nbsp;&nbsp;|&nbsp;            
-            <a href="javascript:;" class="followme">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;
+            <span id="follow" style="display:none"><a href="javascript:;" id="followme">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;</span>
             <a class="menulink" id="m_faq" href="javascript:;">FAQ</a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_contact" href="javascript:;">Contact Tweetonica</a>
         </div> 
@@ -114,9 +114,6 @@
         <div class="error" id="eemptyname2" style="display:none">Name cannot be empty</div>
         <div class="error" id="eduplicatename2" style="display:none">Group with specified name already exists</div>
     </div>
-
-    <form id="followform" action="http://twitter.com/friendships/create/tweetonica.xml" method="post" target="_blank">
-    </form>
 
 </div>
 
