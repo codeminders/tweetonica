@@ -18,7 +18,7 @@
     <div id="header">
         <div id="loginbox">
             <div id="loggedin" style="display:none">
-                <a href="javascript:;" id="currentuserurl" target="_new"><span id="currentuser"></span></a> | <a href="javascript:;" id="logoutbutton">Log out</a>
+                <a href="javascript:;" id="currentuserurl" target="_blank"><span id="currentuser"></span></a> | <a href="javascript:;" id="logoutbutton">Log out</a>
             </div>
             <div id="loggedout">
                 <a href="javascript:;" id="loginbutton">Log In</a>
@@ -38,9 +38,13 @@
     <div id="content">
         <div id="manage" class="page" style="display:none">
             <div id="groups" style="float:left; margin:0;">                
-                <div class="group-background" id="last-group">
-                    <a href="javascript:;" class="grclosed grey-sm" style="margin-top:10px"><span>New Group</span></a>   
-                </div>             
+                <div class="add-group">
+                    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                        <div class="group-box-content">             
+                                <a href="javascript:;">Add New Group</a>                                                  
+                        </div><!--add-group-content-->
+                    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b> 
+                </div>                    
             </div>         
     <div id="group-box">
         <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
@@ -73,11 +77,11 @@
     </div>
     <!-- footer -->
     <div id="footer" class="footer">
-        <div class="copy">&copy; 2009 <a href="http://www.codeminders.com" target="_new">Codeminders</a>. All rights reserved.</div>
+        <div class="copy">&copy; 2009 <a href="http://www.codeminders.com" target="_blank">Codeminders</a>. All rights reserved.</div>
         <div class="bmenu">
             <a class="menulink" id="m_about" href="javascript:;">About </a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_manage" href="javascript:;">My Groups </a>&nbsp;&nbsp;|&nbsp;            
-            <a href="http://twitter.com/tweetonica" target="_new">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;
+            <a href="javascript:;" class="followme">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_faq" href="javascript:;">FAQ</a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_contact" href="javascript:;">Contact Tweetonica</a>
         </div> 
@@ -111,6 +115,8 @@
         <div class="error" id="eduplicatename2" style="display:none">Group with specified name already exists</div>
     </div>
 
+    <form id="followform" action="http://twitter.com/friendships/create/tweetonica.xml" method="post" target="_blank">
+    </form>
 
 </div>
 </body>
