@@ -1410,7 +1410,7 @@ class Api(object):
       return url_data
     else:
       # Using OAuth
-      if post_data:
+      if post_data!=None:
         return self._oauth.post(url, raw=True, **post_data)
       else:
         return self._oauth.get(url, raw=True, **parameters)

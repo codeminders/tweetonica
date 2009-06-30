@@ -62,6 +62,17 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- response methods delegates below --
 
+    def json_create_friendship(self, auth_token=None, screen_name=None):
+        """ Add user as friend (follow)"""
+        u = self._verifyAuthToken(auth_token)
+        t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
+        try:
+            return t.CreateFriendship(screen_name)
+        except Exception:
+            logging.exception("Error creating friendship for %s" % u.screen_name)
+            raise json.JSONRPCError("Error creating friendship",
+                                    code=ERR_TWITTER_COMM_ERROR)
+
     def json_get_screen_name(self, auth_token=None):
         """ Get screen name for current user (by auth_token).
         Returns screen name or error if auth token is invalid
