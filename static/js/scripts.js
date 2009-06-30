@@ -68,7 +68,7 @@ $(document).ready(function() {
             container.append(buttons.append(editbutton).append(delbutton));
         }
 
-        $('#last-group').before(container);        
+        $('#groups').append(container);        
     };
 
     var render_user = function(u, g) {
@@ -81,11 +81,9 @@ $(document).ready(function() {
             '<b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>' +
             '</div>';
 
-        var linkbox = '<div class="userinfo_screenname">' +
-            '<a href="http://twitter.com/' + u.screen_name + '" target="_new">' + u.screen_name + '</a>' +
-            '</div>';
+        var linkbox = '<div class="userinfo_screenname">' + u.screen_name + '</div>';
 
-        var namebox = '<div class="userinfo_realname">' + u.real_name + '</div>';
+        var namebox = '<div class="userinfo_realname">' + (u.real_name == u.screen_name ? '&nbsp;' : u.real_name) + '</div>';
 
         var container   = $('<div id="user_' + u.screen_name + '" class="userinfo' + ($(':radio[name=viewstyle]:checked').val() == 's' ? ' short_details' : '') + '">');
         container.append(picturebox).append(linkbox).append(namebox).append('<div class="clear-div">&nbsp;</div>');
@@ -112,6 +110,7 @@ $(document).ready(function() {
             });
             container.append(controls);
         }
+        container.append($('<a href="http://twitter.com/' + u.screen_name + '" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
 
         container.draggable({appendTo : 'body',helper:'clone'});
         $('#groupmembers').append(container);
@@ -390,7 +389,7 @@ $(document).ready(function() {
             $('.userinfo').removeClass('short_details');
     });
 
-    $('#last-group a').click(function(e) {
+    $('.add-group a').click(function(e) {
         $('#create-group-name').val('');
         $('#create-dialog').dialog('open');
         e.stopPropagation();
@@ -451,6 +450,11 @@ $(document).ready(function() {
     else
         open_page('about');
 
+    $('.followme').live('click', function(e) {
+        $('#followform').submit();
+        e.stopPropagation();
+        e.preventDefault();
+    });
 
 
 });
