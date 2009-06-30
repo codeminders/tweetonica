@@ -151,14 +151,14 @@ var tweetonica = {
                 });
         },
 
-        get_user_info: function(screen_name, success, error) {
+        create_friendship: function(screen_name, success, error) {
             if (!this.token) {
                 if (error) {
                     error({code: this.ERR_AUTH_REQUIRED, message: 'Authentication is required'});
                 }
                 return;
             }
-            this.jsonrpc('get_user_info', 
+            this.jsonrpc('create_friendship', 
                 {
                     auth_token: this.token,
                     screen_name: screen_name

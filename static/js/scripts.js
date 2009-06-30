@@ -432,17 +432,31 @@ $(document).ready(function() {
                  });
                  cache = [];
 
+                 var follows_tweetonica = false;
+
                  $('.groupentry').remove();
                  for (var i = 0; i < groups.length; i++) {
                      var group = groups[i];
                      render_group(group);
                      cache[group.name] = group;
+                     for (var j = 0; !follows_tweetonica && j < group.users.length; j++) {
+                        if (group.users[j].screen_name == 'tweetonica') {
+                            follows_tweetonica = true;
+                            break;
+                        }
+                     }
                  }
+
+                 if (follows_tweetonica)
+                    $('#follow').hide();
+                 else
+                    $('#follow').show();
 
                  open_group($('#groups a[groupname=__ALL__]'));
                  open_page('manage');
              }, function(error) {
                  $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+                 $('#follow').hide();
                  $('#currentuser').html('');
                  $('#currentuserurl').attr('href', 'javascript:;');
                  $('#loggedin').hide();
@@ -453,13 +467,19 @@ $(document).ready(function() {
 
         }, function(error) {
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+            $('#follow').hide();
         });
     }
     else
         open_page('about');
 
-    $('.followme').live('click', function(e) {
-        $('#followform').submit();
+    $('#followme').click(function(e) {
+        tweetonica.api.create_friendship('tweetonica', function(results) {
+            cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: 'http://static.twitter.com/images/default_profile_normal.png'});
+            open_group($('#groups a[groupname=__ALL__]'));            
+            $('#follow').hide();
+        }, function(error) {
+        });
         e.stopPropagation();
         e.preventDefault();
     });
