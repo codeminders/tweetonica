@@ -476,7 +476,7 @@ $(document).ready(function() {
 
     $('#followme').click(function(e) {
         tweetonica.api.create_friendship('tweetonica', function(results) {
-            cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: 'http://static.twitter.com/images/default_profile_normal.png'});
+            cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
             open_group($('#groups a[groupname=__ALL__]'));            
             $('#follow').hide();
         }, function(error) {
