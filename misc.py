@@ -2,6 +2,7 @@
 
 import os, logging
 from base64 import b64decode
+from urllib import quote, urlencode
 
 import data
 import constants
@@ -12,13 +13,13 @@ def groupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
         return "http://%s%s/%s/%s" % \
                (constants.DOMAIN,
                 constants.FEED_PATH_PREFIX,
-                screen_name, group_name)
+                quote(screen_name), quote(group_name))
     else:
-        return "http://%s%s/%s/%s?%s=%s" % \
+        return "http://%s%s/%s/%s?%s" % \
                (constants.DOMAIN,
                 constants.FEED_PATH_PREFIX,
-                screen_name, group_name,
-                constants.TOKEN_PARAM_NAME, rss_token)
+                quote(screen_name), quote(group_name),
+                urlencode({constants.TOKEN_PARAM_NAME : rss_token}))
 
 def HTTP_authenticate():
     if not os.environ.has_key('HTTP_AUTHORIZATION'):
