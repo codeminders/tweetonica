@@ -5,15 +5,14 @@ Backend:
 . OPML generation
 . TTL/caching for static files
 . json_sync_friends() TTL
+. Preferences API
 
 Frontend:
 . Review text for home page, FAQ, etc.
 . OPML download (need backend support)
+. User prefs
 
 Bugs:
 
-Features:
-. Rename to reflect new site name (only logo is left)
-
 Deployement/Production:
-. Redirect www.tweetonica.com to tweetonica.com (bird)
+. Redirect tweetonica.com tot www.weetonica.com (bird)
