@@ -57,6 +57,18 @@
                     '}\n';
         }
 
+        function getPrefsJSON()
+        {
+            return '{\n' +
+                    '"id": '+ (current_id++) +',\n' +
+                    '"method": "get_prefs",\n' +
+                    '"params":\n' + 
+                    '    {\n' +
+                    '         "auth_token": "' + getCookie('oauth.twitter') + '"\n'+
+                    '    }\n' + 
+                    '}\n';
+        }
+
         function getGetFriendsJSON()
         {
             return '{\n' +
@@ -189,6 +201,7 @@
 
 <p>
 <input type="submit" value="get_friends" onclick="document.getElementById('post_content').value = getGetFriendsJSON()"/>
+<input type="submit" value="get_prefs" onclick="document.getElementById('post_content').value = getPrefsJSON()"/>
 <input type="submit" value="new_group" onclick="document.getElementById('post_content').value = getNewGroupJSON()"/>
 <input type="submit" value="rename_group" onclick="document.getElementById('post_content').value = getRenameGroupJSON()"/>
 <input type="submit" value="delete_group" onclick="document.getElementById('post_content').value = getDelGroupJSON()"/>

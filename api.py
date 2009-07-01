@@ -82,10 +82,23 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def json_get_screen_name(self, auth_token=None):
         """ Get screen name for current user (by auth_token).
         Returns screen name or error if auth token is invalid
+        OBOSOLETE
         """
         logging.debug('Method \'get_screen_name\' invoked for cookie %s' % auth_token)
         u = self._verifyAuthToken(auth_token)
         return u.screen_name
+
+    def json_get_prefs(self, auth_token=None):
+        """ Get information for current user
+        """
+        logging.debug('Method \'get_prefs\' invoked for cookie %s' % auth_token)
+        u = self._verifyAuthToken(auth_token)
+        return {'screen_name' : u.screen_name,
+                'remember_me' : u.remember_me,
+                'icons_only': u.icons_only,
+                'use_HTTP_auth' : u.use_HTTP_auth,
+                'timeline_last_updated': timeline_last_updated
+                }
 
     def json_logout(self, auth_token=None):
         """ Invalidates user cookie
