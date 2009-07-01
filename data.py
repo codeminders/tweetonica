@@ -16,7 +16,11 @@ class User(db.Model):
     friendlist_last_updated = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
     timeline_last_updated = db.DateTimeProperty()
-    timeline_max_id = db.IntegerProperty() 
+    timeline_max_id = db.IntegerProperty()
+    # Misc user preferences.
+    remember_me =  db.BooleanProperty()
+    icons_only =  db.BooleanProperty()
+
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
