@@ -415,57 +415,61 @@ $(document).ready(function() {
              $('#loggedin').show();
              $('#loggedout').hide();
 
-             tweetonica.api.get_friends(function(results) {
+             tweetonica.api.sync_friends(true, function(results) {
+                 tweetonica.api.get_friends(function(results) {
 
-                 var groups = [];
-                 for (var g in results) {
-                     groups.push(results[g]);
-                 }
-
-                 groups.sort(function(a, b) {
-                     if (a.name == '__ALL__')
-                         return -1;
-                     if (b.name == '__ALL__')
-                         return 1;
-                     var k1 = a.name.toLowerCase();
-                     var k2 = b.name.toLowerCase();
-                     return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
-                 });
-                 cache = [];
-
-                 var follows_tweetonica = false;
-
-                 $('.groupentry').remove();
-                 for (var i = 0; i < groups.length; i++) {
-                     var group = groups[i];
-                     render_group(group);
-                     cache[group.name] = group;
-                     for (var j = 0; !follows_tweetonica && j < group.users.length; j++) {
-                        if (group.users[j].screen_name == 'tweetonica') {
-                            follows_tweetonica = true;
-                            break;
-                        }
+                     var groups = [];
+                     for (var g in results) {
+                         groups.push(results[g]);
                      }
-                 }
 
-                 if (follows_tweetonica)
-                    $('#follow').hide();
-                 else
-                    $('#follow').show();
+                     groups.sort(function(a, b) {
+                         if (a.name == '__ALL__')
+                             return -1;
+                         if (b.name == '__ALL__')
+                             return 1;
+                         var k1 = a.name.toLowerCase();
+                         var k2 = b.name.toLowerCase();
+                         return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
+                     });
+                     cache = [];
 
-                 open_group($('#groups a[groupname=__ALL__]'));
-                 open_page('manage');
-             }, function(error) {
-                 $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-                 $('#follow').hide();
-                 $('#currentuser').html('');
-                 $('#currentuserurl').attr('href', 'javascript:;');
-                 $('#loggedin').hide();
-                 $('#loggedout').show();
-                 tweetonica.api.token = null;
+                     var follows_tweetonica = false;
 
-             });
+                     $('.groupentry').remove();
+                     for (var i = 0; i < groups.length; i++) {
+                         var group = groups[i];
+                         render_group(group);
+                         cache[group.name] = group;
+                         for (var j = 0; !follows_tweetonica && j < group.users.length; j++) {
+                            if (group.users[j].screen_name == 'tweetonica') {
+                                follows_tweetonica = true;
+                                break;
+                            }
+                         }
+                     }
 
+                     if (follows_tweetonica)
+                        $('#follow').hide();
+                     else
+                        $('#follow').show();
+
+                     open_group($('#groups a[groupname=__ALL__]'));
+                     open_page('manage');
+                 }, function(error) {
+                     $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+                     $('#follow').hide();
+                     $('#currentuser').html('');
+                     $('#currentuserurl').attr('href', 'javascript:;');
+                     $('#loggedin').hide();
+                     $('#loggedout').show();
+                     tweetonica.api.token = null;
+
+                 });
+            }, function(error) {
+                $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+                $('#follow').hide();
+            });
         }, function(error) {
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();

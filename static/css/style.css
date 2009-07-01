@@ -7,6 +7,8 @@ a {color:#360; text-decoration:none; }
 a:hover { color:#690; text-decoration:underline; }
 .layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
 .left {float:left;} 
+h1 { color: #528b00;}
+h2 { color: #963fcf;}
 
 #header {
     background-color: #000;
