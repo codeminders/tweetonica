@@ -213,6 +213,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
         g.name = new_group_name
         g.put()
+        return {
+            'name': g.name,
+            'rssurl': misc.groupRSS_URL(u.screen_name,
+                                        u.rss_token, g.name,
+                                        u.use_HTTP_auth)
+        }               
     
     def json_delete_group(self, auth_token=None, group_name=None):
         """ Delete group """
