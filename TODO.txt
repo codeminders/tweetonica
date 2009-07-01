@@ -4,6 +4,7 @@ Backend:
 . Data store indices
 . OPML generation
 . TTL/caching for static files
+. json_sync_friends() TTL
 
 Frontend:
 . Review text for home page, FAQ, etc.
