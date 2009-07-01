@@ -5,6 +5,8 @@
     <title>Tweetonica</title>
     <link href="css/ui/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
     <link href="css/style.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+    <link href="/favicon.png" rel="icon" type="image/png"/>
     <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
     <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
     <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
@@ -39,7 +41,7 @@
 
         <div id="manage" class="page"  style="display:none">
 
-            <div class="add-group" style="float:right; margin:0;"><a id="opml_link" href="/ompl">OPML</a> <input id="opml_text" readonly="readonly" class="input-field" value="http://www.tweetonica.com/opml"/></div>
+            <div class="opml-link"><a id="opml_link" href="/ompl"><img src="/images/opml-icon-32x32.png" width="14" height="14" alt="OPML"/></a><input id="opml_text" readonly="readonly" class="input-field" value="http://www.tweetonica.com/opml"/></div>
             <div class="clear-div">&nbsp;</div>   
 
             <div>
@@ -55,7 +57,6 @@
                 <div id="group-box">
                     <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
                     <div class="group-box-content">
-                        <div>Tip: You can drag and drop users to move them between groups<br/><br/></div>
                         <div id="details">
                             <div id="groupinfo" >
                                 <div class="radiobutton">
@@ -67,6 +68,7 @@
                                 </div>                       
                             </div>
                             <div class="clear-div">&nbsp;</div>                
+                            <div style="color:#666"><i>Tip: You can drag and drop users to move them between groups</i><br/><br/></div>
                             <div id="groupmembers">
                             </div>
                             <div class="clear-div">&nbsp;</div>
@@ -81,6 +83,7 @@
         <div id="faq" class="page" style="display:none"></div>
         <div id="about" class="page"></div>
         <div id="contact" class="page" style="display:none"></div>
+        <div id="progress" class="page" style="display:none"><img src="/images/ajax-loader.gif" width="128" height="15" alt="Loading"/> Please wait while the data is loading...</div>
     </div>
     <!-- footer -->
     <div id="footer" class="footer">
@@ -126,9 +129,9 @@
 
 <div class="icon-details" id="tt">
     <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
-        <div class="group-box-content transparent09" style="padding:1px 0 1px 3px;">                                     
-            <span id="tt-screen"></span><br/>
-            <span id="tt-real"></span>
+        <div class="group-box-content transparent09" style="padding:1px 3px;">                                     
+            <b><span id="tt-screen"></span></b>
+            <div id="tt-real"></div>
         </div><!--add-group-content-->
     <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>                                                                 
 </div>                    

@@ -198,7 +198,7 @@ a.grclosed, a.grclosed-hl {
     margin-bottom:15px; 
 }
 
-.icon-details { position:absolute; left:-1000px; top:-1000px; display:none; z-index:100; width: 200px;}
+.icon-details { position:absolute; left:-1000px; top:-1000px; display:none; z-index:100;}
 .transparent09 { background-color:#FFF; filter:alpha(opacity=90); -khtml-opacity: 0.9; -moz-opacity: 0.9; opacity:0.9;}
 
 
@@ -289,8 +289,8 @@ a.grclosed, a.grclosed-hl {
 
 .copy { padding:0; margin:0 0 1em; color:#333; font: bold 14px/20px Arial, Helvetica, sans-serif; text-align:right;}
 .bmenu { padding:0 0 10px 0; margin:0 0 1em; font:bold 12px/20px Arial, Helvetica, sans-serif; text-align:right;}
-.bmenu a { color:#333; text-decoration:none;}
-.bmenu a:hover { text-decoration:underline;}
+.bmenu a, .copy a { color:#333; text-decoration:none;}
+.bmenu a:hover, .copy a:hover { text-decoration:underline;}
 
 .group-header
 {
@@ -309,3 +309,7 @@ a.grclosed, a.grclosed-hl {
     text-decoration: none;
     font: bold 14px arial, sans-serif;
 }
+
+.opml-link { float: right; font-weightold;}
+
+#progress {padding: 50px; text-align:center; width:100%;}
