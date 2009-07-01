@@ -95,10 +95,24 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.cookie = None
         u.put()
 
+    def json_sync_friends(self, force=False):
+        """ Sync friend list with twitter.
+        Args:
+        force - ignore TTL and update from twitter now
+
+        Return:
+        True if friends have been added or removed. False if friends list
+             is unchanged
+        """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'sync_fiends\' invoked for user %s' % u.screen_name)
+        # TODO: TTL
+        return self._updateFriends(u)
+        
+
     def json_get_friends(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
-        self._updateFriends(u)
         res = queries.loadGroups(u)
         for x in res.keys():
             res[x]['rssurl']=misc.groupRSS_URL(u.screen_name,
@@ -223,10 +237,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             logging.exception("Error fetching friends for %s" % u.screen_name)
             raise json.JSONRPCError("Error fetching friends",
                                     code=ERR_TWITTER_COMM_ERROR)
+        changed = False
         fnames = []
         for f in friends:
             fnames.append(f.screen_name)
             if queries.getFriendByName(f.screen_name, u)==None:
+                changed = True
                 queries.addNewFriend(u,f,queries.getDefaultGroup(u))
 
         q = data.Friend.gql('WHERE user = :1', u.key())
@@ -235,6 +251,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             if f.screen_name not in fnames:
                 logging.debug("%s is no longer friend." % f.screen_name)
                 # remove all his status updates
+                changed = True
                 q1 = data.StatusUpdate.gql('WHERE from_friend = :1', f.key())
                 for s in q1:
                     s.delete()
@@ -244,6 +261,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.friendlist_last_updated=datetime.datetime.now()
         u.put()
         logging.debug("User %s have %d friends" % (u.screen_name, n))
+        return changed
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
