@@ -97,7 +97,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 'remember_me' : u.remember_me,
                 'icons_only': u.icons_only,
                 'use_HTTP_auth' : u.use_HTTP_auth,
-                'timeline_last_updated': u.timeline_last_updated
+                'timeline_last_updated': u.timeline_last_updated.isoformat()
                 }
 
     def json_set_prefs(self, auth_token=None, prefs={}):
