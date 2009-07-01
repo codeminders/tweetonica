@@ -59,7 +59,7 @@ class ATOMHandler(webapp.RequestHandler):
         g = queries.getGroupByName(group, u)
         if not g:
             logging.warning("Req. non-existing group '%s' for user '%s'" % \
-                            (g.name, u.screen_name))
+                            (group, u.screen_name))
             self.response.set_status(404)
             return
             
