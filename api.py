@@ -95,7 +95,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.cookie = None
         u.put()
 
-    def json_sync_friends(self, force=False):
+    def json_sync_friends(self, auth_token=None, force=False):
         """ Sync friend list with twitter.
         Args:
         force - ignore TTL and update from twitter now
