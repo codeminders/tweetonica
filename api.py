@@ -100,6 +100,18 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 'timeline_last_updated': u.timeline_last_updated
                 }
 
+    def json_set_prefs(self, auth_token=None, prefs={}):
+        """ Set preferences for current user
+        """
+        logging.debug('Method \'set_prefs\' invoked for cookie %s' % auth_token)
+        u = self._verifyAuthToken(auth_token)
+        # 'screen_name' and 'timeline_last_updated' could not be changed
+        u.remember_me = prefs['remember_me']
+        u.icons_only = prefs['icons_only']
+        u.use_HTTP_auth = prefs['use_HTTP_auth']
+        u.put()
+    
+
     def json_logout(self, auth_token=None):
         """ Invalidates user cookie
         """
