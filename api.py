@@ -89,7 +89,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         return u.screen_name
 
     def json_get_prefs(self, auth_token=None):
-        """ Get information for current user
+        """ Get preferences for current user
         """
         logging.debug('Method \'get_prefs\' invoked for cookie %s' % auth_token)
         u = self._verifyAuthToken(auth_token)
