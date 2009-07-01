@@ -37,7 +37,7 @@ $(document).ready(function() {
         if (COLOR >= COLORS.length)
             COLOR = 0;
         var node = $('<a href="javascript:;" class="grclosed ' + c + '-sm">').attr({
-            groupname:g.name,
+            groupname: g.name,
             colorname: c
         }).click(function(e) {
             open_group($(this));
@@ -51,7 +51,7 @@ $(document).ready(function() {
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
-            var editbutton = $('<a href="javascript:;">').click(function(e) {
+            var editbutton = $('<a href="javascript:;" title="Rename">').click(function(e) {
                 $('#old-group-name').val(g.name);
                 $('#new-group-name').val(g.name);
                 $('#rename-dialog').dialog('open');
@@ -59,7 +59,7 @@ $(document).ready(function() {
                 e.preventDefault();
             }).append($('<img src="images/edit.png" alt="Rename"/>'));
 
-            var delbutton = $('<a href="javascript:;">').click(function(e) {
+            var delbutton = $('<a href="javascript:;" title="Delete">').click(function(e) {
                 delete_group(g.name);
                 e.stopPropagation();
                 e.preventDefault();
@@ -94,7 +94,7 @@ $(document).ready(function() {
         }
 
         if (numgroups > 1) {
-            var controls = $('<a href="javascript:;"><img src="images/move.png" alt="Move"></a>').click(function(e) {
+            var controls = $('<a href="javascript:;" title="Move"><img src="images/move.png" alt="Move"></a>').click(function(e) {
                 $('#user-to-move').val(u.screen_name);
                 $('#user-to-move-name').text(u.real_name);
                 var groups = $('#group-to-move');
@@ -110,7 +110,7 @@ $(document).ready(function() {
             });
             container.append(controls);
         }
-        container.append($('<a href="http://twitter.com/' + u.screen_name + '" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
+        container.append($('<a href="http://twitter.com/' + u.screen_name + '" title="User Info" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
 
         container.draggable({appendTo : 'body',helper:'clone', start: function() {
                 $('#tt').hide();
@@ -129,7 +129,7 @@ $(document).ready(function() {
             $('#m' + id).addClass('active');
             $('.page').hide();
             var p = $('#' + id);
-            if (id != 'manage')
+            if (id != 'manage' && id != 'progress')
                p.load(id + '.html');
             p.show();
         }
@@ -406,6 +406,7 @@ $(document).ready(function() {
 
     var cookie = $.cookie('oauth.twitter');
     if (cookie) {
+        open_page('progress');
 
         tweetonica.api.token = cookie;
         tweetonica.api.get_screen_name(function(results) {
@@ -488,7 +489,11 @@ $(document).ready(function() {
         if ($(':radio[name=viewstyle]:checked').val() != 's')
             return;
         $('#tt-screen').text($('.userinfo_screenname', o.parent()).text());
-        $('#tt-real').text($('.userinfo_realname', o.parent()).text());
+        var realname = jQuery.trim($('.userinfo_realname', o.parent()).text());
+        if (realname != '')
+            $('#tt-real').text(realname).show();
+        else
+            $('#tt-real').hide();
         var offset = o.offset();
         $('#tt').css('display','block').css('left', offset.left + o.width() / 2).css('top', offset.top - 30);
         e.stopPropagation();
