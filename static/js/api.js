@@ -53,6 +53,31 @@ var tweetonica = {
                 });
         },
 
+        sync_friends: function(force, success, error) {
+            if (!this.token) {
+                if (error) {
+                    error({code: this.ERR_AUTH_REQUIRED, message: 'Authentication is required'});
+                }
+                return;
+            }
+            this.jsonrpc('sync_friends', 
+                {
+                    auth_token: this.token,
+                    force: force
+                }, 
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
+
         move_friend: function(screen_name, group_name, success, error) {
             if (!this.token) {
                 if (error) {
