@@ -94,7 +94,7 @@ def createOrUpdateUser(screen_name,
                       timeline_max_id=-1,
                       remember_me =  True,
                       icons_only =  False)
-)
+
         u.put()
         g = data.Group(name=constants.DEFAULT_GROUP_NAME,
                        memberships_last_updated=datetime.datetime.now(),
