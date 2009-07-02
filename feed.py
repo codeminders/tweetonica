@@ -121,6 +121,9 @@ class ATOMHandler(webapp.RequestHandler):
 
                 if u.timeline_max_id < e.id:
                     u.timeline_max_id = e.id
+                if e.user.screen_name==u.screen_name:
+                    # skip my own entries
+                    continue
                 eu = ui.get(e.user.screen_name, None)
                 if eu == None:
                     eu = queries.getFriendByName(e.user.screen_name,u)
