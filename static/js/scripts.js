@@ -3,6 +3,9 @@ var COLORS = [ 'green', 'orange', 'yellow', 'blue', 'purple'];
 var COLOR = 0;
 var PREFS = {};
 
+var CACHE_TTL = 60 * 5; // 5 min
+var last_sync_time = 0;
+
 $(document).ready(function() {
     
     // aux functions 
@@ -160,7 +163,8 @@ $(document).ready(function() {
                 destg.users.push(src);
                 if (destg.name != srcg.name)
                     $('#user_' + screen_name).remove();
-            }});
+            check_for_updates();
+        }});
     };
 
     var delete_group = function(name) {
@@ -175,6 +179,7 @@ $(document).ready(function() {
             cache[name] = g;
             render_group(g);
             open_group($('#groups a.gropen'));
+            check_for_updates();
         });
     }
 
@@ -204,6 +209,7 @@ $(document).ready(function() {
                     open_group(o);
                 }
             });
+            check_for_updates();
         });
     }
 
@@ -254,8 +260,24 @@ $(document).ready(function() {
         });
     };
 
+    var check_for_updates = function() {
+        if ((new Date()).getTime() - last_sync_time > CACHE_TTL) {
+            sync_groups(false, function(state) {
+                if (state) {
+                    open_page('progress');
+                    refresh_groups(function() {
+                        open_page('manage');
+                    });
+                } 
+                else
+                    last_sync_time = (new Date()).getTime();
+            });
+        }
+    };
+
     var refresh_groups = function(callback) {
         tweetonica.api.get_friends(function(results) {
+            last_sync_time = (new Date()).getTime();
             cache = {};
 
             var groups = [];
@@ -338,6 +360,7 @@ $(document).ready(function() {
                         }
                     });
                     open_group($('#groups a#root'));
+                    check_for_updates();
                 });
                 $('#delete-confirm-dialog').dialog('close');
             }
@@ -535,6 +558,7 @@ $(document).ready(function() {
             cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
             open_group($('#groups a#root'));            
             $('#follow').hide();
+            check_for_updates();
         }, function(error) {
         });
         e.stopPropagation();
