@@ -28,8 +28,9 @@ MAX_PAGES_TO_FETCH=3
 
 class ATOMHandler(webapp.RequestHandler):
 
-    def get(self, username, g=None):
+    def get(self, u, g=None):
 
+        username = unquote(u)
         if g==None:
             group = constants.DEFAULT_GROUP_NAME
         else:
