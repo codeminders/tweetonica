@@ -2,7 +2,8 @@
 import datetime
 import logging
 from uuid import uuid1
-
+ from urllib import unquote
+ 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
@@ -27,7 +28,12 @@ MAX_PAGES_TO_FETCH=3
 
 class ATOMHandler(webapp.RequestHandler):
 
-    def get(self, username, group=constants.DEFAULT_GROUP_NAME):
+    def get(self, username, g=None):
+
+        if g==None:
+            group = constants.DEFAULT_GROUP_NAME
+        else:
+            group = unquote(g)
 
         logging.debug("Requested group '%s'" % group)
 
