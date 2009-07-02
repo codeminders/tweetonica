@@ -6,6 +6,17 @@ Backend:
 . OPML download API
 . TTL/caching for static files
 . json_sync_friends() TTL
+. HTML formatting of feed entries.
+	. $AAPL style stock links (to stocktwits.com)
+	. @links (consider using avatars)
+	. #links
+	. yfrog/twitpic thumb embeds
+	. URLs to links
+	. youtube embeds
+	. Add navigation liks per entry:
+		. reply
+		. DM
+		. RT
 
 Frontend:
 . Review text for home page, FAQ, etc.
