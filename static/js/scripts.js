@@ -36,9 +36,8 @@ $(document).ready(function() {
         var c = COLORS[COLOR++];
         if (COLOR >= COLORS.length)
             COLOR = 0;
-        var node = $('<a href="javascript:;" class="grclosed ' + c + '-sm">').attr({
-            groupname: g.name,
-            colorname: c
+        var node = $('<a href="javascript:;" class="grclosed ' + c + '-sm color-' + c + '">').attr({
+            groupname: g.name
         }).click(function(e) {
             open_group($(this));
             e.stopPropagation();
@@ -185,7 +184,8 @@ $(document).ready(function() {
             for (var g in cache) {
                 var info = cache[g];
                 if (info.name == old_name) {
-                    info.name = new_name;
+                    info.name = results.name;
+                    info.rssurl = results.rssurl;
                 }
                 tmp[info.name] = info;
             }
@@ -203,9 +203,27 @@ $(document).ready(function() {
 
     var open_group = function(e) {
         $('a.gropen').each(function() {
-            $(this).attr('class', 'grclosed ' + $(this).attr('colorname') + '-sm');
+            var cl = this.className.split(' ');
+            var newcl = 'grclosed ';
+            for (var i = 0; i < cl.length; i++) {
+                if (cl[i].indexOf('color-') == 0) {
+                    newcl += cl[i] + ' ' + cl[i].substring(6) + '-sm';
+                    break;
+                }
+            }
+            this.className = newcl;
         });
-        e.attr('class', 'gropen ' + e.attr('colorname') + '-bg');
+
+        var cl = e.attr('class').split(' ');
+        var newcl = 'gropen ';
+        for (var i = 0; i < cl.length; i++) {
+            if (cl[i].indexOf('color-') == 0) {
+                newcl += cl[i] + ' ' + cl[i].substring(6) + '-bg';
+                break;
+            }
+        }
+
+        e.attr('class', newcl);
 
         var g = cache[e.attr('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
