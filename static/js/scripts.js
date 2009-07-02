@@ -1,6 +1,7 @@
 var cache = [];
 var COLORS = [ 'green', 'orange', 'yellow', 'blue', 'purple'];
 var COLOR = 0;
+var PREFS = {};
 
 $(document).ready(function() {
     
@@ -426,9 +427,10 @@ $(document).ready(function() {
         open_page('progress');
 
         tweetonica.api.token = cookie;
-        tweetonica.api.get_screen_name(function(results) {
-             $('#currentuser').html(results);
-             $('#currentuserurl').attr('href', 'http://twitter.com/' + results);
+        tweetonica.api.get_prefs(function(results) {
+             PREFS = results;
+             $('#currentuser').text(results.screen_name);
+             $('#currentuserurl').attr('href', 'http://twitter.com/' + results.screen_name);
              $('#loggedin').show();
              $('#loggedout').hide();
 
