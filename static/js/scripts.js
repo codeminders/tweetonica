@@ -18,7 +18,7 @@ $(document).ready(function() {
         var container = $('<div class="group-background groupentry">').droppable({
             accept: '.userinfo', 
             drop: function(event, ui) {
-                var dest = $('a', this).attr('groupname');
+                var dest = $('a', this).data('groupname');
                 move_user(ui.draggable.get(0).id.substring(5), dest);
                 $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
                 $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
@@ -36,9 +36,8 @@ $(document).ready(function() {
         var c = COLORS[COLOR++];
         if (COLOR >= COLORS.length)
             COLOR = 0;
-        var node = $('<a href="javascript:;" class="grclosed ' + c + '-sm color-' + c + '">').attr({
-            groupname: g.name
-        }).click(function(e) {
+        var node = $('<a href="javascript:;" ' + (g.name != '__ALL__' ? '' : ' id="root"') + ' class="grclosed ' + c + '-sm color-' + c + '"></a>').attr({
+        }).data('groupname', g.name).click(function(e) {
             open_group($(this));
             e.stopPropagation();
             e.preventDefault();
@@ -50,7 +49,7 @@ $(document).ready(function() {
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
-            var editbutton = $('<a href="javascript:;" title="Rename">').click(function(e) {
+            var editbutton = $('<a href="javascript:;" title="Rename"></a>').click(function(e) {
                 $('#old-group-name').val(g.name);
                 $('#new-group-name').val(g.name);
                 $('#rename-dialog').dialog('open');
@@ -58,7 +57,7 @@ $(document).ready(function() {
                 e.preventDefault();
             }).append($('<img src="images/edit.png" alt="Rename"/>'));
 
-            var delbutton = $('<a href="javascript:;" title="Delete">').click(function(e) {
+            var delbutton = $('<a href="javascript:;" title="Delete"></a>').click(function(e) {
                 delete_group(g.name);
                 e.stopPropagation();
                 e.preventDefault();
@@ -67,7 +66,7 @@ $(document).ready(function() {
             container.append(buttons.append(editbutton).append(delbutton));
         }
 
-        $('#groups').append(container);        
+        $('#groups').append(container);
     };
 
     var render_user = function(u, g) {
@@ -192,8 +191,8 @@ $(document).ready(function() {
             cache = tmp;
             $('#groups a').each(function() {
                 var o = $(this);
-                if (o.attr('groupname') == old_name) {
-                    o.attr('groupname', new_name);
+                if (o.data('groupname') == old_name) {
+                    o.data('groupname', new_name);
                     $('span', o).text(display_group_name(new_name, true));
                     open_group(o);
                 }
@@ -214,7 +213,7 @@ $(document).ready(function() {
             this.className = newcl;
         });
 
-        var cl = e.attr('class').split(' ');
+        var cl = e.attr('className').split(' ');
         var newcl = 'gropen ';
         for (var i = 0; i < cl.length; i++) {
             if (cl[i].indexOf('color-') == 0) {
@@ -223,9 +222,9 @@ $(document).ready(function() {
             }
         }
 
-        e.attr('class', newcl);
+        e.get(0).className = newcl;
 
-        var g = cache[e.attr('groupname')];
+        var g = cache[e.data('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
         $('#info_groupfeed_text').val(g.rssurl);
@@ -257,11 +256,11 @@ $(document).ready(function() {
                     cache = tmp;
                     $('#groups a').each(function() {
                         var o = $(this);
-                        if (o.attr('groupname') == name) {
+                        if (o.data('groupname') == name) {
                             o.parent().remove();
                         }
                     });
-                    open_group($('#groups a[groupname=__ALL__]'));
+                    open_group($('#groups a#root'));
                 });
                 $('#delete-confirm-dialog').dialog('close');
             }
@@ -472,7 +471,7 @@ $(document).ready(function() {
                      else
                         $('#follow').show();
 
-                     open_group($('#groups a[groupname=__ALL__]'));
+                     open_group($('#groups a#root'));
                      open_page('manage');
                  }, function(error) {
                      $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
@@ -499,7 +498,7 @@ $(document).ready(function() {
     $('#followme').click(function(e) {
         tweetonica.api.create_friendship('tweetonica', function(results) {
             cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
-            open_group($('#groups a[groupname=__ALL__]'));            
+            open_group($('#groups a#root'));            
             $('#follow').hide();
         }, function(error) {
         });
