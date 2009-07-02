@@ -30,6 +30,24 @@ var tweetonica = {
                 });
         },
 
+        set_prefs : function(prefs, success, error) {
+            this.jsonrpc('set_prefs', 
+                {
+                    auth_token: this.token,
+                    prefs: prefs
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
 
         get_friends: function(success, error) {
             if (!this.token) {
