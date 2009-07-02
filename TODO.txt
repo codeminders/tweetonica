@@ -24,3 +24,6 @@ Bugs:
 
 Deployement/Production:
 . Redirect tweetonica.com tot www.weetonica.com (bird)
+
+Questions:
+. Consider caching HTML for RSS entries to save CPU. Measure is it cheaper to cache in store or to regenerate.
