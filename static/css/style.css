@@ -7,8 +7,8 @@ a {color:#360; text-decoration:none; }
 a:hover { color:#690; text-decoration:underline; }
 .layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
 .left {float:left;} 
-h1 { color: #528b00;}
-h2 { color: #963fcf;}
+h1 { margin:0.8em 0 0.8em 0; padding:0; color: #528b00; font-size:1.7em;}
+h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
 
 #header {
     background-color: #000;
@@ -233,10 +233,6 @@ a.grclosed, a.grclosed-hl {
 
 .userinfo_screenname {
     font-weight: bold;
-}
-
-.userinfo_screenname a {
-    margin: 0;
 }
 
 .short_details {
