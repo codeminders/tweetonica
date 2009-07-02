@@ -231,6 +231,10 @@ a.grclosed, a.grclosed-hl {
     padding:2px 2px 2px 4px;
 }
 
+.userinfo_screenname {
+    font-weight: bold;
+}
+
 .userinfo_screenname a {
     margin: 0;
 }
