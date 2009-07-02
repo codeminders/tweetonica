@@ -172,7 +172,7 @@ class ATOMHandler(webapp.RequestHandler):
             description = "Timeline for user %s group %s" % (u.screen_name, \
                                                              g.name),
             language = 'en-us',
-            managingEditor = 'lord+phalanges@crocodile.org (Vadim Zaliva)',
+            managingEditor = 'tweetonica@codeminders.com (Tweetonica)',
             lastBuildDate = datetime.datetime.now(),
             syInfo = SyInfo(SyInfo.HOURLY,1,"1901-01-01T00:00+00:00")
             )
