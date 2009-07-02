@@ -79,15 +79,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         # Add tweetonica as friend, to default group.
         queries.addNewFriend(u,f,queries.getDefaultGroup(u))
 
-    def json_get_screen_name(self, auth_token=None):
-        """ Get screen name for current user (by auth_token).
-        Returns screen name or error if auth token is invalid
-        OBOSOLETE
-        """
-        logging.debug('Method \'get_screen_name\' invoked for cookie %s' % auth_token)
-        u = self._verifyAuthToken(auth_token)
-        return u.screen_name
-
     def json_get_prefs(self, auth_token=None):
         """ Get preferences for current user
         """

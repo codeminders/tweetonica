@@ -12,8 +12,8 @@ var tweetonica = {
 
         token: null,
 
-        get_screen_name: function(success, error) {
-            this.jsonrpc('get_screen_name', 
+        get_prefs : function(success, error) {
+            this.jsonrpc('get_prefs', 
                 {
                     auth_token: this.token
                 }, 
@@ -29,6 +29,7 @@ var tweetonica = {
                     tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
+
 
         get_friends: function(success, error) {
             if (!this.token) {
