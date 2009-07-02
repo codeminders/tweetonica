@@ -2,10 +2,10 @@
 Backend:
 . etag/modified-since headers handling
 . Data store indices
-. OPML generation
+. OPML feed
+. OPML download API
 . TTL/caching for static files
 . json_sync_friends() TTL
-. Preferences API
 
 Frontend:
 . Review text for home page, FAQ, etc.
