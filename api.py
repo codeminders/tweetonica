@@ -84,19 +84,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """
         logging.debug('Method \'get_prefs\' invoked for cookie %s' % auth_token)
         u = self._verifyAuthToken(auth_token)
-        return {'screen_name' : u.screen_name,
-                'remember_me' : u.remember_me,
-                'icons_only': u.icons_only,
-                'use_HTTP_auth' : u.use_HTTP_auth,
-                'timeline_last_updated': u.timeline_last_updated.isoformat(),
-                'OPML_feed_url' : misc.getOPML_URL(u.screen_name,
-                                                   u.rss_token,
-                                                   u.use_HTTP_auth),
-                'OPML_download_url' : misc.getOPML_URL(u.screen_name,
-                                                       u.rss_token,
-                                                       False)
-
-                }
+        return self._get_user_prefs(u)
 
     def json_set_prefs(self, auth_token=None, prefs={}):
         """ Set preferences for current user
@@ -108,6 +96,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.icons_only = prefs['icons_only']
         u.use_HTTP_auth = prefs['use_HTTP_auth']
         u.put()
+        return self._get_user_prefs(u)
     
 
     def json_logout(self, auth_token=None):
@@ -256,6 +245,19 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     # -- implementation method below  ---
 
+    def _get_user_prefs(self, u):
+        return {'screen_name' : u.screen_name,
+                'remember_me' : u.remember_me,
+                'icons_only': u.icons_only,
+                'use_HTTP_auth' : u.use_HTTP_auth,
+                'timeline_last_updated': u.timeline_last_updated.isoformat(),
+                'OPML_feed_url' : misc.getOPML_URL(u.screen_name,
+                                                   u.rss_token,
+                                                   u.use_HTTP_auth),
+                'OPML_download_url' : misc.getOPML_URL(u.screen_name,
+                                                       u.rss_token,
+                                                       False)
+                }
 
     def _verifyAuthToken(self, auth_token):
         """ Verify user, returns screen name or None for invalid token"""
