@@ -222,7 +222,7 @@ var tweetonica = {
         reset_RSS_token : function(success, error) {
             this.jsonrpc('reset_RSS_token', 
                 {
-                    auth_token: this.token,
+                    auth_token: this.token
                 }, 
 
                 function(o) {
