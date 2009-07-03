@@ -8,7 +8,7 @@ import data
 import constants
 import queries
 
-def groupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
+def getGroupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
     if use_HTTP_auth:
         return "http://%s%s/%s/%s" % \
                (constants.DOMAIN,
@@ -19,6 +19,19 @@ def groupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
                (constants.DOMAIN,
                 constants.FEED_PATH_PREFIX,
                 quote(screen_name), quote(group_name),
+                urlencode({constants.TOKEN_PARAM_NAME : rss_token}))
+
+def getOPML_URL(screen_name, rss_token, use_HTTP_auth):
+    if use_HTTP_auth:
+        return "http://%s%s/%s" % \
+               (constants.DOMAIN,
+                constants.OPML_PATH_PREFIX,
+                quote(screen_name))
+    else:
+        return "http://%s%s/%s?%s" % \
+               (constants.DOMAIN,
+                constants.OPML_PATH_PREFIX,
+                quote(screen_name),
                 urlencode({constants.TOKEN_PARAM_NAME : rss_token}))
 
 def HTTP_authenticate():

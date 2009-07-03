@@ -88,7 +88,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 'remember_me' : u.remember_me,
                 'icons_only': u.icons_only,
                 'use_HTTP_auth' : u.use_HTTP_auth,
-                'timeline_last_updated': u.timeline_last_updated.isoformat()
+                'timeline_last_updated': u.timeline_last_updated.isoformat(),
+                'OPML_feed_url' : getOPML_URL(u.screen_name, u.rss_token,
+                                              u.use_HTTP_auth),
+                'OPML_download_url' : getOPML_URL(u.screen_name, u.rss_token,
+                                              False)
+
                 }
 
     def json_set_prefs(self, auth_token=None, prefs={}):
@@ -139,7 +144,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         res = queries.loadGroups(u)
         for x in res.keys():
-            res[x]['rssurl']=misc.groupRSS_URL(u.screen_name,
+            res[x]['rssurl']=misc.getGroupRSS_URL(u.screen_name,
                                                u.rss_token,
                                                x, u.use_HTTP_auth)
         return res
@@ -183,7 +188,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': misc.groupRSS_URL(u.screen_name,
+            'rssurl': misc.getGroupRSS_URL(u.screen_name,
                                         u.rss_token, g.name,
                                         u.use_HTTP_auth),
             'users': []
@@ -214,7 +219,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
         return {
             'name': g.name,
-            'rssurl': misc.groupRSS_URL(u.screen_name,
+            'rssurl': misc.getGroupRSS_URL(u.screen_name,
                                         u.rss_token, g.name,
                                         u.use_HTTP_auth)
         }               
