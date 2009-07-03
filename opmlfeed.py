@@ -1,7 +1,7 @@
 
 import datetime
 import logging
-from uuid import uuid1
+from urllib import unquote
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -11,8 +11,6 @@ import queries
 import data
 import constants
 import misc
-
-REALM='phanalgesfeed'
 
 class OPMLHandler(webapp.RequestHandler):
 
@@ -26,7 +24,7 @@ class OPMLHandler(webapp.RequestHandler):
             u = misc.HTTP_authenticate()
             if not u:
                 self.response.headers['WWW-Authenticate'] = \
-                        'Basic realm=%s' % REALM
+                        'Basic realm=%s' % constants.REALM
                 self.response.set_status(401)
                 return
         else:
