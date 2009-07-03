@@ -111,6 +111,14 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.cookie = None
         u.put()
 
+    def json_reset_RSS_token(self, auth_token=None):
+        """ Reset RSS token.
+        """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'reset_RSS_token\' invoked for user %s' % u.screen_name)
+        u.rss_token = str(uuid4())
+        u.put()
+
     def json_sync_friends(self, auth_token=None, force=False):
         """ Sync friend list with twitter.
         Args:
