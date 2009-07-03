@@ -16,12 +16,25 @@ REALM='phanalgesfeed'
 
 class OPMLHandler(webapp.RequestHandler):
 
-    def get(self, *args):
-        u = misc.HTTP_authenticate()
-        if not u:
-            self.response.headers['WWW-Authenticate'] = 'Basic realm=%s' % REALM
-            self.response.set_status(401)
-            return
+    def get(self, u):
+
+        username = unquote(u)
+        rss_token = self.request.get(constants.TOKEN_PARAM_NAME,
+                                    default_value=None)
+
+        if not rss_token:
+            u = misc.HTTP_authenticate()
+            if not u:
+                self.response.headers['WWW-Authenticate'] = \
+                        'Basic realm=%s' % REALM
+                self.response.set_status(401)
+                return
+        else:
+            u = queries.getUserByRSSToken(rss_token)
+            if not u:
+                self.response.set_status(403)
+                return
+        
         self._generateOPML(u)
     
     def post(self):
@@ -60,7 +73,7 @@ class OPMLHandler(webapp.RequestHandler):
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
     logging.debug("Starting")
-    app = webapp.WSGIApplication([(constants.OPML_PATH_PREFIX, \
+    app = webapp.WSGIApplication([('%s/(.+)'%constants.OPML_PATH_PREFIX, \
                                    OPMLHandler)], debug=True)
     util.run_wsgi_app(app)
 

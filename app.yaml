@@ -10,7 +10,7 @@ handlers:
 - url: /feed/(.+)/(.+)
   script: feed.py
 
-- url: /opml
+- url: /opml/(.+)
   script: opmlfeed.py
 
 - url: /oauth/(.*)
