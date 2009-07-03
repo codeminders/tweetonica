@@ -14,6 +14,9 @@ TOKEN_PARAM_NAME = "secret"
 """ App domain. Used in generated URLs """
 DOMAIN = "www.tweetonica.com"
 
+""" HTTP Basic auth realm """
+REALM='tweetonica.com'
+
 OAUTH_APP_SETTINGS = {
     'consumer_key': 'Jfhz20pXgCsg282eIdbg',
     'consumer_secret': 'elCnqrCy2IfGl1KaRde9cOLxjPPpvkFDo2WRNPOzKA',

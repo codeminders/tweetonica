@@ -1,7 +1,6 @@
 
 import datetime
 import logging
-from uuid import uuid1
 from urllib import unquote
 import re
  
@@ -20,8 +19,6 @@ from oauth import OAuthClient
 
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
-
-REALM='www.tweetonica.com/feed'
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
@@ -46,7 +43,7 @@ class ATOMHandler(webapp.RequestHandler):
             u = misc.HTTP_authenticate()
             if not u:
                 self.response.headers['WWW-Authenticate'] = \
-                        'Basic realm=%s' % REALM
+                        'Basic realm=%s' % constants.REALM
                 self.response.set_status(401)
                 return
         else:
