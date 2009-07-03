@@ -182,22 +182,28 @@ class ATOMHandler(webapp.RequestHandler):
             # TODO: nice text formatting with links to @ and #, etc.
             link = "http://twitter.com/%s/status/%d" % \
                    (e.from_friend.screen_name, e.id)
-            
-            rss.items.append(RSSItem(title = e.text,
+
+            subj = "%s: %s" % (e.from_friend.screen_name, e.text)
+            rss.items.append(RSSItem(title = subj,
                                      link = link,
                                      guid = Guid(link),
-                                     description = self.html(e.text)))
+                                     description = self.html(e)))
 
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
-    def html(self, tweet):
+    def html(self, e):
+        tweet = e.text
         # URLs
         tweet = re.sub(r'(http(s)?://[^ ]+)', r'<a href="\1">\1</a>', tweet)
         # @usernames
         tweet = re.sub(r'(\A|\s)@(\w+)', r'\1<a href="http://www.twitter.com/\2">@\2</a>', tweet)
         # #hashtags
         tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
+        tweet = '<a href="http://twitter.com/%s">%s</a>: %s'  % (
+                                e.from_friend.screen_name,
+                                e.from_friend.screen_name,
+                                tweet)
         return tweet
 
 
