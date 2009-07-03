@@ -219,6 +219,24 @@ var tweetonica = {
                 });
         },
 
+        reset_RSS_token : function(success, error) {
+            this.jsonrpc('reset_RSS_token', 
+                {
+                    auth_token: this.token,
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
         jsonrpc: function(method, parameters, success, error) {
 
             var request = {

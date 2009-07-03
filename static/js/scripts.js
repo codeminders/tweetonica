@@ -88,15 +88,17 @@ $(document).ready(function() {
         var namebox = '<div class="userinfo_realname">' + (u.real_name == u.screen_name ? '&nbsp;' : u.real_name) + '</div>';
 
         var container   = $('<div id="user_' + u.screen_name + '" class="userinfo' + ($('#vs-icons').attr('checked') ? ' short_details' : '') + '">');
-        container.append(picturebox).append(linkbox).append(namebox).append('<div class="clear-div">&nbsp;</div>');
+        container.append(picturebox).append(linkbox).append(namebox);
 
         var numgroups = 0;
         for (var i in cache) {
             numgroups++;
         }
 
+        var controls = $('<div class="user-edit-buttons">');
+
         if (numgroups > 1) {
-            var controls = $('<a href="javascript:;" title="Move"><img src="images/move.png" alt="Move"></a>').click(function(e) {
+            controls.append($('<a href="javascript:;" title="Move"><img src="images/move.png" alt="Move"></a>').click(function(e) {
                 $('#user-to-move').val(u.screen_name);
                 $('#user-to-move-name').text(u.real_name);
                 var groups = $('#group-to-move');
@@ -109,10 +111,10 @@ $(document).ready(function() {
                 $('#move-dialog').dialog('open');
                 e.stopPropagation();
                 e.preventDefault();
-            });
-            container.append(controls);
+            }));
         }
-        container.append($('<a href="http://twitter.com/' + u.screen_name + '" title="User Info" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
+        controls.append($('<a href="http://twitter.com/' + u.screen_name + '" title="User Info" target="_blank"><img src="images/user.png" alt="Open"/></a>'));
+        container.append(controls);
 
         container.draggable({appendTo : 'body',helper:'clone', start: function() {
                 $('#tt').hide();
@@ -128,7 +130,10 @@ $(document).ready(function() {
     var open_page = function(id) {
         if (id != 'manage' && id != 'prefs' || tweetonica.api.token) {
             $('.menu').removeClass('active');
-            $('#m' + id).addClass('active');
+            if (id == 'progress')
+                $('#mmanage').addClass('active');
+            else
+                $('#m' + id).addClass('active');
             $('.page').hide();
             var p = $('#' + id);
             if (id != 'manage' && id != 'progress' && id != 'prefs')
@@ -273,6 +278,40 @@ $(document).ready(function() {
                     last_sync_time = (new Date()).getTime();
             });
         }
+    };
+
+    var initialize = function(first) {
+
+        open_page('progress');
+
+        tweetonica.api.get_prefs(function(results) {
+            PREFS = results;
+            reset_prefs();
+            if (first)
+            {
+                $('input[name=vs]').val([PREFS.icons_only === true ? '1' : '0']);
+                $('#currentuser').text(results.screen_name);
+                $('#currentuserurl').attr('href', 'http://twitter.com/' + results.screen_name);
+                $('#loggedin').show();
+                $('#loggedout').hide();
+            }
+            $('#opml_link').attr('href', results.OPML_download_url);
+            $('#opml_text').val(results.OPML_feed_url);
+
+            $('.prefs').show();
+
+            sync_groups(true, function(state) {
+                refresh_groups(function() {
+                    open_page('manage');
+                });
+            });
+        }, function(error) {
+            tweetonica.api.token = null;
+            $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+            $('#follow').hide();
+            $('.prefs').hide();
+            open_page('about');
+        });
     };
 
     var refresh_groups = function(callback) {
@@ -521,38 +560,6 @@ $(document).ready(function() {
         e.preventDefault();
     });
 
-    var cookie = $.cookie('oauth.twitter');
-    if (cookie) {
-        open_page('progress');
-        tweetonica.api.token = cookie;
-        tweetonica.api.get_prefs(function(results) {
-            PREFS = results;
-            reset_prefs();
-            $('input[name=vs]').val(PREFS.icons_only === true ? '1' : '0');
-
-            $('#currentuser').text(results.screen_name);
-            $('#currentuserurl').attr('href', 'http://twitter.com/' + results.screen_name);
-            $('#loggedin').show();
-            $('#loggedout').hide();
-
-            $('.prefs').show();
-
-            open_page('progress');
-            sync_groups(true, function(state) {
-                refresh_groups(function() {
-                    open_page('manage');
-                });
-            });
-        }, function(error) {
-            $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('#follow').hide();
-            $('.prefs').hide();
-            open_page('about');
-        });
-    }
-    else
-        open_page('about');
-
     $('#followme').click(function(e) {
         tweetonica.api.create_friendship('tweetonica', function(results) {
             cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
@@ -593,11 +600,13 @@ $(document).ready(function() {
     $('#btn-apply-prefs').click(function() {
         var temp_prefs = {};
         temp_prefs['remember_me'] = $('#prefs_remember_me').attr('checked') ? true : false;
-        temp_prefs['use_HTTP_auth'] = $(':radio[name=prefs_auth_style]').val() == '1' ? true : false;
-        temp_prefs['icons_only'] = $(':radio[name=prefs_icons_only]').val() == '1' ? true : false;
+        temp_prefs['use_HTTP_auth'] = $(':radio[name=prefs_auth_style]:checked').val() == '1' ? true : false;
+        temp_prefs['icons_only'] = $(':radio[name=prefs_icons_only]:checked').val() == '1' ? true : false;
 
         tweetonica.api.set_prefs(temp_prefs, function(results) {
-            PREFS = temp_prefs; 
+            PREFS = results; 
+            $('#opml_link').attr('href', results.OPML_download_url);
+            $('#opml_text').val(results.OPML_feed_url);
             open_page('progress');
             refresh_groups(function() {
                 open_page('prefs');
@@ -622,5 +631,19 @@ $(document).ready(function() {
         });
     });
 
+    $('#btn-reset-token').click(function() {
+        tweetonica.api.reset_RSS_token(function() {
+            initialize(false);
+        });
+    });
+
+
+    var cookie = $.cookie('oauth.twitter');
+    if (cookie) {
+        tweetonica.api.token = cookie;
+        initialize(true);
+    }
+    else
+        open_page('about');
 
 });

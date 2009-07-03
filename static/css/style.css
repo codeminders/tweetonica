@@ -204,12 +204,8 @@ a.grclosed, a.grclosed-hl {
 .transparent09 { background-color:#FFF; filter:alpha(opacity=90); -khtml-opacity: 0.9; -moz-opacity: 0.9; opacity:0.9;}
 
 
-
-.userinfo_screenname, .userinfo_realname {
-    float:right;
-    margin:0 0 3px 5px;
-    width:80px; 
-}
+.userinfo_screenname, .userinfo_realname { float:right; margin:0 0 3px 5px; width:6em;}
+.userinfo_screenname { margin:0;  font-weight: bold;}
 
 /*- Userpic info border styles -*/
 
@@ -231,14 +227,7 @@ a.grclosed, a.grclosed-hl {
     padding:2px 2px 2px 4px;
 }
 
-.userinfo_screenname {
-    font-weight: bold;
-}
-
-.short_details {
-    width: 50px;
-}
-
+.short_details {width: 58px; }
 .short_details .userinfo_screenname, .short_details .userinfo_realname {
    display: none;
 }
@@ -315,3 +304,7 @@ a.grclosed, a.grclosed-hl {
 .opml-link { float: right; font-weightold;}
 
 #progress {padding: 50px; text-align:center; width:100%;}
+.tip { font-style:italic; color:#666; margin:3px 0; }
+
+.user-edit-buttons {float: left; clear:left; width:58px;}
+.user-edit-buttons a { margin:0 0 0 5px;}
