@@ -3,7 +3,7 @@ import os
 import datetime
 import logging
 from urllib2 import HTTPError
-from uuid import uuid1
+from uuid import uuid4
 
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
