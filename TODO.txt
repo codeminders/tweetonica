@@ -1,0 +1,29 @@
+
+Backend:
+. etag/modified-since headers handling
+. Data store indices
+. OPML feed
+. OPML download API
+. TTL/caching for static files
+. json_sync_friends() TTL
+. HTML formatting of feed entries.
+	. $AAPL style stock links (to stocktwits.com)
+	. yfrog/twitpic thumb embeds
+	. youtube embeds
+	. Add navigation liks per entry:
+		. reply
+		. DM
+		. RT
+
+Frontend:
+. Review text for home page, FAQ, etc.
+. OPML download (need backend support)
+. User prefs
+
+Bugs:
+
+Deployement/Production:
+. Redirect tweetonica.com tot www.weetonica.com (bird)
+
+Questions:
+. Consider caching HTML for RSS entries to save CPU. Measure is it cheaper to cache in store or to regenerate.
