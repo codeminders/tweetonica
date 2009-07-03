@@ -89,10 +89,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 'icons_only': u.icons_only,
                 'use_HTTP_auth' : u.use_HTTP_auth,
                 'timeline_last_updated': u.timeline_last_updated.isoformat(),
-                'OPML_feed_url' : getOPML_URL(u.screen_name, u.rss_token,
-                                              u.use_HTTP_auth),
-                'OPML_download_url' : getOPML_URL(u.screen_name, u.rss_token,
-                                              False)
+                'OPML_feed_url' : misc.getOPML_URL(u.screen_name,
+                                                   u.rss_token,
+                                                   u.use_HTTP_auth),
+                'OPML_download_url' : misc.getOPML_URL(u.screen_name,
+                                                       u.rss_token,
+                                                       False)
 
                 }
 
