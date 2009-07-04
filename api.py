@@ -18,6 +18,9 @@ import misc
 from oauth import OAuthClient
 
 
+""" Timeline update frequency. Update no more often than this """
+FRIENDS_SYNC_FREQ = datetime.timedelta(1, 0)
+
 # JSON-RPC Error Codes (101=999)
 ERR_TWITTER_AUTH_FAILED = 101
 ERR_BAD_AUTH_TOKEN = 102
@@ -126,8 +129,17 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'sync_fiends\' invoked for user %s' % u.screen_name)
-        # TODO: TTL
-        return self._updateFriends(u)
+        need_update = False
+        if force or u.friendlist_last_updated==None:
+            need_update = True
+        else:
+            need_update = (u.friendlist_last_updated+FRIENDS_SYNC_FREQ)\
+                          < datetime.datetime.now()
+
+        if need_update:
+            return self._updateFriends(u)
+        else:
+            return False
         
 
     def json_get_friends(self, auth_token=None):
@@ -274,6 +286,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                     code=ERR_BAD_AUTH_TOKEN)
 
     def _updateFriends(self, u):
+        logging.debug('Synchronizing friends for user %s' % u.screen_name)
         t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
         try:
             friends = t.GetFriends()
