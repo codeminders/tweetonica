@@ -310,3 +310,13 @@ a.grclosed, a.grclosed-hl {
 .user-edit-buttons a { margin:0 0 0 5px;}
 
 #tt-screen {font-weight:bold;}
+
+.prefs { margin:0 0 2em 0;}
+.prefs label { margin:0 2em 0 0;} 
+.prefs a, .sync-friends a { color:#2c4b00; display:block; float:left; margin:0.5em 0.5em 0.2em 0; padding:0.3em 1em; width: 5em; text-decoration:none; text-align:center; }  
+.prefs a:hover, .sync-friends a:hover { color:#528b00; }            
+.prefs span { font-weight:bold;}
+.prefs-box-content {display: block; background: #bee486; border: 0 solid #bee486; border-width: 0 1px; padding:2px 2px 2px 4px; } 
+.white .ub2, .white .ub3, .white .ub4, .white .prefs-box-content { border-color:#528b00; background: #dce9c8;}
+.white .ub1 {background:#528b00;}    
+.sync-friends {}

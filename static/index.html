@@ -30,7 +30,7 @@
             <div class="clear">
                 <a href="javascript:;" class="menu" id="mabout"><span>about</span></a>
                 <a href="javascript:;" class="menu" id="mmanage"><span>my groups</span></a>
-                <a href="javascript:;" class="menu prefs" id="mprefs" style="display:none"><span>preferences</span></a>
+                <a href="javascript:;" class="menu prefsmenu" id="mprefs" style="display:none"><span>preferences</span></a>
                 <a href="javascript:;" class="menu" id="mfaq"><span>faq</span></a>
                 <a href="javascript:;" class="menu" id="mcontact"><span>contacts</span></a>
             </div>
@@ -83,34 +83,83 @@
 
         <div id="prefs" class="page" style="display:none">
 
-            <h1>Preferences</h1>
+          <h1>Preferences</h1>
 
-            <div>
-                <div>
-                    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
-                    <div class="group-box-content">
-                        <input type="checkbox" name="prefs_remember_me" id="prefs_remember_me" checked="checked"/> Remember me<br/>
-                        Display mode: <input type="radio" name="prefs_icons_only" id="prefs_icons_only_0" value="0" checked="checked"/> Icons and text <input type="radio" name="prefs_icons_only" id="prefs_icons_only_1" value="1"/> Icons only<br/>
-                        RSS/OPML feed Authentication: <input type="radio" name="prefs_auth_style" id="prefs_auth_style_0" value="0" checked="checked"/> Secret token in RSS/OPML feed URL <input type="radio" name="prefs_auth_style" id="prefs_auth_style_1" value="1"/> HTTP Authentication <input type="button" id="btn-reset-token" value="Reset RSS token"/><br/>
-                        <input type="button" id="btn-apply-prefs" value="Apply"/> <input type="button" id="btn-reset-prefs" value="Undo"/>
-                    </div><!--group-box-content-->
-                    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
-                </div>
-            </div>
+              <div class="prefs">
+                  <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                  <div class="group-box-content">
+              
+                      <form id="prefsform" style="width:35em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          <input type="checkbox" name="prefs_remember_me" id="prefs_remember_me" checked="checked"/> Remember me
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b> 
+                                <br/><br/>
+                                                                                          
+                          <span>Display mode:</span> <br/><br/>                          
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                           
+                          
+                          <input type="radio" name="prefs_icons_only" id="prefs_icons_only_0" value="0" checked="checked"/> <label>Icons and text</label>
+                          <input type="radio" name="prefs_icons_only" id="prefs_icons_only_1" value="1"/> <label>Icons only</label><br/>
+                          
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>   
+                                <br/><br/>                          
+                          <span>RSS/OPML feed Authentication: </span> <br/><br/>                                 
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                                                          
+                          <input type="radio" name="prefs_auth_style" id="prefs_auth_style_0" value="0" checked="checked"/> <label>Secret token in RSS/OPML feed URL</label> 
+                          <input type="radio" name="prefs_auth_style" id="prefs_auth_style_1" value="1"/><label> HTTP Authentication </label>
+                           <a id="btn-reset-token" class="white" href="javascript:;" style="width:9em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Reset RSS token
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                              
+                           </a>
+                           <div class="clear-div">&nbsp;</div> 
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                               
+                                
+                                
+                          <a id="btn-apply-prefs" class="white" href="javascript:;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Apply
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                          
+                          </a>
+                          <a id="btn-reset-prefs" class="white" href="javascript:;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Undo
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                             
+                          </a>
+                      </form>
+                      <div class="clear-div">&nbsp;</div> 
+                  </div><!--group-box-content-->
+                  <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>
+              </div>
 
-            <br/><br/>
 
-            <div>
-                <div>
-                    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
-                    <div class="group-box-content">
-                        <div class="tip">Check with Twitter you have any new friends added/removed there and add new friends to default group.</div>
-                        <input type="button" id="btn-sync-groups" value="Synch friends"/>
-                    </div><!--group-box-content-->
-                    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
-                </div>
-               
-            </div>
+              <div class="sync-friends">
+                  <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                  <div class="group-box-content">
+                      <div class="tip">Check with Twitter you have any new friends added/removed there and add new friends to default group.</div>
+                      <a id="btn-sync-groups" class="white" href="javascript:;" style="width:8em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Synch friends
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                         
+                      </a>
+                      <div class="clear-div">&nbsp;</div>                       
+                  </div><!--group-box-content-->
+                  <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>
+              </div>
 
         </div>
 
@@ -126,7 +175,7 @@
         <div class="bmenu">
             <a class="menulink" id="m_about" href="javascript:;">About </a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_manage" href="javascript:;">My Groups </a>&nbsp;&nbsp;|&nbsp;
-            <span class="prefs menulink" id="m_prefs" style="display:none"><a href="javascript:;">Preferences</a>&nbsp;&nbsp;|&nbsp;</span>
+            <span class="prefsmenu menulink" id="m_prefs" style="display:none"><a href="javascript:;">Preferences</a>&nbsp;&nbsp;|&nbsp;</span>
             <span id="follow" style="display:none"><a href="javascript:;" id="followme">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;</span>
             <a class="menulink" id="m_faq" href="javascript:;">FAQ</a>&nbsp;&nbsp;|&nbsp;
             <a class="menulink" id="m_contact" href="javascript:;">Contact Tweetonica</a>
