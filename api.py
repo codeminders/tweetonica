@@ -246,11 +246,16 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     # -- implementation method below  ---
 
     def _get_user_prefs(self, u):
+
+        if u.timeline_last_updated:
+            lu = u.timeline_last_updated.isoformat()
+        else:
+            lu = None
         return {'screen_name' : u.screen_name,
                 'remember_me' : u.remember_me,
                 'icons_only': u.icons_only,
                 'use_HTTP_auth' : u.use_HTTP_auth,
-                'timeline_last_updated': u.timeline_last_updated.isoformat(),
+                'timeline_last_updated': lu,
                 'OPML_feed_url' : misc.getOPML_URL(u.screen_name,
                                                    u.rss_token,
                                                    u.use_HTTP_auth),
