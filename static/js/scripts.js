@@ -260,7 +260,7 @@ $(document).ready(function() {
         }, function(error) {
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
-            $('.prefs').hide();
+            $('.prefsmenu').hide();
             open_page('about');
         });
     };
@@ -298,7 +298,7 @@ $(document).ready(function() {
             $('#opml_link').attr('href', results.OPML_download_url);
             $('#opml_text').val(results.OPML_feed_url);
 
-            $('.prefs').show();
+            $('.prefsmenu').show();
 
             sync_groups(true, function(state) {
                 refresh_groups(function() {
@@ -309,7 +309,7 @@ $(document).ready(function() {
             tweetonica.api.token = null;
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
-            $('.prefs').hide();
+            $('.prefsmenu').hide();
             open_page('about');
         });
     };
@@ -363,7 +363,7 @@ $(document).ready(function() {
         }, function(error) {
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
-            $('.prefs').hide();
+            $('.prefsmenu').hide();
             $('#currentuser').html('');
             $('#currentuserurl').attr('href', 'javascript:;');
             $('#loggedin').hide();
