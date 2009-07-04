@@ -3,7 +3,6 @@ Backend:
 . etag/modified-since headers handling
 . OPML generation
 . TTL/caching for static files
-. json_sync_friends() TTL
 . HTML formatting of feed entries.
 	. $AAPL style stock links (to stocktwits.com)
 	. yfrog/twitpic thumb embeds
