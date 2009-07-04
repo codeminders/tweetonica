@@ -1,5 +1,5 @@
-in
 Backend:
+. CRON job to delete old timeline entries
 . etag/modified-since headers handling
 . OPML generation
 . TTL/caching for static files
