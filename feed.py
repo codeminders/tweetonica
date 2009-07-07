@@ -114,8 +114,7 @@ class ATOMHandler(webapp.RequestHandler):
             except Exception:
                 logging.exception("Error fetching friends timeline for %s" % \
                                   u.screen_name)
-                raise json.JSONRPCError("Error fetching friends timeline",
-                                        code=ERR_TWITTER_COMM_ERROR)
+                raise
             if timeline==None or len(timeline)==0:
                 break
             for e in timeline:
