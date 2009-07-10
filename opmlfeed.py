@@ -12,6 +12,8 @@ import data
 import constants
 import misc
 
+import xml.sax.saxutils
+
 class OPMLHandler(webapp.RequestHandler):
 
     def get(self, u):
@@ -64,8 +66,36 @@ class OPMLHandler(webapp.RequestHandler):
 
     def _generateOPML(self, u):
         self.response.headers['Content-Type'] = 'application/opml+xml'
-        self.response.out.write("OPML HERE\n")
-        pass
+        self.response.headers['Content-Disposition'] = 'inline; filename=%s.opml' % u.screen_name
+        res = queries.loadGroups(u)
+
+        tstamp = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
+
+        self.response.out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
+        self.response.out.write("<opml version=\"2.0\">\n")
+        self.response.out.write("    <head>\n")
+        self.response.out.write("        <title>Tweetonica feeds of %s</title>\n" % xml.sax.saxutils.escape(u.screen_name))
+        self.response.out.write("        <dateCreated>%s</dateCreated>\n" % tstamp)
+        self.response.out.write("        <dateModified>%s</dateModified>\n" % tstamp)
+        self.response.out.write("        <ownerName>%s</ownerName>\n" % xml.sax.saxutils.escape(u.screen_name))
+        self.response.out.write("        <ownerId>http://twitter.com/%s</ownerId>\n" % xml.sax.saxutils.escape(u.screen_name))
+        self.response.out.write("        <docs>http://www.opml.org/spec2/</docs>\n")
+        self.response.out.write("    </head>\n")
+        self.response.out.write("    <body>\n")
+        
+        for x in res.keys():
+            rssurl = misc.getGroupRSS_URL(u.screen_name,
+                                          u.rss_token,
+                                          x, 
+                                          u.use_HTTP_auth)
+            if x == constants.DEFAULT_GROUP_NAME:
+                name = "Uncategorized"
+            else:
+                name = xml.sax.saxutils.escape(x)
+            self.response.out.write("        <outline text=\"%s\" description=\"Tweets in group %s\" xmlUrl=\"%s\" type=\"rss\" version=\"RSS\"/>\n" % (name, name, rssurl))
+        
+        self.response.out.write("    </body>\n")
+        self.response.out.write("</opml>\n")
         
 
 def main():
