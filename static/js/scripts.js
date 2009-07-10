@@ -298,6 +298,16 @@ $(document).ready(function() {
             $('#opml_link').attr('href', results.OPML_download_url);
             $('#opml_text').val(results.OPML_feed_url);
 
+            try {
+                var outline   = document.createElement('link');
+                outline.rel   = 'outline';
+                outline.type  = 'text/x-opml';
+                outline.title = 'OPML';
+                outline.href = results.OPML_download_url;
+                document.getElementsByTagName('head')[0].appendChild(outline);
+            } catch (e) {}
+
+
             $('.prefsmenu').show();
 
             sync_groups(true, function(state) {
