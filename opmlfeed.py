@@ -13,6 +13,8 @@ import constants
 import misc
 
 import xml.sax.saxutils
+import xe
+from feed.opml import *
 
 class OPMLHandler(webapp.RequestHandler):
 
@@ -69,20 +71,15 @@ class OPMLHandler(webapp.RequestHandler):
         self.response.headers['Content-Disposition'] = 'inline; filename=%s.opml' % u.screen_name
         res = queries.loadGroups(u)
 
-        tstamp = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S %z")
+        tstamp = datetime.datetime.now().strftime("%a, %d %b %Y %H:%M:%S GMT")
+        logging.debug(tstamp)
+        xmldoc, opml = new_xmldoc_opml()
+        opml.head.title = "Tweetonica feeds of %s" % u.screen_name
+        opml.head.date_created = tstamp
+        opml.head.date_modified = tstamp
+        opml.head.owner_name = u.screen_name
+        opml.head.owner_id = "http://twitter.com/%s" % u.screen_name
 
-        self.response.out.write("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n")
-        self.response.out.write("<opml version=\"2.0\">\n")
-        self.response.out.write("    <head>\n")
-        self.response.out.write("        <title>Tweetonica feeds of %s</title>\n" % xml.sax.saxutils.escape(u.screen_name))
-        self.response.out.write("        <dateCreated>%s</dateCreated>\n" % tstamp)
-        self.response.out.write("        <dateModified>%s</dateModified>\n" % tstamp)
-        self.response.out.write("        <ownerName>%s</ownerName>\n" % xml.sax.saxutils.escape(u.screen_name))
-        self.response.out.write("        <ownerId>http://twitter.com/%s</ownerId>\n" % xml.sax.saxutils.escape(u.screen_name))
-        self.response.out.write("        <docs>http://www.opml.org/spec2/</docs>\n")
-        self.response.out.write("    </head>\n")
-        self.response.out.write("    <body>\n")
-        
         for x in res.keys():
             rssurl = misc.getGroupRSS_URL(u.screen_name,
                                           u.rss_token,
@@ -91,11 +88,15 @@ class OPMLHandler(webapp.RequestHandler):
             if x == constants.DEFAULT_GROUP_NAME:
                 name = "Uncategorized"
             else:
-                name = xml.sax.saxutils.escape(x)
-            self.response.out.write("        <outline text=\"%s\" description=\"Tweets in group %s\" xmlUrl=\"%s\" type=\"rss\" version=\"RSS\"/>\n" % (name, name, rssurl))
-        
-        self.response.out.write("    </body>\n")
-        self.response.out.write("</opml>\n")
+                name = x
+            outline = Outline(name, created=0.0)
+            outline.attrs["description"] = name
+            outline.attrs["xmlUrl"] = rssurl
+            outline.attrs["type"] = "rss"
+            outline.attrs["version"] = "RSS"
+            opml.body.append(outline)
+
+        self.response.out.write(str(xmldoc))
         
 
 def main():
