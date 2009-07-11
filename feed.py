@@ -2,7 +2,6 @@
 import datetime
 import logging
 from urllib import unquote
-import re
  
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
@@ -16,6 +15,7 @@ import data
 import constants
 import misc
 from oauth import OAuthClient
+from formatting import itemHTML
 
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -183,24 +183,11 @@ class ATOMHandler(webapp.RequestHandler):
             rss.items.append(RSSItem(title = subj,
                                      link = link,
                                      guid = Guid(link),
-                                     description = self.html(e)))
+                                     description = itemHTML(e)))
 
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
-    def html(self, e):
-        tweet = e.text
-        # URLs
-        tweet = re.sub(r'(http(s)?://[^ ]+)', r'<a href="\1">\1</a>', tweet)
-        # @usernames
-        tweet = re.sub(r'(\A|\s)@(\w+)', r'\1<a href="http://www.twitter.com/\2">@\2</a>', tweet)
-        # #hashtags
-        tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
-        tweet = '<a href="http://twitter.com/%s">%s</a>: %s'  % (
-                                e.from_friend.screen_name,
-                                e.from_friend.screen_name,
-                                tweet)
-        return tweet
 
 
 def main():
