@@ -15,3 +15,18 @@ def itemHTML(e):
                             e.from_friend.screen_name,
                             tweet)
     return tweet
+
+
+# ------- debug code below ----------
+
+
+if __name__ == '__main__':
+    import sys
+    class Fake:
+        pass
+    e = Fake()
+    e.text = sys.argv[1]
+    e.from_friend = Fake()
+    e.from_friend.screen_name = 'birdowl'
+    
+    print itemHTML(e)
