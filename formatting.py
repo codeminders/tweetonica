@@ -73,11 +73,12 @@ def footer(e):
                e.id,
                e.from_friend.screen_name)
     
-    msg_link = "TODO"
+    msg_link = "http://twitter.com/direct_messages/create/%s" % \
+               (e.from_friend.screen_name)
 
     return ('| <a href="%s">REPLY</a> |' % reply_link)  + \
            ('<a href="%s">RT</a> |' % rt_link)  + \
-           ('<a href="%s">MSG</a> |' % msg_link)
+           ('<a href="%s">DM</a> |' % msg_link)
 
 
 
@@ -92,6 +93,6 @@ if __name__ == '__main__':
     e.id = 2606590561
     e.text = sys.argv[1]
     e.from_friend = Fake()
-    e.from_friend.screen_name = 'birdowl'
+    e.from_friend.screen_name = 'bird_owl'
     
     print itemHTML(e)
