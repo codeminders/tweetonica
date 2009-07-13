@@ -1,5 +1,6 @@
 
 import re
+from urllib import quote
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 
@@ -54,11 +55,30 @@ def itemHTML(e):
     tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
 
     # link to sender
-    tweet = '<a href="http://twitter.com/%s">%s</a>: %s'  % (
+    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br>%s'  % (
                             e.from_friend.screen_name,
                             e.from_friend.screen_name,
-                            tweet)
+                            tweet,
+                            footer(e)
+                            )
     return tweet
+
+def footer(e):
+    reply_link = "http://twitter.com/home?status=@%s%%20&in_reply_to_status_id=%d&in_reply_to=%s" % \
+                 (e.from_friend.screen_name, e.id, e.from_friend.screen_name)
+    
+    rt_link = "http://twitter.com/home?status=RT%%20@%s:%%20%s&in_reply_to_status_id=%d&in_reply_to=%s" %  \
+              (e.from_friend.screen_name,
+               quote(e.text),
+               e.id,
+               e.from_friend.screen_name)
+    
+    msg_link = "TODO"
+
+    return ('| <a href="%s">REPLY</a> |' % reply_link)  + \
+           ('<a href="%s">RT</a> |' % rt_link)  + \
+           ('<a href="%s">MSG</a> |' % msg_link)
+
 
 
 # ------- debug code below ----------
@@ -69,6 +89,7 @@ if __name__ == '__main__':
     class Fake:
         pass
     e = Fake()
+    e.id = 2606590561
     e.text = sys.argv[1]
     e.from_friend = Fake()
     e.from_friend.screen_name = 'birdowl'
