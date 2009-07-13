@@ -27,9 +27,11 @@ handlers:
   static_files: static/favicon.ico
   upload: static/favicon.ico
   mime_type: image/x-icon
+  expiration: 365d
 
 - url: /
   static_dir: static
+  expiration: 365d
 
 - url: /.*
   script: not_found.py
