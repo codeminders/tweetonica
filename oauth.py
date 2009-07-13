@@ -161,7 +161,13 @@ class OAuthClient(object):
 
         cookie = create_uuid()
 
-        p = dict(token.split('=') for token in token_info.split('&'))
+        try:
+            p = dict(token.split('=') for token in token_info.split('&'))
+        except ValueError:
+            logging.exception("Error parsing twitter response token '%s'" % \
+                              (token_info))
+            raise
+            
         self.token = FakeToken()
         self.token.oauth_token = p['oauth_token']
         self.token.oauth_token_secret = p['oauth_token_secret']
