@@ -1,6 +1,6 @@
 
 import re
-from urllib import quote
+from misc import quote
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 
