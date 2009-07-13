@@ -16,10 +16,16 @@ def yfrogMapper(m):
     #domain = m.group(1)
     #media_id = m.group(4)
     return '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
-    
+
+def twitpicMapper(m):
+    url = m.group(0)
+    media_id = m.group(3)
+    return '<a href="%s"><img src="http://twitpic.com/show/thumb/%s"/></a>' % (url, media_id)
+
 MAPPERS = [
     (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
     (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
+    (re.compile(r'^http://((www\.)?twitpic\.com)/([^/\?]+)$'), twitpicMapper),
     
     (re.compile(r'^(.+)$'), defaultMapper)
     ]
