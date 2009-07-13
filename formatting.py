@@ -55,7 +55,7 @@ def itemHTML(e):
     tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
 
     # link to sender
-    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br>%s'  % (
+    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr><br>%s'  % (
                             e.from_friend.screen_name,
                             e.from_friend.screen_name,
                             tweet,
