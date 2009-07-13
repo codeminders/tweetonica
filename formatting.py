@@ -10,10 +10,18 @@ def mailtoMapper(m):
 def defaultMapper(m):
     url = m.group(1)
     return '<a href="%s">%s</a>' % (url, url)
+
+def yfrogMapper(m):
+    url = m.group(0)
+    #domain = m.group(1)
+    #media_id = m.group(4)
+    return '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
     
 MAPPERS = [
-    (re.compile(r'(mailto:([^ ]+))'), mailtoMapper),
-    (re.compile(r'(.+)'), defaultMapper)
+    (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
+    (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
+    
+    (re.compile(r'^(.+)$'), defaultMapper)
     ]
 
 def itemHTML(e):
