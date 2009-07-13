@@ -2,11 +2,21 @@
 
 import os, logging
 from base64 import b64decode
-from urllib import quote, urlencode
+from urllib import urlencode, quote as urlquote
 
 import data
 import constants
 import queries
+
+def quote(s,safe='/'):
+    """ URL-encoding string similar to urllib.quote().
+    Our version includes workaround for Python bug:
+
+    http://mail.python.org/pipermail/python-dev/2006-July/067248.html
+    """
+    if isinstance(s, unicode):
+        s = s.encode('utf-8')
+    return urlquote(s,safe)
 
 def getGroupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
     if use_HTTP_auth:

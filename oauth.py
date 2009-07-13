@@ -9,7 +9,7 @@ from hashlib import sha1
 from hmac import new as hmac
 from random import getrandbits
 from time import time
-from urllib import urlencode, quote as urlquote
+from urllib import urlencode
 from uuid import uuid4
 from wsgiref.handlers import CGIHandler
 
@@ -18,6 +18,8 @@ from simplejson import loads as decode_json
 from google.appengine.api.urlfetch import fetch as urlfetch, GET, POST
 from google.appengine.ext import db
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
+
+from misc import quote
 
 CLEANUP_BATCH_SIZE = 100
 EXPIRATION_WINDOW = timedelta(seconds=60*60*1) # 1 hour
@@ -35,7 +37,7 @@ def create_uuid():
     return 'id-%s' % uuid4()
 
 def encode(text):
-    return urlquote(str(text), '')
+    return quote(str(text), '')
 
 class FakeToken(object):
     oauth_token = None
