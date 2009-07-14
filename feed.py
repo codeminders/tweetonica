@@ -16,6 +16,7 @@ import constants
 import misc
 from oauth import OAuthClient
 from formatting import itemHTML
+from mclock import MCLock
 
 """ Timeline update frequency. Update no more often than this """
 TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -23,6 +24,7 @@ TIMILINE_UPDATE_FREQ = datetime.timedelta(0, 90)
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
 MAX_PAGES_TO_FETCH=3
+TIMELINE_LOCK_TIMEOUT=600
 
 class ATOMHandler(webapp.RequestHandler):
 
@@ -56,8 +58,15 @@ class ATOMHandler(webapp.RequestHandler):
         if u.timeline_last_updated==None or \
                (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < \
                datetime.datetime.now():
-            groups = queries.loadGroups(u)
-            self._updateTimeLine(u,t,groups)
+            l = MCLock(u.screen_name, timeout=TIMELINE_LOCK_TIMEOUT)
+            if l.lock():
+                try:
+                    self._updateTimeLine(u,t)
+                finally:
+                    l.unlock()
+            else:
+                logging.debug("Timeline for %s is already been updated" % u.screen_name)
+                
         else:
             logging.debug("Timeline for %s is up to date" % u.screen_name)
 
@@ -97,8 +106,11 @@ class ATOMHandler(webapp.RequestHandler):
 
     # -- implementation method below  ---
 
-    def _updateTimeLine(self,u,t,groups):
+    def _updateTimeLine(self,u,t):
         logging.debug("Updating timeline for user %s" % u.screen_name)
+
+        groups = queries.loadGroups(u)
+
         ui = {} # friend index index
         page = 1
         done = False
