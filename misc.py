@@ -10,7 +10,7 @@ import queries
 
 def quote(s,safe='/'):
     """ URL-encoding string similar to urllib.quote().
-    Our version includes workaround for Python bug:
+    This version includes workaround for Python bug:
 
     http://mail.python.org/pipermail/python-dev/2006-July/067248.html
     """

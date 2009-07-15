@@ -16,7 +16,7 @@ from wsgiref.handlers import CGIHandler
 
 from simplejson import loads as decode_json
 
-from google.appengine.api.urlfetch import fetch as urlfetch, GET, POST
+from google.appengine.api.urlfetch import fetch as urlfetch
 from google.appengine.ext import db
 from google.appengine.ext.webapp import RequestHandler, WSGIApplication
 
