@@ -5,6 +5,7 @@ from misc import quote
 
 import stock
 import yfrog
+import ytembed
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
@@ -24,6 +25,19 @@ def stockMapper(m):
     else:
         # unknown stock symbol. Leave as is.
         return m.group(0)
+
+def youtubeMapper(m):
+    media_id = m.group(3)
+    embed = None
+    try:
+        embed = ytembed.getEmbed(media_id)
+    except:
+        logging.exception("Error getting youtube embed for id '%s'" % media_id)
+    if embed:
+        return embed
+    else:
+        url = m.group(0)
+        return '<a href="%s">%s</a>' % (url, url)
 
 def mailtoMapper(m):
     email = m.group(2)
@@ -58,6 +72,9 @@ MAPPERS = [
     (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
     (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
     (re.compile(r'^http://((www\.)?twitpic\.com)/([^/\?]+)$'), twitpicMapper),
+    (re.compile(r'^http://((www\.)?youtube\.com)/v/([^/\?]+)$'), youtubeMapper),
+    (re.compile(r'^http://((www\.)?youtube\.com)/watch\?v=([^/\?]+)$'), youtubeMapper),
+    
     (re.compile(r'^(.+)$'), defaultMapper)
     ]
 

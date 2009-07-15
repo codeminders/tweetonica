@@ -16,7 +16,6 @@ def getEmbed(name):
         return v
     yt_service = gdata.youtube.service.YouTubeService()
     entry = yt_service.GetYouTubeVideoEntry(video_id=name)
-    logging.debug(dir(entry))
     u = entry.GetSwfUrl()
     if not entry.noembed and u:
         # embed player

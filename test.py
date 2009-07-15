@@ -10,9 +10,9 @@ import ytembed
 class TESTHandler(webapp.RequestHandler):
 
     def get(self):
-        #self._testFormat()
+        self._testFormat()
         #self._testYfrog()
-        self._testYouTube()
+        #self._testYouTube()
 
     def _testYouTube(self):
         self.response.out.write(ytembed.getEmbed('tOW1XEqCgZI'))
@@ -25,7 +25,7 @@ class TESTHandler(webapp.RequestHandler):
             pass
         e = Fake()
         e.id = 2606590561
-        e.text = 'http://yfrog.us/elp28z Luis Armando Rivera-Hero (3 days after surgery,bloated & in pain,I decided 2 butcher Mariah Carey\'s "Hero".Be kind:P)'
+        e.text = 'http://www.youtube.com/v/tOW1XEqCgZI or http://www.youtube.com/watch?v=tOW1XEqCgZI'
         e.from_friend = Fake()
         e.from_friend.screen_name = 'bird_owl'
 
