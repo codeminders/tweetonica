@@ -5,12 +5,17 @@ from google.appengine.ext.webapp import util
 
 import formatting
 import yfrog
+import ytembed
 
 class TESTHandler(webapp.RequestHandler):
 
     def get(self):
-        self._testFormat()
+        #self._testFormat()
         #self._testYfrog()
+        self._testYouTube()
+
+    def _testYouTube(self):
+        self.response.out.write(ytembed.getEmbed('tOW1XEqCgZI'))
 
     def _testYfrog(self):
         self.response.out.write(yfrog.getEmbed('elp28z'))
