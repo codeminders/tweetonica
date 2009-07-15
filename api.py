@@ -293,9 +293,13 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         fnames = []
         for f in friends:
             fnames.append(f.screen_name)
-            if queries.getFriendByName(f.screen_name, u)==None:
+            xf=queries.getFriendByName(f.screen_name, u)
+            if xf==None:
                 changed = True
                 queries.addNewFriend(u,f,queries.getDefaultGroup(u))
+            else:
+                if queries.updateFriend(u,f,xf):
+                    changed = True
 
         q = data.Friend.gql('WHERE user = :1', u.key())
         n = 0

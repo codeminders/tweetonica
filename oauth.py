@@ -3,6 +3,7 @@ Twitter OAuth Support for Google App Engine Apps.
 """
 
 import sys
+import logging
 
 from datetime import datetime, timedelta
 from hashlib import sha1
@@ -165,7 +166,7 @@ class OAuthClient(object):
 
         try:
             p = dict(token.split('=') for token in token_info.split('&'))
-        except ValueError:
+        except:
             logging.exception("Error parsing twitter response token '%s'" % \
                               (token_info))
             raise
