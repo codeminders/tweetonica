@@ -57,7 +57,6 @@ def itemHTML(e):
     # stock symbols
     res = ''
     prev = 0
-    logging.debug("Examining '%s'" % tweet)
     for m in STOCK_URLX.finditer(tweet):
         (fro, to) = m.span()
         res += tweet[prev:fro]
