@@ -19,6 +19,9 @@ handlers:
 - url: /mockapi
   script: mockapi.py
 
+- url: /test
+  script: test.py
+
 - url: /
   static_files: static/index.html
   upload: static/index.html

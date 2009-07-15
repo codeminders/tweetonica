@@ -112,17 +112,3 @@ def footer(e):
 
 
 
-# ------- debug code below ----------
-
-
-if __name__ == '__main__':
-    import sys
-    class Fake:
-        pass
-    e = Fake()
-    e.id = 2606590561
-    e.text = sys.argv[1]
-    e.from_friend = Fake()
-    e.from_friend.screen_name = 'bird_owl'
-    
-    print itemHTML(e)
