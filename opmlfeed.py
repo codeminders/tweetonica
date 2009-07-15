@@ -84,13 +84,9 @@ class OPMLHandler(webapp.RequestHandler):
             rssurl = misc.getGroupRSS_URL(u.screen_name,
                                           u.rss_token,
                                           x, 
-                                          u.use_HTTP_auth)
-            if x == constants.DEFAULT_GROUP_NAME:
-                name = "Uncategorized"
-            else:
-                name = x
-            outline = Outline(name, created=0.0)
-            outline.attrs["description"] = name
+                                          u.use_HTTP_auth)            
+            outline = Outline("", created=0.0)
+            outline.attrs["description"] = misc.getGroupRSS_title(u.screen_name, x)
             outline.attrs["xmlUrl"] = rssurl
             outline.attrs["type"] = "rss"
             outline.attrs["version"] = "RSS"

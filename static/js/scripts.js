@@ -189,7 +189,6 @@ $(document).ready(function() {
     }
 
     var reset_prefs = function() {
-        $('#prefs_remember_me').attr('checked', PREFS.remember_me === null || PREFS.remember_me === true ? 'checked' : null);
         $(':radio[name=prefs_auth_style]').val([PREFS.use_HTTP_auth === true ? '1' : '0']);
         $(':radio[name=prefs_icons_only]').val([PREFS.icons_only === true ? '1' : '0']);
     }
@@ -561,6 +560,16 @@ $(document).ready(function() {
             $('.userinfo').addClass('short_details');
         else
             $('.userinfo').removeClass('short_details');
+
+        var temp_prefs = {};
+        temp_prefs['remember_me']   = PREFS['remember_me'];
+        temp_prefs['use_HTTP_auth'] = PREFS['use_HTTP_auth'];
+        temp_prefs['icons_only'] = $('#vs-icons').attr('checked') ? true : false;
+
+        tweetonica.api.set_prefs(temp_prefs, function(results) {
+            PREFS = results; 
+        }, function(error) {            
+        });
     });
 
     $('.add-group a').click(function(e) {
@@ -611,7 +620,7 @@ $(document).ready(function() {
         var temp_prefs = {};
         temp_prefs['remember_me'] = $('#prefs_remember_me').attr('checked') ? true : false;
         temp_prefs['use_HTTP_auth'] = $(':radio[name=prefs_auth_style]:checked').val() == '1' ? true : false;
-        temp_prefs['icons_only'] = $(':radio[name=prefs_icons_only]:checked').val() == '1' ? true : false;
+        temp_prefs['icons_only'] = $(':radio[name=vs]:checked').val() == '1' ? true : false;
 
         tweetonica.api.set_prefs(temp_prefs, function(results) {
             PREFS = results; 
