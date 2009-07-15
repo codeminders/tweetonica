@@ -1,8 +1,27 @@
 
 import re
 from misc import quote
+import stock
+import logging
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
+STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)((\s+)|$)')
+
+def stockMapper(m):
+    symbol = str(m.group(1))
+    ws = str(m.group(3))
+    try:
+        valid = stock.isStockSymbol(symbol)
+    except:
+        logging.exception("Error looking up stock symbol '%s'" % symbol)
+        valid = False
+        
+    if valid:
+        return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>%s' % \
+               (quote(symbol), symbol, ws);
+    else:
+        # unknown stock symbol. Leave as is.
+        return m.group(0)
 
 def mailtoMapper(m):
     email = m.group(2)
@@ -27,13 +46,24 @@ MAPPERS = [
     (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
     (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
     (re.compile(r'^http://((www\.)?twitpic\.com)/([^/\?]+)$'), twitpicMapper),
-    
     (re.compile(r'^(.+)$'), defaultMapper)
     ]
+
 
 def itemHTML(e):
     """ Format tweet as HTML """
     tweet = e.text
+
+    # stock symbols
+    res = ''
+    prev = 0
+    logging.debug("Examining '%s'" % tweet)
+    for m in STOCK_URLX.finditer(tweet):
+        (fro, to) = m.span()
+        res += tweet[prev:fro]
+        prev = to
+        res += stockMapper(m)
+    tweet = res + tweet[prev:]
 
     # URLs
     res = ''
@@ -49,6 +79,7 @@ def itemHTML(e):
                 res += mf(mx)
                 break
     tweet = res + tweet[prev:]
+    
     # @usernames
     tweet = re.sub(r'(\A|\s)@(\w+)', r'\1<a href="http://www.twitter.com/\2">@\2</a>', tweet)
     # #hashtags
