@@ -1,5 +1,7 @@
 from google.appengine.api import memcache
 
+LOCK_NAMESPACE='LCK'
+
 class MCLock:
     """ Memcache-based simple atomic locking service.
     It is using the fact that memcache add/delete operations
@@ -8,7 +10,7 @@ class MCLock:
     which have not been set by you, so use with caution!
     """
 
-    def __init__(self, name, timeout=0, namespace='LCK'):
+    def __init__(self, name, timeout=0, namespace=LOCK_NAMESPACE):
         """ Construct new lock.
         Args
         name - lock name
