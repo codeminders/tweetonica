@@ -12,7 +12,7 @@ class TESTHandler(webapp.RequestHandler):
             pass
         e = Fake()
         e.id = 2606590561
-        e.text = 'Last one: $AAPL, $MSFT1 and $AVSR. All for $nothing or $1'
+        e.text = 'Last one: $AAPL, $MSFT1, $MSSS and $AVSR. All for $nothing or $1'
         e.from_friend = Fake()
         e.from_friend.screen_name = 'bird_owl'
 
