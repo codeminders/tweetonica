@@ -5,10 +5,11 @@ import stock
 import logging
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
-STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)')
+STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
 
 def stockMapper(m):
     symbol = str(m.group(1))
+    ws = str(m.group(3))
     try:
         valid = stock.isStockSymbol(symbol)
     except:
@@ -16,8 +17,8 @@ def stockMapper(m):
         valid = False
         
     if valid:
-        return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>' % \
-               (quote(symbol), symbol);
+        return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>%s' % \
+               (quote(symbol), symbol, ws);
     else:
         # unknown stock symbol. Leave as is.
         return m.group(0)
