@@ -1,8 +1,10 @@
 
 import re
-from misc import quote
-import stock
 import logging
+from misc import quote
+
+import stock
+import yfrog
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
@@ -33,8 +35,18 @@ def defaultMapper(m):
 
 def yfrogMapper(m):
     url = m.group(0)
-    #domain = m.group(1)
-    #media_id = m.group(4)
+    domain = m.group(1)
+    media_id = m.group(4)
+    if domain=="us" or \
+       media_id.endswith('z') or \
+       media_id.endswith('f'):
+        # Video file, try to get embed
+        try:
+            embed = yfrog.getEmbed(media_id)
+            if embed!=None:
+                return embed
+        except:
+            logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
     return '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
 
 def twitpicMapper(m):
