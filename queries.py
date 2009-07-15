@@ -136,6 +136,18 @@ def getFriendByName(screen_name, u):
     else:
         return None
 
+def updateFriend(u,f,xf):
+    changed = False
+    if xf.real_name != f.name:
+        xf.real_name = f.name
+        changed = True
+        
+    if xf.profile_image_url != f.profile_image_url:
+        xf.profile_image_url = f.profile_image_url
+        changed = True
+
+    if changed:
+        xf.put()
 
 def addNewFriend(u,f,g):
     logging.debug("Adding friend %s to %s" % (f.screen_name, u.screen_name))
