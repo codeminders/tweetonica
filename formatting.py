@@ -5,11 +5,10 @@ import stock
 import logging
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
-STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)((\s+)|$)')
+STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)')
 
 def stockMapper(m):
     symbol = str(m.group(1))
-    ws = str(m.group(3))
     try:
         valid = stock.isStockSymbol(symbol)
     except:
@@ -17,8 +16,8 @@ def stockMapper(m):
         valid = False
         
     if valid:
-        return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>%s' % \
-               (quote(symbol), symbol, ws);
+        return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>' % \
+               (quote(symbol), symbol);
     else:
         # unknown stock symbol. Leave as is.
         return m.group(0)
@@ -54,16 +53,6 @@ def itemHTML(e):
     """ Format tweet as HTML """
     tweet = e.text
 
-    # stock symbols
-    res = ''
-    prev = 0
-    for m in STOCK_URLX.finditer(tweet):
-        (fro, to) = m.span()
-        res += tweet[prev:fro]
-        prev = to
-        res += stockMapper(m)
-    tweet = res + tweet[prev:]
-
     # URLs
     res = ''
     prev = 0
@@ -77,6 +66,18 @@ def itemHTML(e):
             if mx:
                 res += mf(mx)
                 break
+    tweet = res + tweet[prev:]
+
+    # stock symbols
+    res = ''
+    prev = 0
+    logging.debug("Looking for stocks ")
+    for m in STOCK_URLX.finditer(tweet):
+        logging.debug("Found stock ")
+        (fro, to) = m.span()
+        res += tweet[prev:fro]
+        prev = to
+        res += stockMapper(m)
     tweet = res + tweet[prev:]
     
     # @usernames
