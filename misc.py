@@ -31,6 +31,12 @@ def getGroupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
                 quote(screen_name), quote(group_name),
                 urlencode({constants.TOKEN_PARAM_NAME : rss_token}))
 
+def getGroupRSS_title(screen_name, group_name):
+    if group_name == constants.DEFAULT_GROUP_NAME:
+        group_name = "Uncategorized"
+    return "%s/%s @tweetonica" % (screen_name, group_name)
+
+
 def getOPML_URL(screen_name, rss_token, use_HTTP_auth):
     if use_HTTP_auth:
         return "http://%s%s/%s" % \
