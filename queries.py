@@ -90,17 +90,23 @@ def createOrUpdateUser(screen_name,
                       rss_token = str(uuid4()),
                       use_HTTP_auth = False,
                       friendlist_last_updated = None,
-                      timeline_last_updated = None,
-                      timeline_max_id=-1,
                       remember_me =  True,
                       icons_only =  False)
 
         u.put()
+        # Create default group
         g = data.Group(name=constants.DEFAULT_GROUP_NAME,
                        memberships_last_updated=datetime.datetime.now(),
                        user=u,
                        parent=u)
         g.put()
+        # Create user timeline object
+        tl = data.Timeline(user=u,
+                           timeline_last_updated = None,
+                           timeline_max_id=-1,
+                           parent=u)
+        tl.put()
+        
         return u
 
 def getDefaultGroup(u):
@@ -147,4 +153,19 @@ def getGroupTimeline(g, howmany=20):
     q = data.StatusUpdate.gql("WHERE group = :1 ORDER BY id DESC LIMIT %d" % howmany,\
                               g.key())
     return q
+
+def getUserTimeline(u):
+    q = data.Timeline.gql('WHERE user=:1', u.key())
+    tl = q.fetch(1)
+    if len(tl)==1:
+        return tl[0]
+    else:
+        # Temp. workaround for old users, before Timeline
+        # object was introduced. To be removed later.
+        tl = data.Timeline(user=u,
+                           timeline_last_updated = None,
+                           timeline_max_id=-1,
+                           parent=u)
+        tl.put()
+        return tl
 

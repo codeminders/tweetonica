@@ -94,7 +94,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """
         logging.debug('Method \'set_prefs\' invoked for cookie %s' % auth_token)
         u = self._verifyAuthToken(auth_token)
-        # 'screen_name' and 'timeline_last_updated' could not be changed
+        # 'screen_name' and could not be changed
         u.remember_me = prefs['remember_me']
         u.icons_only = prefs['icons_only']
         u.use_HTTP_auth = prefs['use_HTTP_auth']
@@ -259,15 +259,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _get_user_prefs(self, u):
 
-        if u.timeline_last_updated:
-            lu = u.timeline_last_updated.isoformat()
-        else:
-            lu = None
         return {'screen_name' : u.screen_name,
                 'remember_me' : u.remember_me,
                 'icons_only': u.icons_only,
                 'use_HTTP_auth' : u.use_HTTP_auth,
-                'timeline_last_updated': lu,
                 'OPML_feed_url' : misc.getOPML_URL(u.screen_name,
                                                    u.rss_token,
                                                    u.use_HTTP_auth),

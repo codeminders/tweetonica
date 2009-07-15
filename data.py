@@ -15,12 +15,18 @@ class User(db.Model):
     user_created = db.DateTimeProperty(auto_now_add=True)
     friendlist_last_updated = db.DateTimeProperty()
     id = db.IntegerProperty(required=True) 
-    timeline_last_updated = db.DateTimeProperty()
-    timeline_max_id = db.IntegerProperty()
     # Misc user preferences.
     remember_me =  db.BooleanProperty()
     icons_only =  db.BooleanProperty()
 
+class Timeline(db.Model):
+    """ To avoid DB contention (see Ticket #25),
+    this sub-object holds
+    timeline-related properties of User
+    """
+    user = db.ReferenceProperty(User)
+    timeline_last_updated = db.DateTimeProperty()
+    timeline_max_id = db.IntegerProperty()
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key

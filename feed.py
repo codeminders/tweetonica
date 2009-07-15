@@ -54,14 +54,15 @@ class ATOMHandler(webapp.RequestHandler):
                 self.response.set_status(403)
                 return
 
+        tl = queries.getUserTimeline(u)
         t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
-        if u.timeline_last_updated==None or \
-               (u.timeline_last_updated+TIMILINE_UPDATE_FREQ) < \
+        if tl.timeline_last_updated==None or \
+               (tl.timeline_last_updated+TIMILINE_UPDATE_FREQ) < \
                datetime.datetime.now():
             l = MCLock(u.screen_name, timeout=TIMELINE_LOCK_TIMEOUT)
             if l.lock():
                 try:
-                    self._updateTimeLine(u,t)
+                    self._updateTimeLine(u,t,tl)
                 finally:
                     l.unlock()
             else:
@@ -106,7 +107,7 @@ class ATOMHandler(webapp.RequestHandler):
 
     # -- implementation method below  ---
 
-    def _updateTimeLine(self,u,t):
+    def _updateTimeLine(self,u,t,tl):
         logging.debug("Updating timeline for user %s" % u.screen_name)
 
         groups = queries.loadGroups(u)
@@ -115,7 +116,7 @@ class ATOMHandler(webapp.RequestHandler):
         page = 1
         done = False
         fetched = 0
-        since = u.timeline_max_id
+        since = tl.timeline_max_id
         while not done and page<=MAX_PAGES_TO_FETCH:
             try:
                 logging.debug("Fetching page %d of %s timeline (since %d)" % \
@@ -135,8 +136,8 @@ class ATOMHandler(webapp.RequestHandler):
                     done = True
                     break
 
-                if u.timeline_max_id < e.id:
-                    u.timeline_max_id = e.id
+                if tl.timeline_max_id < e.id:
+                    tl.timeline_max_id = e.id
                 if e.user.screen_name==u.screen_name:
                     # skip my own entries
                     continue
@@ -151,9 +152,11 @@ class ATOMHandler(webapp.RequestHandler):
                          ui[e.user.screen_name]=eu
                 self._addTimeLineEntry(e,u,eu)
                 fetched = fetched+1
-                
-        u.timeline_last_updated=datetime.datetime.now()
-        u.put()
+            # Save timeline_max_id between page
+            tl.put()
+            
+        tl.timeline_last_updated=datetime.datetime.now()
+        tl.put()
         logging.debug("Fetced  %d timeline entries for %s" % \
                       (fetched, u.screen_name))
 
