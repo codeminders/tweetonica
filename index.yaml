@@ -1,0 +1,7 @@
+indexes:
+
+- kind: StatusUpdate
+  properties:
+  - name: group
+  - name: id
+    direction: desc

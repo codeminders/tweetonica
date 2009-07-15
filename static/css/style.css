@@ -1,0 +1,322 @@
+html, body { height:100%; margin:0; padding:0;}
+body { background:#FFF; color:#222222; font:normal 14px/18px Arial, Helvetica, sans-serif;}
+form, body, iframe { margin:0; padding:0;}
+img, table, iframe { border:0;}
+p {margin:0; margin-bottom:15px;}
+a {color:#360; text-decoration:none; }
+a:hover { color:#690; text-decoration:underline; }
+.layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
+.left {float:left;} 
+h1 { margin:0.8em 0 0.8em 0; padding:0; color: #528b00; font-size:1.7em;}
+h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
+
+#header {
+    background-color: #000;
+    height: 120px;
+    margin-bottom: 20px;
+    position:relative;
+}
+
+.logo a { display:block; width:360px; height:88px; background:url(images/logo.png) no-repeat 20px 20px; overflow:hidden; text-indent:-999px;}
+
+#menubar {
+    position:absolute;
+    right:10px;
+    bottom:0;
+}
+
+#loginbox {
+    float:right;
+    margin:20px 20px 0 0;
+    color: #fff;
+}
+
+#loginbox a, #loginbox a:hover, #loginbox a:visited, #loginbox a:active {
+    text-decoration: none;
+    color: #fff;
+}
+
+.menu,.menu:hover,.menu:active,.menu:visited {
+    background: transparent url('images/menu-background.png') no-repeat bottom left;
+    color: #000;
+    display: block;
+    float: left;
+    height: 28px;
+    margin-right: 6px;
+    text-decoration: none;
+    width: 100px;
+}
+
+.menu span {
+    line-height: 18px;
+    text-align: center;
+    display: block;
+    padding: 5px 0 5px 5px;
+    line-height: 150%;
+}
+
+.menu:hover, .active {
+    background-position: top left;
+}
+
+.clear {
+    overflow: hidden;
+}
+
+/*  button for Group */
+
+a.gropen, a.grclosed, a.gropen-hl, a.grclosed-hl {
+    position:relative;
+    display: block;
+    float: left;
+    height: 29px;
+    text-decoration: none;
+    margin-bottom: 3px;
+    text-align:center;
+}
+
+a.gropen, a.grclosed {
+    color: #000;
+}
+
+a.gropen-hl, a.grclosed-hl {
+    color: #fff;
+}
+
+a.gropen span, a.grclosed span, a.gropen-hl span, a.grclosed-hl span
+{
+    line-height:29px;
+}
+
+a.gropen, a.gropen-hl {
+    background-image: url('images/groupeopen.png');
+    background-repeat: no-repeat;
+    width: 254px; 
+}
+
+
+a.grclosed, a.grclosed-hl {
+    background-image: url('images/groupeclosed.png');
+    background-repeat: no-repeat;
+    width: 219px; 
+}
+
+
+.green-bg, .green-sm {background-position: 0 0;}
+.green-bg:hover {background-position: -254px 0;}
+.green-sm:hover {background-position: -219px 0;}
+.orange-bg, .orange-sm {background-position: 0 -29px;}
+.orange-bg:hover {background-position: -254px -29px;}
+.orange-sm:hover {background-position: -219px -29px;}
+.yellow-bg, .yellow-sm {background-position: 0 -58px;}
+.yellow-bg:hover {background-position: -254px -58px;}
+.yellow-sm:hover {background-position: -219px -58px;}
+.blue-bg, .blue-sm {background-position: 0 -87px;}
+.blue-bg:hover {background-position: -254px -87px;}
+.blue-sm:hover {background-position: -219px -87px;}
+.purple-bg, .purple-sm {background-position: 0 -116px;}
+.purple-bg:hover {background-position: -254px -116px;}
+.purple-sm:hover {background-position: -219px -116px;}
+.grey-bg, .grey-sm {background-position: 0 -145px;}
+.grey-bg:hover {background-position: -254px -145px;}
+.grey-sm:hover {background-position: -219px -145px;}
+
+.group-background
+{
+    position:relative;
+    float:left;
+}
+
+
+.group-button
+{
+    position:absolute;
+    top:7px;
+    left:5px;
+}
+
+
+.group-button a
+{
+        background-color:transparent;
+        height:12px;
+        display:block;
+        float:left;
+        margin-left:2px;
+
+}
+.group-button a:hover
+{
+        background-color:#FFF;
+        filter:alpha(opacity=70);
+        -khtml-opacity: 0.7;
+        -moz-opacity: 0.7;
+        opacity:0.7;
+}
+
+
+.add-group
+{
+   margin:10px auto;
+   padding:0;
+   text-align:center;          
+   font-weight:bold;
+}
+
+.add-group a { padding:0 15px 0 0; *padding:0 30px 0 0;  }
+
+/* TODO */
+.error {
+    color: red;
+}
+
+#groups {
+    width: 219px;
+    padding-top:5px;
+    margin: 0;  
+    float: left;    
+
+}
+
+#details {
+}
+
+/*- User info styles -*/
+.userinfo {
+    float:left;
+    width:150px;
+    margin:10px 10px 0 10px;
+}
+
+.userinfo a {
+    margin:0 0 0 5px;
+}
+
+
+.userinfo_pic {
+    float:left;
+    width:58px;
+    height:52px;
+    margin-bottom:15px; 
+}
+
+.icon-details { position:absolute; left:-1000px; top:-1000px; display:none; z-index:100;}
+.transparent09 { background-color:#FFF; filter:alpha(opacity=90); -khtml-opacity: 0.9; -moz-opacity: 0.9; opacity:0.9;}
+
+
+.userinfo_screenname, .userinfo_realname { float:right; margin:0 0 3px 5px; width:6em;}
+.userinfo_screenname { margin:0;  font-weight: bold;}
+
+/*- Userpic info border styles -*/
+
+.utop, .ubottom {display:block; background:transparent; font-size:1px;}
+.ub1, .ub2, .ub3, .ub4 {display:block; overflow:hidden;}
+.ub1, .ub2, .ub3 {height:1px;}
+.ub2, .ub3, .ub4 {background:#bee486; border-left:1px solid #bee486; border-right:1px solid #bee486;}
+.ub1 {margin:0 5px; background:#bee486;}
+.ub2 {margin:0 3px; border-width:0 2px;}
+.ub3 {margin:0 2px;}
+.ub4 {height:2px; margin:0 1px;}
+
+.userpic-box-content
+{
+    display: block;
+    background: #bee486;
+    border: 0 solid #bee486;
+    border-width: 0 1px;
+    padding:2px 2px 2px 4px;
+}
+
+.short_details {width: 58px; }
+.short_details .userinfo_screenname, .short_details .userinfo_realname {
+   display: none;
+}
+
+.input-field {font-size: 14px; line-height:120%; border: 1px solid #bee486; -moz-border-radius: 5px; -webkit-border-radius: 5px; width:250px; margin:5px 0 5px 5px; background:#bee486;}
+
+/*- Group info border styles -*/
+#group-box
+{
+    float:right;
+    width:761px;
+    background: transparent;
+    margin:0 0 0 20px;
+}
+
+.gtop, .gbottom {display:block; background:transparent; font-size:1px;}
+.gb1, .gb2, .gb3, .gb4 {display:block; overflow:hidden;}
+.gb1, .gb2, .gb3 {height:1px;}
+.gb2, .gb3, .gb4 {background:#FFF; border-left:1px solid #bee486; border-right:1px solid #bee486;}
+.gb1 {margin:0 5px; background:#bee486;}
+.gb2 {margin:0 3px; border-width:0 2px;}
+.gb3 {margin:0 2px;}
+.gb4 {height:2px; margin:0 1px;}
+
+.group-box-content
+{
+    display: block;
+    background: #FFF;
+    border: 0 solid #bee486;
+    border-width: 0 1px;
+    padding:5px 5px 5px 40px;
+}
+
+.clear-div
+{
+    clear: both;  
+    height:1px;
+}
+
+.footer 
+{ 
+/*
+    position: absolute; 
+    bottom:0;
+    right:10px;
+*/
+    clear: both;
+    padding-top: 20px;
+}
+
+.copy { padding:0; margin:0 0 1em; color:#333; font: bold 14px/20px Arial, Helvetica, sans-serif; text-align:right;}
+.bmenu { padding:0 0 10px 0; margin:0 0 1em; font:bold 12px/20px Arial, Helvetica, sans-serif; text-align:right;}
+.bmenu a, .copy a { color:#333; text-decoration:none;}
+.bmenu a:hover, .copy a:hover { text-decoration:underline;}
+
+.group-header
+{
+    float:left;
+    margin:0;
+}
+
+.radiobutton
+{
+    float:right;
+    margin:0 10px 0 0;
+}
+
+.faqentry, .faqentry:visited, .faqentry:hover, .faqentry:active {
+    color: #000;
+    text-decoration: none;
+    font: bold 14px arial, sans-serif;
+}
+
+.opml-link { float: right; font-weightold;}
+
+#progress {padding: 50px; text-align:center; width:100%;}
+.tip { font-style:italic; color:#666; margin:3px 0; }
+
+.user-edit-buttons {float: left; clear:left; width:58px;}
+.user-edit-buttons a { margin:0 0 0 5px;}
+
+#tt-screen {font-weight:bold;}
+
+.prefs { margin:0 0 2em 0;}
+.prefs label { margin:0 2em 0 0;} 
+.prefs a, .sync-friends a { color:#2c4b00; display:block; float:left; margin:0.5em 0.5em 0.2em 0; padding:0.3em 1em; width: 5em; text-decoration:none; text-align:center; }  
+.prefs a:hover, .sync-friends a:hover { color:#528b00; }            
+.prefs span { font-weight:bold;}
+.prefs-box-content {display: block; background: #bee486; border: 0 solid #bee486; border-width: 0 1px; padding:2px 2px 2px 4px; } 
+.white .ub2, .white .ub3, .white .ub4, .white .prefs-box-content { border-color:#528b00; background: #dce9c8;}
+.white .ub1 {background:#528b00;}    
+.sync-friends {}
