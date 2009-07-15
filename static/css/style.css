@@ -154,15 +154,7 @@ a.grclosed, a.grclosed-hl {
         opacity:0.7;
 }
 
-
-.add-group
-{
-   margin:10px auto;
-   padding:0;
-   text-align:center;          
-   font-weight:bold;
-}
-
+.add-group { margin:10px auto; margin-top:25px; padding:0; text-align:center; font-weight: bold;}
 .add-group a { padding:0 15px 0 0; *padding:0 30px 0 0;  }
 
 /* TODO */
@@ -232,7 +224,7 @@ a.grclosed, a.grclosed-hl {
    display: none;
 }
 
-.input-field {font-size: 14px; line-height:120%; border: 1px solid #bee486; -moz-border-radius: 5px; -webkit-border-radius: 5px; width:250px; margin:5px 0 5px 5px; background:#bee486;}
+.input-field {font-size: 14px; line-height:120%; border: 1px solid #bee486; -moz-border-radius: 5px; -webkit-border-radius: 5px; width:15em; margin:5px 0 5px 5px; background:#bee486;}
 
 /*- Group info border styles -*/
 #group-box
@@ -289,11 +281,7 @@ a.grclosed, a.grclosed-hl {
     margin:0;
 }
 
-.radiobutton
-{
-    float:right;
-    margin:0 10px 0 0;
-}
+.radiobutton { float:right; margin:10px 10px 5px 0; }
 
 .faqentry, .faqentry:visited, .faqentry:hover, .faqentry:active {
     color: #000;
@@ -302,6 +290,7 @@ a.grclosed, a.grclosed-hl {
 }
 
 .opml-link { float: right; font-weightold;}
+.opml-link input {width:50em;}
 
 #progress {padding: 50px; text-align:center; width:100%;}
 .tip { font-style:italic; color:#666; margin:3px 0; }
