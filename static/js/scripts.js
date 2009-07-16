@@ -656,13 +656,18 @@ $(document).ready(function() {
         });
     });
 
+    $('#contactus').click(function() {
+        open_page('contact');
+    });
 
-    var cookie = $.cookie('oauth.twitter');
-    if (cookie) {
-        tweetonica.api.token = cookie;
-        initialize(true);
+    if (!$('#errormarker').length) {
+        var cookie = $.cookie('oauth.twitter');
+        if (cookie) {
+            tweetonica.api.token = cookie;
+            initialize(true);
+        }
+        else
+            open_page('about');
     }
-    else
-        open_page('about');
 
 });

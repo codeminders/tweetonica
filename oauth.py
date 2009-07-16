@@ -115,8 +115,8 @@ class OAuthClient(object):
         proxy_id = self.get_cookie()
 
         if proxy_id:
-            return "FOO%rFF" % proxy_id
             self.expire_cookie()
+            return "FOO%rFF" % proxy_id
 
         return self.get_request_token()
 
@@ -264,13 +264,16 @@ class OAuthClient(object):
 class OAuthHandler(RequestHandler):
 
     def get(self, action=''):
-
-        client = OAuthClient(self)
-
-        if action in client.__public__:
-            self.response.out.write(getattr(client, action)())
-        else:
-            self.response.out.write(client.login())
+        try:
+            client = OAuthClient(self)
+            if action in client.__public__:
+                self.response.out.write(getattr(client, action)())
+            else:
+                self.response.out.write(client.login())
+        except:
+            logging.exception("An error occured while talking to Twitter")
+            self.redirect('/error.html')
+            
 
 def main():
 
