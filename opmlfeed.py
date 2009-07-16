@@ -76,9 +76,10 @@ class OPMLHandler(webapp.RequestHandler):
         xmldoc, opml = new_xmldoc_opml()
         opml.head.title = "Tweetonica feeds of %s" % u.screen_name
         opml.head.date_created = tstamp
-        opml.head.date_modified = tstamp
         opml.head.owner_name = u.screen_name
         opml.head.owner_id = "http://twitter.com/%s" % u.screen_name
+
+        lastupdated = datetime.datetime(2009, 1, 1)
 
         for x in res.keys():
             rssurl = misc.getGroupRSS_URL(u.screen_name,
@@ -92,6 +93,9 @@ class OPMLHandler(webapp.RequestHandler):
             outline.attrs["version"] = "RSS"
             opml.body.append(outline)
 
+            if res[x]['memberships_last_updated'] > lastupdated:
+                lastupdated = res[x]['memberships_last_updated']
+        opml.head.date_modified = lastupdated.strftime("%a, %d %b %Y %H:%M:%S GMT")
         self.response.out.write(str(xmldoc))
         
 

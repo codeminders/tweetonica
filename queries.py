@@ -15,6 +15,7 @@ def loadGroups(u):
     for g in q:
         res[g.name]={
             'name': g.name,
+            'memberships_last_updated': g.memberships_last_updated,
             "users": [{'screen_name':f.screen_name,
                        'real_name':f.real_name,
                        'profile_image_url': f.profile_image_url} \
