@@ -147,6 +147,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         res = queries.loadGroups(u)
         for x in res.keys():
+            del res[x]['memberships_last_updated']
             res[x]['rssurl']=misc.getGroupRSS_URL(u.screen_name,
                                                u.rss_token,
                                                x, u.use_HTTP_auth)
