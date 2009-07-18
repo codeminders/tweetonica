@@ -148,7 +148,9 @@ def footer(e):
 
     return \
            _icon_embed('reply.png',reply_link,"Reply") + \
+           "&nbsp;&nbsp;&nbsp;&nbsp;" +\
            _icon_embed('retweet.png',rt_link,"Re-tweet") + \
+           "&nbsp;&nbsp;&nbsp;&nbsp;" +\
            _icon_embed('direct_msg.png',msg_link,"Direct message")
     
 
