@@ -28,3 +28,9 @@ OAUTH_APP_SETTINGS = {
     'default_api_prefix': 'http://twitter.com',
     'default_api_suffix': '.json'
 }
+
+
+# web-related
+SITE_BASE_URL = 'http://tweetonica.com'
+#SITE_BASE_URL = 'http://localhost:8080'
+ICONS_PATH = "/images/"
