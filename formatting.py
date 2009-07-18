@@ -1,11 +1,12 @@
 
 import re
 import logging
-from misc import quote
 
+from misc import quote
 import stock
 import yfrog
 import ytembed
+import constants
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
@@ -116,13 +117,21 @@ def itemHTML(e):
     tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
 
     # link to sender
-    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr><br>%s'  % (
+    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr>%s'  % (
                             e.from_friend.screen_name,
                             e.from_friend.screen_name,
                             tweet,
                             footer(e)
                             )
     return tweet
+
+def _icon_embed(name, link, alt):
+    return '<a href="%s"><img src="%s%s%s" alt="%s" title="%s"/></a>' % \
+           (link,
+            constants.SITE_BASE_URL,
+            constants.ICONS_PATH,
+            name,
+            alt,alt)
 
 def footer(e):
     reply_link = "http://twitter.com/home?status=@%s%%20&in_reply_to_status_id=%d&in_reply_to=%s" % \
@@ -137,9 +146,11 @@ def footer(e):
     msg_link = "http://twitter.com/direct_messages/create/%s" % \
                (e.from_friend.screen_name)
 
-    return ('| <a href="%s">REPLY</a> |' % reply_link)  + \
-           ('<a href="%s">RT</a> |' % rt_link)  + \
-           ('<a href="%s">DM</a> |' % msg_link)
+    return \
+           _icon_embed('reply.png',reply_link,"Reply") + \
+           _icon_embed('retweet.png',rt_link,"Re-tweet") + \
+           _icon_embed('direct_msg.png',msg_link,"Direct message")
+    
 
 
 
