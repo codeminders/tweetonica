@@ -126,7 +126,7 @@ def itemHTML(e):
     return tweet
 
 def _icon_embed(name, link, alt):
-    return '<a href="%s"><img src="%s%s%s" alt="%s" title="%s"/></a>' % \
+    return '<a href="%s"><img src="%s%s%s?ver=1" alt="%s" title="%s"/></a>' % \
            (link,
             constants.SITE_BASE_URL,
             constants.ICONS_PATH,
