@@ -25,7 +25,7 @@ class TESTHandler(webapp.RequestHandler):
             pass
         e = Fake()
         e.id = 2606590561
-        e.text = 'http://www.youtube.com/v/tOW1XEqCgZI or http://www.youtube.com/watch?v=tOW1XEqCgZI'
+        e.text = "Foggy! Can't see the sea! - http://mobypicture.com/?piu6yk"
         e.from_friend = Fake()
         e.from_friend.screen_name = 'bird_owl'
 
