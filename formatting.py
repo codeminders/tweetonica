@@ -1,6 +1,7 @@
 
 import re
 import logging
+from urllib import urlencode
 
 from misc import quote
 import stock
@@ -10,6 +11,15 @@ import constants
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
+
+def mobypictureMapper(m):
+    url = m.group(0)
+    th_url = "http://api.mobypicture.com?%s" % \
+             (urlencode([('t', url),
+                          ('s', 'small'),
+                          ('k',constants.MOBYPIC_DEV_KEY),
+                          ('format','plain')]))
+    return '<a href="%s"><img src="%s"/></a>' % (url, th_url)
 
 def stockMapper(m):
     symbol = str(m.group(1))
@@ -75,6 +85,7 @@ MAPPERS = [
     (re.compile(r'^http://((www\.)?twitpic\.com)/([^/\?]+)$'), twitpicMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/v/([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/watch\?v=([^/\?]+)$'), youtubeMapper),
+    (re.compile(r'^http://((www\.)?mobypicture\.com)/\?([^/\?]+)$'), mobypictureMapper),
     
     (re.compile(r'^(.+)$'), defaultMapper)
     ]

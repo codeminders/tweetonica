@@ -37,6 +37,7 @@ such entries exist, they would be cleaned from DB
 """
 BACK_ENTRIES = datetime.timedelta(days=7)
 
+MOBYPIC_DEV_KEY='7mV3iBuSDu33ERyi'
 
 # web-related
 SITE_BASE_URL = 'http://tweetonica.com'
