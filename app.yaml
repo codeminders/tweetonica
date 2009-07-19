@@ -1,0 +1,45 @@
+application: tweetonica
+version: 2
+runtime: python
+api_version: 1
+
+handlers:
+
+- url: /cleanup
+  script: cleanup.py
+  login: admin
+
+- url: /api
+  script: api.py
+
+- url: /feed/(.+)/(.+)
+  script: feed.py
+
+- url: /opml/(.+)
+  script: opmlfeed.py
+
+- url: /oauth/(.*)
+  script: oauth.py
+
+- url: /mockapi
+  script: mockapi.py
+
+- url: /test
+  script: test.py
+
+- url: /
+  static_files: static/index.html
+  upload: static/index.html
+
+- url: /favicon.ico
+  static_files: static/favicon.ico
+  upload: static/favicon.ico
+  mime_type: image/x-icon
+  expiration: 365d
+
+- url: /
+  static_dir: static
+  expiration: 365d
+
+- url: /.*
+  script: not_found.py
