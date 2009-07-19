@@ -79,6 +79,9 @@ class OPMLHandler(webapp.RequestHandler):
         opml.head.owner_name = u.screen_name
         opml.head.owner_id = "http://twitter.com/%s" % u.screen_name
 
+        opml.head._element_names.remove('owner_email')
+        del(opml.head.__dict__['owner_email'])
+
         lastupdated = datetime.datetime(2009, 1, 1)
 
         for x in res.keys():
