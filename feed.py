@@ -116,12 +116,13 @@ class ATOMHandler(webapp.RequestHandler):
         page = 1
         done = False
         fetched = 0
-        since = tl.timeline_max_id
+        since_id = tl.timeline_max_id
+        since = datetime.datetime.now()-constants.BACK_ENTRIES
         while not done and page<=MAX_PAGES_TO_FETCH:
             try:
-                logging.debug("Fetching page %d of %s timeline (since %d)" % \
-                              (page, u.screen_name, since))
-                timeline = t.GetFriendsTimeline(since_id = since,\
+                logging.debug("Fetching page %d of %s timeline (since id %d)" % \
+                              (page, u.screen_name, since_id))
+                timeline = t.GetFriendsTimeline(since_id = since_id,\
                                                 page=page, count=FETCH_COUNT)
                 page = page + 1
             except Exception:
@@ -132,7 +133,17 @@ class ATOMHandler(webapp.RequestHandler):
                 break
             for e in timeline:
                 logging.debug("Got timeline entry %d" % e.id)
-                if e.id<=since:
+                if e.id<=since_id:
+                    done = True
+                    break
+
+                ts = datetime.datetime.utcfromtimestamp(\
+                    e.GetCreatedAtInSeconds())
+
+                if ts<=since:
+                    logging.debug("Stopping, as encountered an entry, " \
+                                  "which is older than cut off date %s" %  \
+                                  since.ctime())
                     done = True
                     break
 
@@ -150,7 +161,7 @@ class ATOMHandler(webapp.RequestHandler):
                         continue
                     else:
                          ui[e.user.screen_name]=eu
-                self._addTimeLineEntry(e,u,eu)
+                self._addTimeLineEntry(e,ts,u,eu)
                 fetched = fetched+1
             # Save timeline_max_id between page
             tl.put()
@@ -160,9 +171,8 @@ class ATOMHandler(webapp.RequestHandler):
         logging.debug("Fetced  %d timeline entries for %s" % \
                       (fetched, u.screen_name))
 
-    def _addTimeLineEntry(self,e,u,friend):
+    def _addTimeLineEntry(self,e,ts,u,friend):
         logging.debug("Adding timeline entry %d" % e.id)
-        ts = datetime.datetime.utcfromtimestamp(e.GetCreatedAtInSeconds())
         s = data.StatusUpdate(id = e.id,
                               text = e.text,
                               created_at = ts,
