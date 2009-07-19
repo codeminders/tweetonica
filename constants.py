@@ -1,5 +1,7 @@
 """ Various constants """
 
+import datetime
+
 DEFAULT_GROUP_NAME = "__ALL__"
 
 """ URL path of WSGI app for feed.py. Witout trailing slash! """
@@ -28,6 +30,12 @@ OAUTH_APP_SETTINGS = {
     'default_api_prefix': 'http://twitter.com',
     'default_api_suffix': '.json'
 }
+
+
+""" Entries older that this time will be not fetched. If
+such entries exist, they would be cleaned from DB
+"""
+BACK_ENTRIES = datetime.timedelta(days=7)
 
 
 # web-related

@@ -4,6 +4,11 @@ runtime: python
 api_version: 1
 
 handlers:
+
+- url: /cleanup
+  script: cleanup.py
+  login: admin
+
 - url: /api
   script: api.py
 
