@@ -7,7 +7,7 @@ from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
 
-from PyRSS2Gen import RSS2, SyInfo, RSSItem, Guid
+from PyRSS2Gen import RSS2, SyInfo, RSSItem, Guid, Image
 
 import queries
 import twitter
@@ -187,12 +187,21 @@ class ATOMHandler(webapp.RequestHandler):
     def _generateFeed(self,u,g):
         timeline = queries.getGroupTimeline(g)
         
+        rssTitle = misc.getGroupRSS_title(u.screen_name, g.name)
+        rssLink = misc.getGroupRSS_URL(u.screen_name, u.rss_token, \
+                                       g.name, u.use_HTTP_auth)
+        rssDescription = "Timeline for user %s group %s" % (u.screen_name, \
+                                                            misc.getGroupTitle(g.name))
         rss = RSS2(
-            title = misc.getGroupRSS_title(u.screen_name, g.name),
-            link = misc.getGroupRSS_URL(u.screen_name, u.rss_token, \
-                                     g.name, u.use_HTTP_auth),
-            description = "Timeline for user %s group %s" % (u.screen_name, \
-                                                             g.name),
+            title = rssTitle,
+            link = rssLink,
+            image = Image(url = "http://www.tweetonica.com/images/rssicon.png",
+                          title = rssTitle,
+                          link = rssLink,
+                          width = 16,
+                          height = 16,
+                          description = rssDescription),
+            description = rssDescription,
             language = 'en-us',
             managingEditor = 'tweetonica@codeminders.com (Tweetonica)',
             lastBuildDate = datetime.datetime.now(),
