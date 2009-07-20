@@ -1,0 +1,214 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <title>Tweetonica</title>
+    <link href="css/ui/jquery-ui-1.7.2.custom.css" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="css/style.css?v1" rel="stylesheet" type="text/css" media="screen"/>
+    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon"/>
+    <link href="/favicon.png" rel="icon" type="image/png"/>
+    <script type="text/javascript" src="js/jquery-1.3.2.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui-1.7.2.custom.min.js"></script>
+    <script type="text/javascript" src="js/jquery.json-1.3.min.js"></script>
+    <script type="text/javascript" src="js/jquery.cookie.js"></script>
+    <script type="text/javascript" src="js/api.js?v1"></script>
+    <script type="text/javascript" src="js/scripts.js?v1"></script>
+</head>
+<body>
+<div class="layout">
+    <!-- header -->
+    <div id="header">
+        <div id="loginbox">
+            <div id="loggedin" style="display:none">
+                <a href="javascript:;" id="currentuserurl" target="_blank"><span id="currentuser"></span></a> | <a href="javascript:;" id="logoutbutton">Log out</a>
+            </div>
+            <div id="loggedout">
+                <a href="javascript:;" id="loginbutton">Log In</a>
+            </div>
+        </div>
+        <div id="menubar">
+            <div class="clear">
+                <a href="javascript:;" class="menu" id="mabout"><span>about</span></a>
+                <a href="javascript:;" class="menu" id="mmanage"><span>my groups</span></a>
+                <a href="javascript:;" class="menu prefsmenu" id="mprefs" style="display:none"><span>preferences</span></a>
+                <a href="javascript:;" class="menu" id="mfaq"><span>faq</span></a>
+                <a href="javascript:;" class="menu" id="mcontact"><span>contacts</span></a>
+            </div>
+        </div>
+        <div class="logo"><h1><a href="http://www.tweetonica.com/">Tweetonica</a></h1></div>        
+    </div>
+    <!-- content -->
+    <div id="content">
+
+        <div id="manage" class="page"  style="display:none">
+
+            <div class="opml-link"><a id="opml_link" href="javascript:;"><img src="/images/opml-icon-32x32.png" width="14" height="14" alt="OPML"/></a><input id="opml_text" readonly="readonly" class="input-field" value=""/></div>
+            <div class="clear-div">&nbsp;</div>   
+
+            <div>
+                <div id="groups" style="float:left; margin:0;">                
+                    <div class="add-group">
+                        <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                            <div class="group-box-content">             
+                                    <a href="javascript:;">Add New Group</a>                                                  
+                            </div><!--add-group-content-->
+                        <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b> 
+                    </div>                    
+                </div>
+                <div id="group-box">
+                    <div class="radiobutton">
+                        <input type="radio" name="vs" id="vs-full"  value="0" checked="checked"/> names and icons
+                        <input type="radio" name="vs" id="vs-icons" value="1"/> icons only
+                    </div>
+                    <div class="clear-div">&nbsp;</div>
+                    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                    <div class="group-box-content">
+                        <div id="details">
+                            <div id="groupinfo" >
+                                <div class="group-header">
+                                    <span>Group:</span>&nbsp;<b><span id="info_groupname"></span></b>&nbsp;<a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="14" height="14" alt="RSS feed"/></a><input id="info_groupfeed_text" readonly="readonly" class="input-field" value=""/>
+                                </div>                       
+                            </div>
+                            <div class="clear-div">&nbsp;</div>                
+                            <div class="tip">Tip: You can drag and drop users to move them between groups</div>
+                            <div id="groupmembers">
+                            </div>
+                            <div class="clear-div">&nbsp;</div>
+                        </div>
+                    </div><!--group-box-content-->
+                    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
+                </div><!--group-box-->
+               
+            </div>
+        </div>
+
+        <div id="prefs" class="page" style="display:none">
+
+          <h1>Preferences</h1>
+
+              <div class="prefs">
+                  <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                  <div class="group-box-content">
+              
+                      <form id="prefsform" style="width:35em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          <input type="checkbox" name="prefs_remember_me" id="prefs_remember_me" checked="checked"/> Remember me
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b> 
+                                <br/><br/>
+                                                                                          
+                          <span>RSS/OPML feed Authentication: </span> <br/><br/>                                 
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                                                          
+                          <input type="radio" name="prefs_auth_style" id="prefs_auth_style_0" value="0" checked="checked"/> <label>Secret token in RSS/OPML feed URL</label> 
+                          <input type="radio" name="prefs_auth_style" id="prefs_auth_style_1" value="1"/><label> HTTP Authentication </label>
+                           <a id="btn-reset-token" class="white" href="javascript:;" style="width:9em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Reset RSS token
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                              
+                           </a>
+                           <div class="clear-div">&nbsp;</div> 
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                               
+                                
+                                
+                          <a id="btn-apply-prefs" class="white" href="javascript:;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Apply
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                          
+                          </a>
+                          <a id="btn-reset-prefs" class="white" href="javascript:;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Undo
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                             
+                          </a>
+                      </form>
+                      <div class="clear-div">&nbsp;</div> 
+                  </div><!--group-box-content-->
+                  <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>
+              </div>
+
+
+              <div class="sync-friends">
+                  <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                  <div class="group-box-content">
+                      <div class="tip">Check with Twitter you have any new friends added/removed there and add new friends to default group.</div>
+                      <a id="btn-sync-groups" class="white" href="javascript:;" style="width:8em;">
+                                <b class="utop"><b class="ub1"></b><b class="ub2"></b><b class="ub3"></b><b class="ub4"></b></b>
+                                <div class="prefs-box-content">                          
+                          Synch friends
+                                </div><!--prefs-box-content-->
+                                <b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>                         
+                      </a>
+                      <div class="clear-div">&nbsp;</div>                       
+                  </div><!--group-box-content-->
+                  <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>
+              </div>
+
+        </div>
+
+        
+        <div id="faq" class="page" style="display:none"></div>
+        <div id="about" class="page"></div>
+        <div id="contact" class="page" style="display:none"></div>
+        <div id="progress" class="page" style="display:none"><img src="/images/ajax-loader.gif" width="128" height="15" alt="Loading"/><br/>Please wait while the data is loading...</div>
+    </div>
+    <!-- footer -->
+    <div id="footer" class="footer">
+        <div class="copy">&copy; 2009 <a href="http://www.codeminders.com" target="_blank">Codeminders</a>. All rights reserved.</div>
+        <div class="bmenu">
+            <a class="menulink" id="m_about" href="javascript:;">About </a>&nbsp;&nbsp;|&nbsp;
+            <a class="menulink" id="m_manage" href="javascript:;">My Groups </a>&nbsp;&nbsp;|&nbsp;
+            <span class="prefsmenu menulink" id="m_prefs" style="display:none"><a href="javascript:;">Preferences</a>&nbsp;&nbsp;|&nbsp;</span>
+            <span id="follow" style="display:none"><a href="javascript:;" id="followme">Follow Tweetonica on Twitter</a>&nbsp;&nbsp;|&nbsp;</span>
+            <a class="menulink" id="m_faq" href="javascript:;">FAQ</a>&nbsp;&nbsp;|&nbsp;
+            <a class="menulink" id="m_contact" href="javascript:;">Contact Tweetonica</a>
+        </div> 
+    </div>
+
+    <div id="delete-confirm-dialog" style="display:none">
+        <input type="hidden" id="group-to-delete"/>
+        Please confirm deletion of group <span id="group-to-delete-name"></span>.<br/>
+        <i>Note: all your contacts from this group will be moved to &quot;Uncategorized&quot;</i>
+    </div>
+
+    <div id="move-dialog" style="display:none">
+        <input type="hidden" id="user-to-move"/>
+        Please choose destination group to move <span id="user-to-move-name"></span> to.<br/>
+        <select id="group-to-move">
+        </select>
+    </div>
+
+    <div id="rename-dialog" style="display:none">
+        <input type="hidden" id="old-group-name"/>
+        Please enter new group name:<br/>
+        <input type="text" id="new-group-name" style="width:320px"/>
+        <div class="error" id="eemptyname" style="display:none">Name cannot be empty</div>
+        <div class="error" id="eduplicatename" style="display:none">Group with specified name already exists</div>
+    </div>
+
+    <div id="create-dialog" style="display:none">
+        Please enter new group name:<br/>
+        <input type="text" id="create-group-name" style="width:320px"/>
+        <div class="error" id="eemptyname2" style="display:none">Name cannot be empty</div>
+        <div class="error" id="eduplicatename2" style="display:none">Group with specified name already exists</div>
+    </div>
+
+</div>
+<div class="icon-details" id="tt">
+    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+        <div class="group-box-content transparent09" style="padding:1px 3px;">                                     
+            <span id="tt-screen"></span>
+            <div id="tt-real"></div>
+        </div>
+    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>                                                                 
+</div>                    
+</body>
+</html>

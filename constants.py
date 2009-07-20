@@ -1,0 +1,45 @@
+""" Various constants """
+
+import datetime
+
+DEFAULT_GROUP_NAME = "__ALL__"
+
+""" URL path of WSGI app for feed.py. Witout trailing slash! """
+FEED_PATH_PREFIX = "/feed"
+
+""" URL path of WSGI app for opml.py. Witout trailing slash! """
+OPML_PATH_PREFIX = "/opml"
+
+""" Name of RSS feed URL parameter which holds secret token """
+TOKEN_PARAM_NAME = "secret"
+
+""" App domain. Used in generated URLs """
+DOMAIN = "www.tweetonica.com"
+
+""" HTTP Basic auth realm """
+REALM='tweetonica.com'
+
+OAUTH_APP_SETTINGS = {
+    'consumer_key': 'Jfhz20pXgCsg282eIdbg',
+    'consumer_secret': 'elCnqrCy2IfGl1KaRde9cOLxjPPpvkFDo2WRNPOzKA',
+    
+    'request_token_url': 'http://twitter.com/oauth/request_token',
+    'access_token_url': 'http://twitter.com/oauth/access_token',
+    'user_auth_url': 'http://twitter.com/oauth/authorize',
+
+    'default_api_prefix': 'http://twitter.com',
+    'default_api_suffix': '.json'
+}
+
+
+""" Entries older that this time will be not fetched. If
+such entries exist, they would be cleaned from DB
+"""
+BACK_ENTRIES = datetime.timedelta(days=7)
+
+MOBYPIC_DEV_KEY='7mV3iBuSDu33ERyi'
+
+# web-related
+SITE_BASE_URL = 'http://tweetonica.com'
+#SITE_BASE_URL = 'http://localhost:8080'
+ICONS_PATH = "/images/"
