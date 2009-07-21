@@ -127,24 +127,6 @@ $(document).ready(function() {
         $('#groupmembers').append(container);
     }
 
-    var open_page = function(id) {
-        if (id != 'manage' && id != 'prefs' || tweetonica.api.token) {
-            $('.menu').removeClass('active');
-            if (id == 'progress')
-                $('#mmanage').addClass('active');
-            else
-                $('#m' + id).addClass('active');
-            $('.page').hide();
-            var p = $('#' + id);
-            if (id != 'manage' && id != 'progress' && id != 'prefs')
-               p.load(id + '.html');
-            p.show();
-        }
-        else {
-            document.location.href = '/oauth/login';
-        }
-    };
-
     var move_user = function(screen_name, group_name) {
         tweetonica.api.move_friend(screen_name, group_name, function(results) {
             var src = null;
@@ -276,6 +258,24 @@ $(document).ready(function() {
                 else
                     last_sync_time = (new Date()).getTime();
             });
+        }
+    };
+
+    var open_page = function(id) {
+        if (id != 'manage' && id != 'prefs' || tweetonica.api.token) {
+            $('.menu').removeClass('act');
+            if (id == 'progress')
+                $('#mmanage').addClass('act');
+            else
+                $('#m' + id).addClass('act');
+            $('.page').hide();
+            var p = $('#' + id);
+            if (id != 'manage' && id != 'progress' && id != 'prefs')
+               p.load(id + '.html div.' + id);
+            p.show();
+        }
+        else {
+            document.location.href = '/oauth/login';
         }
     };
 
