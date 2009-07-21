@@ -251,7 +251,6 @@ $(document).ready(function() {
             tweetonica.api.token = null;
             $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('#follow').hide();
             $('.prefsmenu').hide();
             $('#currentuser').html('');
             $('#currentuserurl').attr('href', 'javascript:;');
@@ -336,7 +335,6 @@ $(document).ready(function() {
             tweetonica.api.token = null;
             $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('#follow').hide();
             $('.prefsmenu').hide();
             $('#currentuser').html('');
             $('#currentuserurl').attr('href', 'javascript:;');
@@ -381,11 +379,22 @@ $(document).ready(function() {
                    }
                 }
             }
-
-            if (follows_tweetonica)
-               $('#follow').hide();
-            else
-               $('#follow').show();
+            if (!follows_tweetonica)
+            {
+                $('#followme').click(function(e) {
+                    tweetonica.api.create_friendship('tweetonica', function(results) {
+                        cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
+                        open_group($('#groups a#root'));            
+                        $('#followme').unbind('click');
+                        check_for_updates();
+                    }, function(error) {
+                        $('#error-description').text('Sorry, an error occured. Please try again later');
+                        $('#error-dialog').dialog('open');
+                    });
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            }
 
             open_group($('#groups a#root'));
 
@@ -395,7 +404,6 @@ $(document).ready(function() {
         }, function(error) {
             $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('#follow').hide();
             $('.prefsmenu').hide();
             $('#currentuser').html('');
             $('#currentuserurl').attr('href', 'javascript:;');
@@ -620,20 +628,6 @@ $(document).ready(function() {
     $('.add-group a').click(function(e) {
         $('#create-group-name').val('');
         $('#create-dialog').dialog('open');
-        e.stopPropagation();
-        e.preventDefault();
-    });
-
-    $('#followme').click(function(e) {
-        tweetonica.api.create_friendship('tweetonica', function(results) {
-            cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
-            open_group($('#groups a#root'));            
-            $('#follow').hide();
-            check_for_updates();
-        }, function(error) {
-            $('#error-description').text('Sorry, an error occured. Please try again later');
-            $('#error-dialog').dialog('open');
-        });
         e.stopPropagation();
         e.preventDefault();
     });
