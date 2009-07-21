@@ -7,8 +7,6 @@ a {color:#360; text-decoration:none; }
 a:hover { color:#690; text-decoration:underline; }
 .layout { position:relative; width:1000px; margin:0 auto; height:auto !important; *height:100%; min-height:100%;}
 .left {float:left;} 
-h1 { margin:0.8em 0 0.8em 0; padding:0; color: #528b00; font-size:1.7em;}
-h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
 
 #header {
     background-color: #000;
@@ -36,7 +34,7 @@ h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
     color: #fff;
 }
 
-.menu,.menu:hover,.menu:active,.menu:visited {
+.menu,.menu:hover,.menu:active,.menu:visited,.act,.act:hover,.act:active,.act:visited {
     background: transparent url('images/menu-background.png') no-repeat bottom left;
     color: #000;
     display: block;
@@ -47,7 +45,7 @@ h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
     width: 100px;
 }
 
-.menu span {
+.menu span, .act span {
     line-height: 18px;
     text-align: center;
     display: block;
@@ -55,7 +53,7 @@ h2 { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
     line-height: 150%;
 }
 
-.menu:hover, .active {
+.menu:hover, .act,.act:hover,.act:active,.act:visited {
     background-position: top left;
 }
 
@@ -283,12 +281,6 @@ a.grclosed, a.grclosed-hl {
 
 .radiobutton { float:right; margin:10px 10px 5px 0; }
 
-.faqentry, .faqentry:visited, .faqentry:hover, .faqentry:active {
-    color: #000;
-    text-decoration: none;
-    font: bold 14px arial, sans-serif;
-}
-
 .opml-link { float: right; font-weight:bold;}
 .opml-link input {width:50em;}
 
@@ -309,3 +301,6 @@ a.grclosed, a.grclosed-hl {
 .white .ub2, .white .ub3, .white .ub4, .white .prefs-box-content { border-color:#528b00; background: #dce9c8;}
 .white .ub1 {background:#528b00;}    
 .sync-friends {}
+
+h1, h1 a { margin:0.8em 0 0.8em 0; padding:0; color: #528b00; font-size:1.7em;}
+h2, h2 a { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
