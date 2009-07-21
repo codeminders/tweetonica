@@ -293,6 +293,7 @@ $(document).ready(function() {
                 $('#currentuserurl').attr('href', 'http://twitter.com/' + results.screen_name);
                 $('#loggedin').show();
                 $('#loggedout').hide();
+                $.cookie('t.uname', results.screen_name);
             }
             $('#opml_link').attr('href', results.OPML_download_url);
             $('#opml_text').val(results.OPML_feed_url);
@@ -533,10 +534,12 @@ $(document).ready(function() {
     // handlers
 
     $('.menu').click(function(e) {
-        var pageid = this.id.substring(1);
-        open_page(pageid);
-        e.stopPropagation();
-        e.preventDefault();
+        if (this.id) {
+            var pageid = this.id.substring(1);
+            open_page(pageid);
+            e.stopPropagation();
+            e.preventDefault();
+        }
     });
 
     $('.menulink').click(function(e) {
@@ -660,7 +663,7 @@ $(document).ready(function() {
         open_page('contact');
     });
 
-    if (!$('#errormarker').length) {
+    if (!$('#staticpage').length) {
         var cookie = $.cookie('oauth.twitter');
         if (cookie) {
             tweetonica.api.token = cookie;
@@ -668,6 +671,14 @@ $(document).ready(function() {
         }
         else
             open_page('about');
+    } else {
+        var user = $.cookie('t.uname');
+        if (user) {
+            $('#currentuser').text(user);
+            $('#currentuserurl').attr('href', 'http://twitter.com/' + user);
+            $('#loggedin').show();
+            $('#loggedout').hide();
+        }        
     }
 
 });

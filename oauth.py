@@ -260,6 +260,11 @@ class OAuthClient(object):
             '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
             ('oauth.twitter', path)
             )
+        self.handler.response.headers.add_header(
+            'Set-Cookie', 
+            '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
+            ('t.uname', path)
+            )
 
 class OAuthHandler(RequestHandler):
 
