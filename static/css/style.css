@@ -196,6 +196,7 @@ a.grclosed, a.grclosed-hl {
 
 .userinfo_screenname, .userinfo_realname { float:right; margin:0 0 3px 5px; width:6em;}
 .userinfo_screenname { margin:0;  font-weight: bold;}
+.userinfo_screenname a, .userinfo_screenname a:hover, .userinfo_screenname a:visited, .userinfo_screenname a:active { margin:0;  padding:0; text-decoration:none; color: #000; font-weight: bold;}
 
 /*- Userpic info border styles -*/
 
@@ -282,7 +283,7 @@ a.grclosed, a.grclosed-hl {
 .radiobutton { float:right; margin:10px 10px 5px 0; }
 
 .opml-link { float: right; font-weight:bold;}
-.opml-link input {width:50em;}
+.opml-link input {width:45em;}
 
 #progress {padding: 50px; text-align:center; width:100%;}
 .tip { font-style:italic; color:#666; margin:3px 0; }
@@ -304,3 +305,8 @@ a.grclosed, a.grclosed-hl {
 
 h1, h1 a { margin:0.8em 0 0.8em 0; padding:0; color: #528b00; font-size:1.7em;}
 h2, h2 a { margin:0.5em 0 0.3em 0; padding:0; color: #963fcf; font-size:1.3em;}
+
+.red-txt {color:#ff3300;}
+red .gb2, .red .gb3, .red .gb4 {background-color:#FFF; border-left:1px solid #ff3300; border-right:1px solid #ff3300;}
+.red .gb1 {margin:0 5px; background-color:#ff3300;}
+.red .group-box-content { border: 0 solid #ff3300; border-width: 0 1px;}

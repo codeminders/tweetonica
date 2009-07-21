@@ -184,7 +184,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if queries.getGroupByName(group_name, u)!=None:
             raise json.JSONRPCError("Group %s already exists" % group_name,
                                     code=ERR_GROUP_ALREADY_EXISTS)
-            
+
         g = data.Group(name=group_name,
                        memberships_last_updated=datetime.datetime.now(),
                        user=u,

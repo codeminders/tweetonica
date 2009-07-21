@@ -83,7 +83,7 @@ $(document).ready(function() {
             '<b class="ubottom"><b class="ub4"></b><b class="ub3"></b><b class="ub2"></b><b class="ub1"></b></b>' +
             '</div>';
 
-        var linkbox = '<div class="userinfo_screenname">' + u.screen_name + '</div>';
+        var linkbox = '<div class="userinfo_screenname"><a href="http://twitter.com/' + u.screen_name + '" target="_blank">' + u.screen_name + '</a></div>';
 
         var namebox = '<div class="userinfo_realname">' + (u.real_name == u.screen_name ? '&nbsp;' : u.real_name) + '</div>';
 
@@ -151,7 +151,10 @@ $(document).ready(function() {
                 if (destg.name != srcg.name)
                     $('#user_' + screen_name).remove();
             check_for_updates();
-        }});
+        }}, function(error) {
+            $('#error-description').text('Sorry, we were unable to move your contact. Please try again later');
+            $('#error-dialog').dialog('open');
+        });
     };
 
     var delete_group = function(name) {
@@ -167,6 +170,9 @@ $(document).ready(function() {
             render_group(g);
             open_group($('#groups a.gropen'));
             check_for_updates();
+        }, function(error) {
+            $('#error-description').text('Sorry, we were unable to create new group. Please try again later');
+            $('#error-dialog').dialog('open');
         });
     }
 
@@ -196,6 +202,9 @@ $(document).ready(function() {
                 }
             });
             check_for_updates();
+        }, function(error) {
+            $('#error-description').text('Sorry, we were unable to rename group. Please try again later');
+            $('#error-dialog').dialog('open');
         });
     }
 
@@ -239,10 +248,16 @@ $(document).ready(function() {
             if (callback)
                 callback(results);
         }, function(error) {
+            tweetonica.api.token = null;
+            $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
             $('.prefsmenu').hide();
-            open_page('about');
+            $('#currentuser').html('');
+            $('#currentuserurl').attr('href', 'javascript:;');
+            $('#loggedin').hide();
+            $('#loggedout').show();
+            open_page('error');
         });
     };
 
@@ -312,15 +327,22 @@ $(document).ready(function() {
 
             sync_groups(true, function(state) {
                 refresh_groups(function() {
-                    open_page('manage');
+                    var tab = $.cookie('tt.tab');
+                    open_page(tab != 'prefs' ? 'manage' : 'prefs');
+                    $.cookie('tt.tab', null);
                 });
             });
         }, function(error) {
             tweetonica.api.token = null;
+            $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
             $('.prefsmenu').hide();
-            open_page('about');
+            $('#currentuser').html('');
+            $('#currentuserurl').attr('href', 'javascript:;');
+            $('#loggedin').hide();
+            $('#loggedout').show();
+            open_page('error');
         });
     };
 
@@ -371,6 +393,7 @@ $(document).ready(function() {
                callback();
 
         }, function(error) {
+            $.cookie('t.uname', null, {expires: -1, path: '/'});
             $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
             $('#follow').hide();
             $('.prefsmenu').hide();
@@ -379,7 +402,7 @@ $(document).ready(function() {
             $('#loggedin').hide();
             $('#loggedout').show();
             tweetonica.api.token = null;
-
+            open_page('error');
         });
     };
 
@@ -410,6 +433,9 @@ $(document).ready(function() {
                     });
                     open_group($('#groups a#root'));
                     check_for_updates();
+                }, function(error) {
+                    $('#error-description').text('Sorry, we were unable to delete group. Please try again later');
+                    $('#error-dialog').dialog('open');
                 });
                 $('#delete-confirm-dialog').dialog('close');
             }
@@ -530,6 +556,18 @@ $(document).ready(function() {
         }
     });
 
+    $('#error-dialog').dialog({
+        buttons: {
+            'OK': function() {
+                $('#error-dialog').dialog('close');
+            }
+        },
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        title: 'Error',
+        width: 360
+    });
 
     // handlers
 
@@ -543,10 +581,12 @@ $(document).ready(function() {
     });
 
     $('.menulink').click(function(e) {
-        var pageid = this.id.substring(2);
-        $('#m' + pageid).click();
-        e.stopPropagation();
-        e.preventDefault();
+        if (this.id) {
+            var pageid = this.id.substring(2);
+            $('#m' + pageid).click();
+            e.stopPropagation();
+            e.preventDefault();
+        }
     });
 
 
@@ -571,7 +611,9 @@ $(document).ready(function() {
 
         tweetonica.api.set_prefs(temp_prefs, function(results) {
             PREFS = results; 
-        }, function(error) {            
+        }, function(error) {
+            $('#error-description').text('Sorry, we were unable to save your preferences. Please try again later');
+            $('#error-dialog').dialog('open');
         });
     });
 
@@ -589,6 +631,8 @@ $(document).ready(function() {
             $('#follow').hide();
             check_for_updates();
         }, function(error) {
+            $('#error-description').text('Sorry, an error occured. Please try again later');
+            $('#error-dialog').dialog('open');
         });
         e.stopPropagation();
         e.preventDefault();
@@ -597,7 +641,7 @@ $(document).ready(function() {
     var show_tooltip = function(e, o) {
         if (!$('#vs-icons').attr('checked'))
             return;
-        $('#tt-screen').text($('.userinfo_screenname', o.parent()).text());
+        $('#tt-screen').text($('.userinfo_screenname a', o.parent()).text());
         var realname = jQuery.trim($('.userinfo_realname', o.parent()).text());
         if (realname != '')
             $('#tt-real').text(realname).show();
@@ -634,6 +678,8 @@ $(document).ready(function() {
                 open_page('prefs');
             });
         }, function(error) {            
+            $('#error-description').text('Sorry, we were unable to save your preferences. Please try again later');        
+            $('#error-dialog').dialog('open');
         });
     });
 
@@ -659,7 +705,7 @@ $(document).ready(function() {
         });
     });
 
-    $('#contactus').click(function() {
+    $('#contactus').live('click', function() {
         open_page('contact');
     });
 
@@ -678,6 +724,12 @@ $(document).ready(function() {
             $('#currentuserurl').attr('href', 'http://twitter.com/' + user);
             $('#loggedin').show();
             $('#loggedout').hide();
+            $('.prefsmenu').show().click(function(e) {
+                $.cookie('tt.tab', 'prefs');
+                document.location.href = '/';
+                e.stopPropagation();
+                e.preventDefault();
+            });
         }        
     }
 

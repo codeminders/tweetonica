@@ -63,7 +63,7 @@
                         <div id="details">
                             <div id="groupinfo" >
                                 <div class="group-header">
-                                    <span>Group:</span>&nbsp;<b><span id="info_groupname"></span></b>&nbsp;<a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="14" height="14" alt="RSS feed"/></a><input id="info_groupfeed_text" readonly="readonly" class="input-field" value=""/>
+                                    <span>Group:</span>&nbsp;<b><span id="info_groupname"></span></b>&nbsp;RSS&nbsp;<a id="info_groupfeed" href="javascript:;"><img src="images/feed-icon-28x28.png" width="14" height="14" alt="RSS feed"/></a><input id="info_groupfeed_text" readonly="readonly" class="input-field" value=""/>
                                 </div>                       
                             </div>
                             <div class="clear-div">&nbsp;</div>                
@@ -75,7 +75,7 @@
                     </div><!--group-box-content-->
                     <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
                     <div class="clear-div">&nbsp;</div>   
-                    <div class="opml-link"><a id="opml_link" href="javascript:;"><img src="/images/opml-icon-32x32.png" width="14" height="14" alt="OPML"/></a><input id="opml_text" readonly="readonly" class="input-field" value=""/></div>
+                    <div class="opml-link">OMPL&nbsp;<a id="opml_link" href="javascript:;"><img src="/images/opml-icon-32x32.png" width="14" height="14" alt="OPML"/></a><input id="opml_text" readonly="readonly" class="input-field" value=""/></div>
                     <div class="clear-div">&nbsp;</div>   
                 </div><!--group-box-->
                
@@ -156,6 +156,7 @@
         <div id="faq" class="page" style="display:none"></div>
         <div id="about" class="page"></div>
         <div id="contact" class="page" style="display:none"></div>
+        <div id="error" class="page" style="display:none"></div>
         <div id="progress" class="page" style="display:none"><img src="/images/ajax-loader.gif" width="128" height="15" alt="Loading"/><br/>Please wait while the data is loading...</div>
     </div>
     <!-- footer -->
@@ -206,6 +207,11 @@
             <div id="tt-real"></div>
         </div>
     <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>                                                                 
-</div>                    
+</div>
+
+<div id="error-dialog" style="display:none">
+    <h2 class="red-txt" id="error-description">Failed to create new group</h2>
+</div>
+
 </body>
 </html>
