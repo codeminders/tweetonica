@@ -28,6 +28,7 @@
             <div class="clear">
                 <a href="about.html" class="menu"><span>about</span></a>
                 <a href="/" class="menu"><span>my groups</span></a>
+                <a href="javascript:;" class="menu prefsmenu" style="display:none"><span>preferences</span></a>
                 <a href="faq.html" class="menu"><span>faq</span></a>
                 <a href="contact.html" class="menu"><span>contacts</span></a>
             </div>
@@ -36,13 +37,21 @@
     </div>
     <!-- content -->
     <div id="content">  
-        <div class="page" style="text-align:center;">
-            <h1>Oops</h1>
-            <p>
-                We've encountered a problem while talking to Twitter.<br/>
-                You can <a style="font-weight: bold" href="/oauth/login">try again</a> now or little later. If problem persists, please 
-                <a style="font-weight: bold" id="contactus" href="javascript:;">let us know</a>.
-            </p>
+        <div class="page">
+            <div class="error">
+                <div class="red">                    
+                    <b class="gtop"><b class="gb1"></b><b class="gb2"></b><b class="gb3"></b><b class="gb4"></b></b>
+                    <div class="group-box-content"> 
+                        <h1 class="red-txt">Oops</h1>
+                        <p>
+                            We've encountered a problem while talking to Twitter.<br/>
+                            You can <a class="red-txt" style="font-weight: bold" href="/oauth/login">try again</a> now or little later. If problem persists, please 
+                            <a class="red-txt" style="font-weight: bold" id="contactus" href="javascript:;">let us know</a>.
+                        </p>
+                    </div><!--group-box-content-->
+                    <b class="gbottom"><b class="gb4"></b><b class="gb3"></b><b class="gb2"></b><b class="gb1"></b></b>     
+                </div><!--group-box-->
+            </div>
         </div>
         <div id="faq" class="page" style="display:none"></div>
         <div id="about" class="page"></div>
@@ -54,6 +63,7 @@
         <div class="bmenu">
             <a href="about.html">About</a>&nbsp;&nbsp;|&nbsp;
             <a href="/">My Groups</a>&nbsp;&nbsp;|&nbsp;
+            <span class="prefsmenu menulink" style="display:none"><a href="javascript:;">Preferences</a>&nbsp;&nbsp;|&nbsp;</span>
             <a href="faq.html">FAQ</a>&nbsp;&nbsp;|&nbsp;
             <a href="contact.html">Contact Tweetonica</a>
         </div> 
