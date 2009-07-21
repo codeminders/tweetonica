@@ -21,12 +21,6 @@ handlers:
 - url: /oauth/(.*)
   script: oauth.py
 
-- url: /mockapi
-  script: mockapi.py
-
-- url: /test
-  script: test.py
-
 - url: /
   static_files: static/index.html
   upload: static/index.html
@@ -36,6 +30,11 @@ handlers:
   upload: static/favicon.ico
   mime_type: image/x-icon
   expiration: 365d
+
+- url: /robots.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+  expiration: 7d
 
 - url: /
   static_dir: static

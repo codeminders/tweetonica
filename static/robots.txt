@@ -1,0 +1,5 @@
+User-agent: *
+Disallow: /opml/
+Disallow: /feed/
+Disallow: /oauth/
+Disallow: /api/
