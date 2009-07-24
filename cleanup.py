@@ -13,14 +13,14 @@ class CleanupHandler(webapp.RequestHandler):
         self._removeOldStatusRecords()
 
     def _removeOldStatusRecords(self):
-        logging.info("Removing old status updates")
         since = datetime.datetime.now()-constants.BACK_ENTRIES
+        logging.info("Removing status updates older then %s " % since.strftime('%Y-%m-%d %H:%M:%S'))
         rs = data.StatusUpdate.gql("WHERE created_at < :1",\
-                                   since.strftime('DATETIME(%Y-%m-%d %H:%M:%S)')
+                                   since.strftime("DATETIME('%Y-%m-%d %H:%M:%S')")
                                    )
         n = 0
         for r in rs:
-            logging.debug("Removing entry %d" %r.id)
+            logging.debug("Removing entry %d, created at: %s" % (r.id, r.created_at.strftime('%Y-%m-%d %H:%M:%S')))
             r.delete()
             n = n + 1
         logging.info("%d entries deleted" % n)
