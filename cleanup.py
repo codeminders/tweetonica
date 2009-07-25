@@ -15,9 +15,7 @@ class CleanupHandler(webapp.RequestHandler):
     def _removeOldStatusRecords(self):
         since = datetime.datetime.now()-constants.BACK_ENTRIES
         logging.info("Removing status updates older then %s " % since.strftime('%Y-%m-%d %H:%M:%S'))
-        rs = data.StatusUpdate.gql("WHERE created_at < :1",\
-                                   since.strftime("DATETIME('%Y-%m-%d %H:%M:%S')")
-                                   )
+        rs = data.StatusUpdate.gql("WHERE created_at < :1", since)
         n = 0
         for r in rs:
             logging.debug("Removing entry %d, created at: %s" % (r.id, r.created_at.strftime('%Y-%m-%d %H:%M:%S')))
