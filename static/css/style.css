@@ -152,8 +152,8 @@ a.grclosed, a.grclosed-hl {
         opacity:0.7;
 }
 
-.add-group { margin:10px auto; padding:0; text-align:center; font-weight: bold;}
-.add-group a { padding:0 15px 0 0; *padding:0 30px 0 0;  }
+.add-group,.post-tweet { margin:10px auto; padding:0; text-align:center; font-weight: bold;}
+.add-group a,.post-tweet a { padding:0 15px 0 0; *padding:0 30px 0 0;  }
 
 /* TODO */
 .error {
@@ -314,7 +314,7 @@ red .gb2, .red .gb3, .red .gb4 {background-color:#FFF; border-left:1px solid #ff
 .purple-txt {color:#6e02b5; font-weight:bold;}
 .purple .gb2, .purple .gb3, .purple .gb4 {background-color:#FFF; border-left:1px solid #8a26cc; border-right:1px solid #8a26cc;}
 .purple .gb1 {margin:0 5px; background-color:#8a26cc;}
-.purple .group-box-content { border: 0 solid #8a26cc; border-width: 0 1px;}
+.purple .group-box-content, .purple .more-box-content { border: 0 solid #8a26cc; border-width: 0 1px;}
 .purple .input-field {background:#bc90da; border: 1px solid #bc90da;}
 .purple a { color:#660099; font-weight:bold;}
 .purple a:hover { color:#9933cc;}
@@ -325,3 +325,17 @@ red .gb2, .red .gb3, .red .gb4 {background-color:#FFF; border-left:1px solid #ff
 .msg-edit-buttons a { margin:0 0 0 10px;}
 .msg-date {color:#999; font-style:italic; font-size: 11px; padding-left:5px;}
 .usermsg .userinfo_pic { margin-bottom:0; }
+
+.lt-purple .gb2, .lt-purple .gb3, .lt-purple .gb4 {background-color:#f3e1ff;}
+.dk-purple .gb2, .dk-purple .gb3, .dk-purple .gb4 {background-color:#d1b1e5;}
+.more-box-content { text-align:center; color:#6e02b5; background: #d1b1e5 url(images/bt-line.png) repeat-x; min-height:22px;}
+
+.direct-msg, .new-tweet {float: left; clear:left; width: 16em; color:#427700; padding:10px;}
+.direct-msg label, .new-tweet label {font-size:12px;}
+.direct-msg textarea, .new-tweet textarea{ clear:both; width:100%; height:4em; margin:3px 0}
+.number {float:right; color:#bce384; font:bold 16px/20px Verdana, Arial, Helvetica, sans-serif; *margin-top:-18px;}
+
+.color-txt {color:#528b00; font-weight:bold;}
+.purple .color-txt {color:#6e02b5;}
+
+.feed-plain-text {display:none;}

@@ -1,6 +1,6 @@
 import os
 
-import datetime
+import datetime, time
 import logging
 from urllib2 import HTTPError
 from uuid import uuid4
@@ -15,7 +15,9 @@ import data
 import queries
 import constants
 import misc
+import timeline
 from oauth import OAuthClient
+from formatting import itemHTML
 
 
 """ Timeline update frequency. Update no more often than this """
@@ -29,6 +31,7 @@ ERR_GROUP_ALREADY_EXISTS = 104
 ERR_NO_SUCH_GROUP = 105
 ERR_NO_SUCH_FRIEND = 106
 ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED = 107
+
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
@@ -254,7 +257,62 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                 s.group = d
                 s.put()
         g.delete()
+
+    def json_get_feed(self, auth_token=None, group_name=None, offset = 0):
+        """ Feed entries for a given group """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'get_feed(%s, %d)\' invoked for user %s' % (group_name, offset, u.screen_name))
+
+        timeline.updateTimeLine(u)
+
+        g = queries.getGroupByName(group_name, u)
+        if not g:
+            logging.warning("Req. non-existing group '%s' for user '%s'" % \
+                            (group, u.screen_name))
+            raise json.JSONRPCError("Group %s does not exists" % group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+            
+        tl = queries.getGroupTimeline(g, 20, offset)
+
+        ret = []
+        for e in tl:
+            ret.append({'id' : e.id,
+                        'text' : e.text,
+                        'html' : itemHTML(e, False), 
+                        'from' : {'screen_name' : e.from_friend.screen_name, 
+                                  'real_name' : e.from_friend.real_name,
+                                  'profile_image_url' : e.from_friend.profile_image_url}, 
+                        'created_at': long(time.mktime(e.created_at.timetuple()))})
+        return ret
         
+    def json_post_tweet(self, auth_token=None, message=None, in_reply_to=None):
+        """ Posts a tweet """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'post_tweet()\' invoked for user %s' % (u.screen_name))
+
+        t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
+        try:
+            if in_reply_to == '':
+                in_reply_to = None
+            f = t.PostUpdate(message, in_reply_to)
+        except Exception:
+            logging.exception("Post failed")
+            raise json.JSONRPCError("Post failed",
+                                    code=ERR_TWITTER_COMM_ERROR)
+
+    def json_post_direct_tweet(self, auth_token=None, to=None, message=None):
+        """ Posts a tweet """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'post_direct_tweet(%s)\' invoked for user %s' % (to, u.screen_name))
+
+        t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
+        try:
+            f = t.PostDirectMessage(to, message)
+        except Exception:
+            logging.exception("Direct post failed")
+            raise json.JSONRPCError("Direct post failed",
+                                    code=ERR_TWITTER_COMM_ERROR)
+
 
     # -- implementation method below  ---
 

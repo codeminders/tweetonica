@@ -91,7 +91,7 @@ MAPPERS = [
     ]
 
 
-def itemHTML(e):
+def itemHTML(e, decorate = True):
     """ Format tweet as HTML """
     tweet = e.text
 
@@ -127,12 +127,13 @@ def itemHTML(e):
     tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
 
     # link to sender
-    tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr>%s'  % (
-                            e.from_friend.screen_name,
-                            e.from_friend.screen_name,
-                            tweet,
-                            footer(e)
-                            )
+    if decorate:
+        tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr>%s'  % (
+                                e.from_friend.screen_name,
+                                e.from_friend.screen_name,
+                                tweet,
+                                footer(e)
+                                )
     return tweet
 
 def _icon_embed(name, link, alt):
