@@ -97,7 +97,7 @@ $(document).ready(function() {
 
                 var btn_reply = $('<a href="javascript:;">').click(function(e) {
                     var container = $(this).parents('.usermsg');
-                    set_post_text('@' + $('.feed-author-name', container).text() + ' ' + $('.feed-plain-text', container).text());
+                    set_post_text('@' + $('.feed-author-name', container).text());
                     $('#reply-to-status-id').val(container.attr('id').substring(4));
                     $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
                     e.stopPropagation();
@@ -428,6 +428,7 @@ $(document).ready(function() {
                 $('.tip').hide();
                 $('.group-button a').hide();
                 $('#group-box').addClass('purple');
+                $('#view-style').hide();
                 load_feed($('#groups a.gropen').data('groupname'), 0);
             } else if (id == 'manage') {
                 $('#groupmembers_feed').hide();
@@ -436,6 +437,7 @@ $(document).ready(function() {
                 $('.post-tweet').hide();
                 $('.tip').show();
                 $('.group-button a').show();
+                $('#view-style').show();
                 $('#group-box').removeClass('purple');
             }
         }
@@ -785,6 +787,7 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         width: 300,
+        title: 'Direct Message',
         open: function() {
             $('object,embed').hide();
             setTimeout(function() {$('#direct-message-text').focus()}, 100);
