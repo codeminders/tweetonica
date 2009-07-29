@@ -17,6 +17,133 @@ $(document).ready(function() {
         return name;
     }
 
+    var format_date = function(s) {
+        var d = new Date();
+        d.setTime(s * 1000 - d.getTimezoneOffset() * 60);
+        var now = new Date();
+        var delta = Math.max(0, ((new Date()).getTime() - d.getTime()) / 1000);
+        if (delta < 20)
+            return 'less than 20 seconds ago';
+        else if (delta >= 20 && delta <= 50)
+            return 'half a minute ago';
+        else if (delta > 50 && delta <= 60)
+            return 'less then a minute ago';
+        else if (delta > 60 && delta <= 48 * 60)
+            return 'about ' + Math.ceil(delta / 60) + ' minutes ago';
+        else if (delta > 48 * 60 && delta <= 90 * 60)
+            return 'about a hour ago';
+        else if (delta > 90 * 60 && delta < 23 * 3600 + 31 * 60)
+            return Math.ceil(delta / 3600) + ' hours ago';
+        else if (delta >= 23 * 3600 + 31 * 60 && delta < 30 * 24 * 3600)
+            return Math.ceil(delta / (24 * 3600)) + ' days ago';
+        return d.getMonth() + '/' + d.getDate() + '/' + d.getFullYear();
+    }
+
+    var set_post_text = function(s) {
+        if (s.length > 140)
+            s = s.substring(0, 140);
+        $('#message-text').val(s);
+        $('#chars-left').text(140 - s.length);
+    }
+
+    var check_message = function() {
+       var message = $('#message-text').val();
+       if (message.length >= 140)
+       {
+           message = message.substring(0, 140);
+           $('#message-text').val(message);
+       }
+       $('#chars-left').text(140 - message.length);
+    }
+
+    var direct_check_message = function() {
+       var message = $('#direct-message-text').val();
+       if (message.length >= 140)
+       {
+           message = message.substring(0, 140);
+           $('#direct-message-text').val(message);
+       }
+       $('#direct-chars-left').text(140 - message.length);
+    }
+
+
+    var load_feed = function(g, offset) {
+        $('#feed_anchor').show();
+        $('#btn-morefeed').hide();
+        tweetonica.api.get_feed(g, offset, function(feed) {
+            for (var i = 0; i < feed.length; i++) {
+
+                var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
+                container.append('<div class="userinfo_pic"><img src="' + feed[i].from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
+                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed[i].from.screen_name + '</span></a>');
+                container.append('<span class="msg-date">' + format_date(feed[i].created_at) + '</span><br/>');
+                container.append('<span class="feed-text">' + feed[i].html + '</span>');
+                container.append($('<span class="feed-plain-text"></span>').text(feed[i].text));
+
+                var buttons = $('<div class="msg-edit-buttons">');
+                var btn_direct = $('<a href="javascript:;">').click(function(e) {
+                    var container = $(this).parents('.usermsg');
+                    $('#direct-message-text').val('');
+                    $('#direct-chars-left').text(140);
+                    var to = $('.feed-author-name', container).text();
+                    $('.direct-msg label span').text(to);
+                    $('#target-user').val(to);
+                    $('#direct-post-dialog').dialog('open');
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+                btn_direct.append('<img src="/images/direct_msg.png" alt="Direct Message"/>');
+                buttons.append(btn_direct);
+
+                var btn_reply = $('<a href="javascript:;">').click(function(e) {
+                    var container = $(this).parents('.usermsg');
+                    set_post_text('@' + $('.feed-author-name', container).text() + ' ' + $('.feed-plain-text', container).text());
+                    $('#reply-to-status-id').val(container.attr('id').substring(4));
+                    $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+                btn_reply.append('<img src="/images/reply.png" alt="Reply"/>');
+                buttons.append(btn_reply);
+
+                var btn_retweet = $('<a href="javascript:;">').click(function(e) {
+                    var container = $(this).parents('.usermsg');
+                    set_post_text('RT @' + $('.feed-author-name', container).text() + ' ' + $('.feed-plain-text', container).text());
+                    $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
+                    e.stopPropagation();
+                    e.preventDefault();
+
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+                btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
+                buttons.append(btn_retweet);
+                container.append(buttons);
+
+                $('.feed-text a', container).attr('target', '_blank');
+
+                $('#feed_anchor').before(container);
+                $('#feed_anchor').before('<div class="line"></div>');
+
+            }
+            $('#feed_anchor').hide();
+            $('#btn-morefeed').show().unbind('click').click(function(e) {
+                load_feed(g, $('.usermsg').size());
+                e.stopPropagation();
+                e.preventDefault();
+            });
+
+
+        }, function(error) {
+            $('#feed_anchor').hide();
+            $('#btn-morefeed').show().unbind('click').click(function(e) {
+                load_feed(g, $('.usermsg').size());
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
+    }
+
     var render_group = function(g) {
 
         var container = $('<div class="group-background groupentry">').droppable({
@@ -124,7 +251,7 @@ $(document).ready(function() {
                 show_tooltip(e, $(this));
             })
         }});
-        $('#groupmembers').append(container);
+        $('#groupmembers_members').append(container);
     }
 
     var move_user = function(screen_name, group_name) {
@@ -237,9 +364,14 @@ $(document).ready(function() {
         $('#info_groupfeed').attr('href', g.rssurl);
         $('#info_groupfeed_text').val(g.rssurl);
 
-        $('#groupmembers').empty();
+        $('#groupmembers_members').empty();
+        $('#groupmembers_feed .usermsg, #groupmembers_feed .line').remove();
         for (var i = 0; i< g.users.length; i++) {
             render_user(g.users[i], g);
+        }
+
+        if ($('#groupmembers_feed').css('display') != 'none') {
+            load_feed(g.name, 0);
         }
     }
 
@@ -276,17 +408,36 @@ $(document).ready(function() {
     };
 
     var open_page = function(id) {
-        if (id != 'manage' && id != 'prefs' || tweetonica.api.token) {
+        if (id != 'manage' && id != 'prefs' && id != 'threads' || tweetonica.api.token) {
             $('.menu').removeClass('act');
             if (id == 'progress')
                 $('#mmanage').addClass('act');
             else
                 $('#m' + id).addClass('act');
             $('.page').hide();
-            var p = $('#' + id);
-            if (id != 'manage' && id != 'progress' && id != 'prefs')
+            var p = $('#' + (id == 'threads' ? 'manage' : id));
+            if (id != 'manage' && id != 'progress' && id != 'prefs' && id != 'threads')
                p.load(id + '.html div.' + id);
             p.show();
+
+            if (id == 'threads') {
+                $('#groupmembers_feed').show();
+                $('#groupmembers_members').hide();
+                $('.add-group').hide();
+                $('.post-tweet').show();
+                $('.tip').hide();
+                $('.group-button a').hide();
+                $('#group-box').addClass('purple');
+                load_feed($('#groups a.gropen').data('groupname'), 0);
+            } else if (id == 'manage') {
+                $('#groupmembers_feed').hide();
+                $('#groupmembers_members').show();
+                $('.add-group').show();
+                $('.post-tweet').hide();
+                $('.tip').show();
+                $('.group-button a').show();
+                $('#group-box').removeClass('purple');
+            }
         }
         else {
             document.location.href = '/oauth/login';
@@ -327,7 +478,7 @@ $(document).ready(function() {
             sync_groups(true, function(state) {
                 refresh_groups(function() {
                     var tab = $.cookie('tt.tab');
-                    open_page(tab != 'prefs' ? 'manage' : 'prefs');
+                    open_page(tab == 'prefs' ? 'prefs' : (tab == 'threads' ? 'threads' : 'manage'));
                     $.cookie('tt.tab', null);
                 });
             });
@@ -574,7 +725,73 @@ $(document).ready(function() {
         modal: true,
         resizable: false,
         title: 'Error',
-        width: 360
+        width: 360,
+        open: function() {
+            $('object,embed').hide();
+        },
+        close: function() {
+            $('object,embed').show();
+        }
+    });
+
+    $('#post-dialog').dialog({
+        buttons: {
+            'Cancel': function() {
+                $('#post-dialog').dialog('close');
+            },
+            'OK': function() {
+                var text     = $('#message-text').val();
+                var reply_to = $('#reply-to-status-id').val();
+                tweetonica.api.post_tweet(text, reply_to, function(results) {
+                    $('#post-dialog').dialog('close');
+                }, function(error) {
+                    $('#post-dialog').dialog('close');
+                    $('#error-description').text('Sorry, we were unable to post your tweet. Please try again later');
+                    $('#error-dialog').dialog('open');
+                });
+            }
+        },
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        width: 300,
+        open: function() {
+            $('object,embed').hide();
+            setTimeout(function() {$('#message-text').focus()}, 100);
+        },
+        close: function() {
+            $('object,embed').show();
+        }
+    });
+
+    $('#direct-post-dialog').dialog({
+        buttons: {
+            'Cancel': function() {
+                $('#direct-post-dialog').dialog('close');
+            },
+            'OK': function() {
+                var text = $('#direct-message-text').val();
+                var to   = $('#target-user').val();
+                tweetonica.api.post_direct_tweet(to, text, function(results) {
+                    $('#direct-post-dialog').dialog('close');
+                }, function(error) {
+                    $('#direct-post-dialog').dialog('close');
+                    $('#error-description').text('Sorry, we were unable to post your tweet. Please try again later');
+                    $('#error-dialog').dialog('open');
+                });
+            }
+        },
+        autoOpen: false,
+        modal: true,
+        resizable: false,
+        width: 300,
+        open: function() {
+            $('object,embed').hide();
+            setTimeout(function() {$('#direct-message-text').focus()}, 100);
+        },
+        close: function() {
+            $('object,embed').show();
+        }
     });
 
     // handlers
@@ -703,6 +920,26 @@ $(document).ready(function() {
         open_page('contact');
     });
 
+    $('#btn-morefeed').mouseover(function() {
+        $('.lt-purple, .dk-purple').toggleClass('lt-purple').toggleClass('dk-purple');
+        $('.more-box-content', $(this)).css('background', '#f3e1ff url(/css/images/bt-line-reverse.png) repeat-x');
+    }).mouseout(function() {
+        $('.lt-purple, .dk-purple').toggleClass('lt-purple').toggleClass('dk-purple');
+        $('.more-box-content', $(this)).css('background', null);
+    });
+
+    $('.post-tweet').click(function(e) {
+        set_post_text('');
+        $('#reply-to-status-id').val('');
+        $('#post-dialog').dialog('option', 'title', 'New Tweet').dialog('open');
+        e.stopPropagation();
+        e.preventDefault();
+    });
+
+
+    $('#message-text').keyup(check_message).keydown(check_message).change(check_message);
+    $('#direct-message-text').keyup(direct_check_message).keydown(direct_check_message).change(direct_check_message);
+
     if (!$('#staticpage').length) {
         var cookie = $.cookie('oauth.twitter');
         if (cookie) {
@@ -720,6 +957,12 @@ $(document).ready(function() {
             $('#loggedout').hide();
             $('.prefsmenu').show().click(function(e) {
                 $.cookie('tt.tab', 'prefs');
+                document.location.href = '/';
+                e.stopPropagation();
+                e.preventDefault();
+            });
+            $('.threads').click(function(e) {
+                $.cookie('tt.tab', 'threads');
                 document.location.href = '/';
                 e.stopPropagation();
                 e.preventDefault();

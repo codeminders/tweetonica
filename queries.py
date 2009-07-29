@@ -162,8 +162,8 @@ def addNewFriend(u,f,g):
     fo.put()
 
 
-def getGroupTimeline(g, howmany=20):
-    q = data.StatusUpdate.gql("WHERE group = :1 ORDER BY id DESC LIMIT %d" % howmany,\
+def getGroupTimeline(g, howmany=20, offset = 0):
+    q = data.StatusUpdate.gql("WHERE group = :1 ORDER BY id DESC LIMIT %d OFFSET %d" % (howmany, offset),\
                               g.key())
     return q
 

@@ -237,6 +237,66 @@ var tweetonica = {
                 });
         },
 
+        get_feed : function(group_name, offset, success, error) {
+            this.jsonrpc('get_feed', 
+                {
+                    auth_token: this.token,
+                    group_name: group_name,
+                    offset: offset
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
+        post_tweet : function(message, in_reply_to, success, error) {
+            this.jsonrpc('post_tweet', 
+                {
+                    auth_token: this.token,
+                    message: message,
+                    in_reply_to: in_reply_to
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
+        post_direct_tweet : function(to, message, success, error) {
+            this.jsonrpc('post_direct_tweet', 
+                {
+                    auth_token: this.token,
+                    to: to,
+                    message: message
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
         jsonrpc: function(method, parameters, success, error) {
 
             var request = {
