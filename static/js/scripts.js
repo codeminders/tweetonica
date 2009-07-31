@@ -76,16 +76,16 @@ $(document).ready(function() {
                 var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
                 container.append('<div class="userinfo_pic"><img src="' + feed[i].from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
                 container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed[i].from.screen_name + '</span></a>');
-                container.append('<span class="msg-date">' + format_date(feed[i].created_at) + '</span><br/>');
+                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '/status/' + feed[i].id + '" target="_blank"><span class="msg-date">' + format_date(feed[i].created_at) + '</span></a><br/>');
                 container.append('<span class="feed-text">' + feed[i].html + '</span>');
                 container.append($('<span class="feed-plain-text"></span>').text(feed[i].text));
 
-                var buttons = $('<div class="msg-edit-buttons">');
+                var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed[i].id + '">');
                 var btn_direct = $('<a href="javascript:;">').click(function(e) {
-                    var container = $(this).parents('.usermsg');
+                    var id = $(this).parent().attr('id').substring(4);
                     $('#direct-message-text').val('');
                     $('#direct-chars-left').text(140);
-                    var to = $('.feed-author-name', container).text();
+                    var to = $('#msg-' + id + ' .feed-author-name').text();
                     $('.direct-msg label span').text(to);
                     $('#target-user').val(to);
                     $('#direct-post-dialog').dialog('open');
@@ -96,9 +96,9 @@ $(document).ready(function() {
                 buttons.append(btn_direct);
 
                 var btn_reply = $('<a href="javascript:;">').click(function(e) {
-                    var container = $(this).parents('.usermsg');
-                    set_post_text('@' + $('.feed-author-name', container).text());
-                    $('#reply-to-status-id').val(container.attr('id').substring(4));
+                    var id = $(this).parent().attr('id').substring(4);
+                    set_post_text('@' + $('#msg-' + id + ' .feed-author-name').text());
+                    $('#reply-to-status-id').val(id);
                     $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
                     e.stopPropagation();
                     e.preventDefault();
@@ -107,8 +107,8 @@ $(document).ready(function() {
                 buttons.append(btn_reply);
 
                 var btn_retweet = $('<a href="javascript:;">').click(function(e) {
-                    var container = $(this).parents('.usermsg');
-                    set_post_text('RT @' + $('.feed-author-name', container).text() + ' ' + $('.feed-plain-text', container).text());
+                    var id = $(this).parent().attr('id').substring(4);
+                    set_post_text('RT @' + $('#msg-' + id + ' .feed-author-name').text() + ' ' + $('#msg-' + id + ' .feed-plain-text').text());
                     $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
                     e.stopPropagation();
                     e.preventDefault();
@@ -118,12 +118,11 @@ $(document).ready(function() {
                 });
                 btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
                 buttons.append(btn_retweet);
-                container.append(buttons);
-
                 $('.feed-text a', container).attr('target', '_blank');
-
-                $('#feed_anchor').before(container);
-                $('#feed_anchor').before('<div class="line"></div>');
+                var anc = $('#feed_anchor');
+                anc.before(container);
+                anc.before(buttons);
+                anc.before('<div class="line"></div>');
 
             }
             $('#feed_anchor').hide();
@@ -480,7 +479,7 @@ $(document).ready(function() {
             sync_groups(true, function(state) {
                 refresh_groups(function() {
                     var tab = $.cookie('tt.tab');
-                    open_page(tab == 'prefs' ? 'prefs' : (tab == 'threads' ? 'threads' : 'manage'));
+                    open_page(tab == 'prefs' ? 'prefs' : (tab == 'manage' ? 'manage' : 'threads'));
                     $.cookie('tt.tab', null);
                 });
             });
@@ -964,8 +963,8 @@ $(document).ready(function() {
                 e.stopPropagation();
                 e.preventDefault();
             });
-            $('.threads').click(function(e) {
-                $.cookie('tt.tab', 'threads');
+            $('.manage').click(function(e) {
+                $.cookie('tt.tab', 'manage');
                 document.location.href = '/';
                 e.stopPropagation();
                 e.preventDefault();
