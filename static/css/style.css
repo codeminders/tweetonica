@@ -15,7 +15,7 @@ a:hover { color:#690; text-decoration:underline; }
     position:relative;
 }
 
-.logo a { display:block; width:360px; height:88px; background:url(images/logo.png) no-repeat 20px 20px; overflow:hidden; text-indent:-999px;}
+.logo a { display:block; width:360px; height:88px; background:url(images/logo.png) no-repeat 20px 10px; overflow:hidden; text-indent:-999px;}
 
 #menubar {
     position:absolute;
@@ -316,16 +316,13 @@ red .gb2, .red .gb3, .red .gb4 {background-color:#FFF; border-left:1px solid #ff
 .purple .gb1 {margin:0 5px; background-color:#8a26cc;}
 .purple .group-box-content, .purple .more-box-content { border: 0 solid #8a26cc; border-width: 0 1px;}
 .purple .input-field {background:#bc90da; border: 1px solid #bc90da;}
-.purple a { color:#660099; font-weight:bold;}
-.purple a:hover { color:#9933cc;}
-.line { background: url(images/line.gif) repeat-x; width:100%; height:1px; margin:5px 0; clear:both;}
-.usermsg {float:left; margin:10px 10px 0 10px; font:normal 12px/18px Arial, Helvetica, sans-serif;}
-.usermsg a {color:#963fcf;}
-.msg-edit-buttons { float:left; clear:left; margin:10px 0 5px 0;}
+.purple a { color:#963fcf; font-weight:bold; }
+.line { background: url(images/line.gif) repeat-x; width:100%; height:1px; margin:5px 0;clear:both;}
+.msg-edit-buttons { float:right; clear:left; margin:5px 0;}
 .msg-edit-buttons a { margin:0 0 0 10px;}
+.usermsg {float:left; margin:10px 10px 0 10px; font:normal 12px/18px Arial, Helvetica, sans-serif;}
 .msg-date {color:#999; font-style:italic; font-size: 11px; padding-left:5px;}
 .usermsg .userinfo_pic { margin-bottom:0; }
-
 .lt-purple .gb2, .lt-purple .gb3, .lt-purple .gb4 {background-color:#f3e1ff;}
 .dk-purple .gb2, .dk-purple .gb3, .dk-purple .gb4 {background-color:#d1b1e5;}
 .more-box-content { text-align:center; color:#6e02b5; background: #d1b1e5 url(images/bt-line.png) repeat-x; min-height:22px;}
