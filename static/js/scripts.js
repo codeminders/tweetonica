@@ -78,7 +78,6 @@ $(document).ready(function() {
                 container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed[i].from.screen_name + '</span></a>');
                 container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '/status/' + feed[i].id + '" target="_blank"><span class="msg-date">' + format_date(feed[i].created_at) + '</span></a><br/>');
                 container.append('<span class="feed-text">' + feed[i].html + '</span>');
-                container.append($('<span class="feed-plain-text"></span>').text(feed[i].text));
 
                 var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed[i].id + '">');
                 var btn_direct = $('<a href="javascript:;">').click(function(e) {
@@ -108,11 +107,13 @@ $(document).ready(function() {
 
                 var btn_retweet = $('<a href="javascript:;">').click(function(e) {
                     var id = $(this).parent().attr('id').substring(4);
-                    set_post_text('RT @' + $('#msg-' + id + ' .feed-author-name').text() + ' ' + $('#msg-' + id + ' .feed-plain-text').text());
-                    $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
-                    e.stopPropagation();
-                    e.preventDefault();
-
+                    tweetonica.api.get_feed_by_id(id, function(result) {
+                        set_post_text('RT @' + result.from.screen_name + ' ' + result.text);
+                        $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
+                    }, function(error) {
+                        $('#error-description').text('Sorry, we were unable to retrieve feed data, please try again later');
+                        $('#error-dialog').dialog('open');
+                    });
                     e.stopPropagation();
                     e.preventDefault();
                 });
@@ -364,7 +365,7 @@ $(document).ready(function() {
         $('#info_groupfeed_text').val(g.rssurl);
 
         $('#groupmembers_members').empty();
-        $('#groupmembers_feed .usermsg, #groupmembers_feed .line').remove();
+        $('#groupmembers_feed .usermsg, #groupmembers_feed .line, #groupmembers_feed .msg-edit-buttons').remove();
         for (var i = 0; i< g.users.length; i++) {
             render_user(g.users[i], g);
         }
