@@ -257,6 +257,25 @@ var tweetonica = {
                 });
         },
 
+        get_feed_by_id : function(id, success, error) {
+            this.jsonrpc('get_feed_by_id', 
+                {
+                    auth_token: this.token,
+                    id: id
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+        },
+
         post_tweet : function(message, in_reply_to, success, error) {
             this.jsonrpc('post_tweet', 
                 {

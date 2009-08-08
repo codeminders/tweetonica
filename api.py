@@ -31,6 +31,7 @@ ERR_GROUP_ALREADY_EXISTS = 104
 ERR_NO_SUCH_GROUP = 105
 ERR_NO_SUCH_FRIEND = 106
 ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED = 107
+ERR_NO_SUCH_ENTRY = 108
 
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
@@ -277,13 +278,32 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         ret = []
         for e in tl:
             ret.append({'id' : e.id,
-                        'text' : e.text,
                         'html' : itemHTML(e, False), 
                         'from' : {'screen_name' : e.from_friend.screen_name, 
                                   'real_name' : e.from_friend.real_name,
                                   'profile_image_url' : e.from_friend.profile_image_url}, 
                         'created_at': long(time.mktime(e.created_at.timetuple()))})
         return ret
+
+    def json_get_feed_by_id(self, auth_token=None, id = None):
+        """ Feed entries with specified ID """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'get_feed_by_id(%s)\' invoked for user %s' % (id, u.screen_name))
+
+        e = queries.getTimelineById(id, u)
+        if not e:
+            logging.warning("Req. non-existing feed '%s' for user '%s'" % \
+                            (id, u.screen_name))
+            raise json.JSONRPCError("Feed entry %s does not exist" % id,
+                                    code=ERR_NO_SUCH_ENTRY)
+
+        return {'id' : e.id,
+                'text' : e.text,
+                'html' : itemHTML(e, False), 
+                'from' : {'screen_name' : e.from_friend.screen_name, 
+                          'real_name' : e.from_friend.real_name,
+                          'profile_image_url' : e.from_friend.profile_image_url}, 
+                'created_at': long(time.mktime(e.created_at.timetuple()))}
         
     def json_post_tweet(self, auth_token=None, message=None, in_reply_to=None):
         """ Posts a tweet """

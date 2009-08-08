@@ -167,6 +167,18 @@ def getGroupTimeline(g, howmany=20, offset = 0):
                               g.key())
     return q
 
+def getTimelineById(id, u):
+    ''' TODO: does not work '''
+    q = data.StatusUpdate.gql('WHERE id = :1', id)
+    tl = q.fetch(1)
+    if len(tl)==1:
+        if  tl[0].from_friend.user.key() == u.key():            
+            return tl[0]
+        else:
+            return None
+    else:
+        return None
+
 def getUserTimeline(u):
     q = data.Timeline.gql('WHERE user=:1', u.key())
     tl = q.fetch(1)
