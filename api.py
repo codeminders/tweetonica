@@ -30,7 +30,7 @@ ERR_TWITTER_COMM_ERROR = 103
 ERR_GROUP_ALREADY_EXISTS = 104
 ERR_NO_SUCH_GROUP = 105
 ERR_NO_SUCH_FRIEND = 106
-ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED = 107
+ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED = 107
 ERR_NO_SUCH_ENTRY = 108
 
 
@@ -184,6 +184,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'new_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
+        if group_name.startswith(SPECIAL_GROUP_PREFIX):
+            raise json.JSONRPCError("User-defined group name could not start with '%s'" % SPECIAL_GROUP_PREFIX,
+                                    code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
+
         #TODO: transacton
         if queries.getGroupByName(group_name, u)!=None:
             raise json.JSONRPCError("Group %s already exists" % group_name,
@@ -209,10 +213,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'rename_group(%s,%s)\' invoked for user %s' % (old_group_name, new_group_name, u.screen_name))
 
-        if old_group_name==constants.DEFAULT_GROUP_NAME or \
-           new_group_name==constants.DEFAULT_GROUP_NAME:
-            raise json.JSONRPCError("Could not modify default group",
-                                    code=ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED)
+        if old_group_name.startswith(SPECIAL_GROUP_PREFIX) or \
+           new_group_name.startswith(SPECIAL_GROUP_PREFIX):
+            raise json.JSONRPCError("Could not modify special group",
+                                    code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
         #TODO: transacton
         g = queries.getGroupByName(old_group_name, u)
         if g==None:
@@ -237,9 +241,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'delete_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
-        if group_name==constants.DEFAULT_GROUP_NAME:
-            raise json.JSONRPCError("Could not modify default group",
-                                    code=ERR_DEFAULT_GROUP_MODIFICATION_NOT_PERMITTED)
+        if group_name.startswith(SPECIAL_GROUP_PREFIX):
+            raise json.JSONRPCError("Could not modify special group",
+                                    code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
         #TODO: transacton
         g = queries.getGroupByName(group_name, u)
         if g==None:
