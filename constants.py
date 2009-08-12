@@ -2,7 +2,8 @@
 
 import datetime
 
-DEFAULT_GROUP_NAME = "__ALL__"
+SPECIAL_GROUP_PREFIX = '__'
+DEFAULT_GROUP_NAME = SPECIAL_GROUP_PREFIX + "ALL__"
 
 """ URL path of WSGI app for feed.py. Witout trailing slash! """
 FEED_PATH_PREFIX = "/feed"
