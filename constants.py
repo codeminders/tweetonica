@@ -1,5 +1,6 @@
 """ Various constants """
 
+
 import datetime
 
 SPECIAL_GROUP_PREFIX = '__'
