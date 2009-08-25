@@ -6,6 +6,8 @@ import datetime
 SPECIAL_GROUP_PREFIX = '__'
 DEFAULT_GROUP_NAME = SPECIAL_GROUP_PREFIX + "ALL__"
 
+REPLIES_GROUP_NAME = SPECIAL_GROUP_PREFIX + "REPLIES__"
+
 """ URL path of WSGI app for feed.py. Witout trailing slash! """
 FEED_PATH_PREFIX = "/feed"
 
@@ -27,7 +29,7 @@ OAUTH_APP_SETTINGS = {
 
     'consumer_key': 'K9qqChOFmpGp7e4LlA1g',
     'consumer_secret': 'DxcDnyLEeOOSXteiZf0gntHXQMkfeUoCgIiKro',
-    
+
     'request_token_url': 'http://twitter.com/oauth/request_token',
     'access_token_url': 'http://twitter.com/oauth/access_token',
     'user_auth_url': 'http://twitter.com/oauth/authorize',
@@ -45,7 +47,7 @@ BACK_ENTRIES = datetime.timedelta(days=7)
 MOBYPIC_DEV_KEY='7mV3iBuSDu33ERyi'
 
 # web-related
-#SITE_BASE_URL = 'http://tweetonica.com'
+SITE_BASE_URL = 'http://tweetonica.com'
 #SITE_BASE_URL = 'http://localhost:8080'
-SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
+#SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
 ICONS_PATH = "/images/"

@@ -36,9 +36,9 @@ class OPMLHandler(webapp.RequestHandler):
             if not u:
                 self.response.set_status(403)
                 return
-        
+
         self._generateOPML(u)
-    
+
     def post(self):
         self.response.set_status(405)
         self.response.headers.add_header('Allow', 'GET')
@@ -87,8 +87,8 @@ class OPMLHandler(webapp.RequestHandler):
         for x in res.keys():
             rssurl = misc.getGroupRSS_URL(u.screen_name,
                                           u.rss_token,
-                                          x, 
-                                          u.use_HTTP_auth)            
+                                          x,
+                                          u.use_HTTP_auth)
             outline = Outline("", created=0.0)
             outline.attrs["description"] = misc.getGroupRSS_title(u.screen_name, x)
             outline.attrs["xmlUrl"] = rssurl
@@ -100,7 +100,7 @@ class OPMLHandler(webapp.RequestHandler):
                 lastupdated = res[x]['memberships_last_updated']
         opml.head.date_modified = lastupdated.strftime("%a, %d %b %Y %H:%M:%S GMT")
         self.response.out.write(str(xmldoc))
-        
+
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)

@@ -34,11 +34,12 @@ def getGroupRSS_URL(screen_name, rss_token, group_name, use_HTTP_auth):
 def getGroupTitle(group_name):
     if group_name == constants.DEFAULT_GROUP_NAME:
         return "Uncategorized"
+    if group_name == constants.REPLIES_GROUP_NAME:
+        return "Replies"
     return group_name
 
 def getGroupRSS_title(screen_name, group_name):
     return "%s/%s @tweetonica" % (screen_name, getGroupTitle(group_name))
-
 
 def getOPML_URL(screen_name, rss_token, use_HTTP_auth):
     if use_HTTP_auth:
@@ -73,5 +74,5 @@ def HTTP_authenticate():
     (username,password) = ahds
     logging.debug("Authenticating user '%s' with password '%s'" % \
                   (username,password))
-    
+
     return queries.getUserByScreenNameAndRSSTOken(username, password)

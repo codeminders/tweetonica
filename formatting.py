@@ -29,7 +29,7 @@ def stockMapper(m):
     except:
         logging.exception("Error looking up stock symbol '%s'" % symbol)
         valid = False
-        
+
     if valid:
         return '<a href="http://stocktwits.com/t/%s" target="_blank">$%s</a>%s' % \
                (quote(symbol), symbol, ws);
@@ -86,7 +86,7 @@ MAPPERS = [
     (re.compile(r'^http://((www\.)?youtube\.com)/v/([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/watch\?v=([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?mobypicture\.com)/\?([^/\?]+)$'), mobypictureMapper),
-    
+
     (re.compile(r'^(.+)$'), defaultMapper)
     ]
 
@@ -120,17 +120,22 @@ def itemHTML(e, decorate = True):
         prev = to
         res += stockMapper(m)
     tweet = res + tweet[prev:]
-    
+
     # @usernames
     tweet = re.sub(r'(\A|\s)@(\w+)', r'\1<a href="http://www.twitter.com/\2">@\2</a>', tweet)
     # #hashtags
     tweet = re.sub(r'(\A|\s)#(\w+)', r'\1<a href="http://search.twitter.com/search?q=%23\2">#\2</a>', tweet)
 
     # link to sender
+    if hasattr(e, 'from_friend'):
+        name = e.from_friend.screen_name
+    elif hasattr(e, 'to'):
+        name = e.author
+
     if decorate:
         tweet = '<a href="http://twitter.com/%s">%s</a>: %s\n<br><hr>%s'  % (
-                                e.from_friend.screen_name,
-                                e.from_friend.screen_name,
+                                name,
+                                name,
                                 tweet,
                                 footer(e)
                                 )
@@ -145,17 +150,21 @@ def _icon_embed(name, link, alt):
             alt,alt)
 
 def footer(e):
+    if hasattr(e, 'from_friend'):
+        name = e.from_friend.screen_name
+    elif hasattr(e, 'to'):
+        name = e.author
     reply_link = "http://twitter.com/home?status=@%s%%20&in_reply_to_status_id=%d&in_reply_to=%s" % \
-                 (e.from_friend.screen_name, e.id, e.from_friend.screen_name)
-    
+                 (name, e.id, name)
+
     rt_link = "http://twitter.com/home?status=RT%%20@%s:%%20%s&in_reply_to_status_id=%d&in_reply_to=%s" %  \
-              (e.from_friend.screen_name,
+              (name,
                quote(e.text),
                e.id,
-               e.from_friend.screen_name)
-    
+               name)
+
     msg_link = "http://twitter.com/direct_messages/create/%s" % \
-               (e.from_friend.screen_name)
+               (name)
 
     return \
            _icon_embed('reply.png',reply_link,"Reply") + \
@@ -163,7 +172,7 @@ def footer(e):
            _icon_embed('retweet.png',rt_link,"Re-tweet") + \
            "&nbsp;&nbsp;&nbsp;&nbsp;" +\
            _icon_embed('direct_msg.png',msg_link,"Direct message")
-    
+
 
 
 

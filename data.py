@@ -14,7 +14,7 @@ class User(db.Model):
     use_HTTP_auth =  db.BooleanProperty()
     user_created = db.DateTimeProperty(auto_now_add=True)
     friendlist_last_updated = db.DateTimeProperty()
-    id = db.IntegerProperty(required=True) 
+    id = db.IntegerProperty(required=True)
     # Misc user preferences.
     remember_me =  db.BooleanProperty()
     icons_only =  db.BooleanProperty()
@@ -27,6 +27,11 @@ class Timeline(db.Model):
     user = db.ReferenceProperty(User)
     timeline_last_updated = db.DateTimeProperty()
     timeline_max_id = db.IntegerProperty()
+
+class Replies(db.Model):
+    user = db.ReferenceProperty(User)
+    replies_last_updated = db.DateTimeProperty()
+    replies_max_id = db.IntegerProperty()
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
@@ -54,6 +59,17 @@ class StatusUpdate(db.Model):
     # foreing keys
     group = db.ReferenceProperty(Group)
     from_friend = db.ReferenceProperty(Friend)
+
+class Reply(db.Model):
+    id = db.IntegerProperty(required=True) # primary key
+    to = db.ReferenceProperty(User)
+    text = db.StringProperty(required=True, multiline=True)
+    created_at = db.DateTimeProperty()
+    truncated = db.BooleanProperty()
+    in_reply_to_status_id = db.IntegerProperty()
+    in_reply_to_user_id = db.IntegerProperty()
+    in_reply_to_screen_name = db.StringProperty()
+    author = db.StringProperty(required=True, multiline=False)
 
 class OAuthRequestToken(db.Model):
     """OAuth Request Token."""
