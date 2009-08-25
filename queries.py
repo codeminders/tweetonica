@@ -107,7 +107,7 @@ def createOrUpdateUser(screen_name,
                            timeline_max_id=-1,
                            parent=u)
         tl.put()
-        
+
         return u
 
 def getDefaultGroup(u):
@@ -142,7 +142,7 @@ def updateFriend(u,f,xf):
     if xf.real_name != f.name:
         xf.real_name = f.name
         changed = True
-        
+
     if xf.profile_image_url != f.profile_image_url:
         xf.profile_image_url = f.profile_image_url
         changed = True
@@ -172,7 +172,7 @@ def getTimelineById(id, u):
     q = data.StatusUpdate.gql('WHERE id = :1', id)
     tl = q.fetch(1)
     if len(tl)==1:
-        if  tl[0].from_friend.user.key() == u.key():            
+        if  tl[0].from_friend.user.key() == u.key():
             return tl[0]
         else:
             return None
@@ -194,3 +194,20 @@ def getUserTimeline(u):
         tl.put()
         return tl
 
+def getUserReplies(user):
+    query = data.Replies.gql('WHERE user=:1', user.key())
+    replies = query.fetch(1)
+    if len(replies):
+        return replies[0]
+    else:
+        tl = data.Replies(user=user,
+                          replies_last_updated = None,
+                          replies_max_id=-1,
+                          parent=user)
+        tl.put()
+        return tl
+
+def getReplies(user):
+    query = data.Reply.gql('WHERE to=:1', user.key())
+    replies = query.fetch(1)
+    return replies
