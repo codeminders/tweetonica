@@ -167,10 +167,11 @@ def getGroupTimeline(g, howmany=20, offset = 0):
                               g.key())
     return q
 
-def getTimelineById(id, u):
+def getTimelineById(uid, u):
     ''' TODO: does not work '''
-    q = data.StatusUpdate.gql('WHERE id = :1', id)
+    q = data.StatusUpdate.gql('WHERE id =:1 ', int(uid))
     tl = q.fetch(1)
+    logging.debug("Got %d items" % len(tl))
     if len(tl)==1:
         if  tl[0].from_friend.user.key() == u.key():
             return tl[0]
@@ -209,5 +210,5 @@ def getUserReplies(user):
 
 def getReplies(user):
     query = data.Reply.gql('WHERE to=:1', user.key())
-    replies = query.fetch(1)
+    replies = query.fetch(100)
     return replies
