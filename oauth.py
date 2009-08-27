@@ -26,6 +26,7 @@ CLEANUP_BATCH_SIZE = 100
 EXPIRATION_WINDOW = timedelta(seconds=60*60*1) # 1 hour
 
 from constants import OAUTH_APP_SETTINGS
+from constants import SITE_BASE_URL
 from data import OAuthRequestToken
 import queries
 
@@ -115,8 +116,9 @@ class OAuthClient(object):
         proxy_id = self.get_cookie()
 
         if proxy_id:
-            self.expire_cookie()
-            return "FOO%rFF" % proxy_id
+            return 'LOGGED_IN'
+            #self.expire_cookie()
+            #return "FOO%rFF" % proxy_id
 
         return self.get_request_token()
 
@@ -170,11 +172,11 @@ class OAuthClient(object):
             logging.exception("Error parsing twitter response token '%s'" % \
                               (token_info))
             raise
-            
+
         self.token = FakeToken()
         self.token.oauth_token = p['oauth_token']
         self.token.oauth_token_secret = p['oauth_token_secret']
-        
+
         cred = self.get('/account/verify_credentials')
 
         queries.createOrUpdateUser(cred['screen_name'],
@@ -249,19 +251,19 @@ class OAuthClient(object):
 
     def set_cookie(self, value, path='/'):
         self.handler.response.headers.add_header(
-            'Set-Cookie', 
+            'Set-Cookie',
             '%s=%s; path=%s; expires="Fri, 31-Dec-2021 23:59:59 GMT"' %
             ('oauth.twitter', value, path)
             )
 
     def expire_cookie(self, path='/'):
         self.handler.response.headers.add_header(
-            'Set-Cookie', 
+            'Set-Cookie',
             '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
             ('oauth.twitter', path)
             )
         self.handler.response.headers.add_header(
-            'Set-Cookie', 
+            'Set-Cookie',
             '%s=; path=%s; expires="Fri, 31-Dec-1999 23:59:59 GMT"' %
             ('t.uname', path)
             )
@@ -272,13 +274,19 @@ class OAuthHandler(RequestHandler):
         try:
             client = OAuthClient(self)
             if action in client.__public__:
-                self.response.out.write(getattr(client, action)())
+                resp = getattr(client, action)()
+                if resp and resp == 'LOGGED_IN':
+                    self.redirect(SITE_BASE_URL)
+                    return
+                else:
+                    self.response.out.write(resp)
             else:
+                #self.response.out.write(client.get_cookie())
                 self.response.out.write(client.login())
         except:
             logging.exception("An error occured while talking to Twitter")
             self.redirect('/error.html')
-            
+
 
 def main():
 

@@ -13,7 +13,7 @@ handlers:
   script: api.py
 
 - url: /feed/(.+)/(.+)
-  script: feed.py
+  script: rss.py
 
 - url: /opml/(.+)
   script: opmlfeed.py
