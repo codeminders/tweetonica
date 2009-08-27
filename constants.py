@@ -47,7 +47,7 @@ BACK_ENTRIES = datetime.timedelta(days=7)
 MOBYPIC_DEV_KEY='7mV3iBuSDu33ERyi'
 
 # web-related
-SITE_BASE_URL = 'http://tweetonica.com'
+#SITE_BASE_URL = 'http://tweetonica.com'
 #SITE_BASE_URL = 'http://localhost:8080'
-#SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
+SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
 ICONS_PATH = "/images/"
