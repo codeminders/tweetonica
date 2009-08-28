@@ -26,7 +26,7 @@ def mobypictureMapper(m):
                           ('s', 'small'),
                           ('k',constants.MOBYPIC_DEV_KEY),
                           ('format','plain')]))
-    return '<a href="%s"><img src="%s"/></a>' % (url, th_url)
+    return '<br><a href="%s"><img src="%s"/></a>' % (url, th_url)
 
 def stockMapper(m):
     symbol = str(m.group(1))

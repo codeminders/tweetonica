@@ -123,7 +123,8 @@ class ATOMHandler(webapp.RequestHandler):
             rss.items.append(RSSItem(title = subj,
                                      link = link,
                                      guid = Guid(link),
-                                     description = itemHTML(e)))
+                                     description = itemHTML(e),
+                                     pubDate = e.created_at))
 
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
@@ -160,7 +161,8 @@ class ATOMHandler(webapp.RequestHandler):
             rss.items.append(RSSItem(title = subj,
                                      link = link,
                                      guid = Guid(link),
-                                     description = itemHTML(reply)))
+                                     description = itemHTML(reply),
+                                     pubDate = reply.created_at))
 
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
