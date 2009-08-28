@@ -79,7 +79,9 @@ def yfrogMapper(m):
                 return embed
         except:
             logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
-    return '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
+    if media_id.endswith('x'):
+        return '<a href="%s">%s</a>' % (url, url)
+    return '<br><a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
 
 def twitpicMapper(m):
     url = m.group(0)
@@ -96,7 +98,7 @@ def flickrMapper(m):
         logging.exception("Error getting flickr embed for id %s" % photo_id)
     if embed:
 
-        return embed
+        return '<br>' + embed
     else: return '<a href="%s">%s</a>' % (url, url)
 
 def urlResolver(match):
