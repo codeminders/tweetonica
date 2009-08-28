@@ -153,8 +153,8 @@ def itemHTML(e, decorate = True):
     res = ''
     prev = 0
 
-    def urlSolver(src, match):
-        url = src[match.start():match.end()]
+    def urlSolver(match):
+        url = match.group(0)
         for (regex, handler) in URLSOLVERS:
             match = regex.match(url)
             if match:
@@ -165,8 +165,8 @@ def itemHTML(e, decorate = True):
                     return url
         return url
 
-    def urlMapper(src, match):
-        url = src[match.start():match.end()]
+    def urlMapper(match):
+        url = match.group(0)
         for (regex, handler) in MAPPERS:
             match = regex.match(url)
             if match:
@@ -176,8 +176,8 @@ def itemHTML(e, decorate = True):
                 else: return url
         return url
 
-    tweet = URLRX.subn(lambda x: urlSolver(tweet, x), tweet)[0]
-    tweet = URLRX.subn(lambda x: urlMapper(tweet, x), tweet)[0]
+    tweet = URLRX.subn(urlSolver, tweet)[0]
+    tweet = URLRX.subn(urlMapper, tweet)[0]
 
     # This is old function. I don't see any reason not to use re.subn
     #for m in URLRX.finditer(tweet):
