@@ -21,6 +21,10 @@ handlers:
 - url: /oauth/(.*)
   script: oauth.py
 
+- url: /report
+  script: report.py
+  login: admin
+
 - url: /
   static_files: static/index.html
   upload: static/index.html
