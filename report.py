@@ -16,17 +16,30 @@ class AdminPanel(webapp.RequestHandler):
                                    </head>
                                    <body>
                                    <h3>Tweetonica statistics:</h3>""");
+        self.response.out.write('<table><tr>')
         tweetcount = data.StatusUpdate.all().count()
-        self.response.out.write('Status update count: %d<br>' % tweetcount)
+        self.response.out.write('<td>')
+        self.response.out.write('Status update count: ')
+        self.response.out.write('</td><td>')
+        self.response.out.write('%s' % tweetcount)
+        self.response.out.write('</td></tr><tr><td>')
 
         replycount = data.Reply.all().count()
-        self.response.out.write('Reply count: %d<br>' % replycount)
-
+        self.response.out.write('Reply count:')
+        self.response.out.write('</td><td>')
+        self.response.out.write('%s' % replycount)
+        self.response.out.write('</td></tr><tr><td>')
         groupcount = data.Group.all().count()
-        self.response.out.write('Group count: %d<br>' % groupcount)
+        self.response.out.write('Group count:')
+        self.response.out.write('</td><td>')
+        self.response.out.write('%s' % groupcount)
+        self.response.out.write('</td></tr><tr><td>')
 
         usercount = data.User.all().count()
-        self.response.out.write('User count: %d<br>' % usercount)
+        self.response.out.write('User count:')
+        self.response.out.write('</td><td>')
+        self.response.out.write('%s' % usercount)
+        self.response.out.write('</td></tr></table>')
 
         self.response.out.write("</body></html>")
 
