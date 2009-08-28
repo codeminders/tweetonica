@@ -11,6 +11,11 @@ import ytembed
 import flickrembed
 import constants
 
+from google.appengine.api import memcache
+
+URLS_NAMESPACE = 'URLS'
+URLS_CACHE_EXPIRATION = 3600 * 48
+
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
 STOCK_URLX = re.compile(r'\$([A-Z]+(\.[A-Z]+)?)(([\s,\.!\?\-\:]+)|$)')
 
@@ -90,6 +95,7 @@ def flickrMapper(m):
     except:
         logging.exception("Error getting flickr embed for id %s" % photo_id)
     if embed:
+
         return embed
     else: return '<a href="%s">%s</a>' % (url, url)
 
@@ -97,6 +103,8 @@ def urlResolver(match):
     url = match.group(0)
     site = match.group(2)
     short = match.group(3)
+    cached = memcache.get(url, namespace = URLS_NAMESPACE)
+    if cached: return cached
     try:
         conn = httplib.HTTPConnection(site)
         conn.request('HEAD', short)
@@ -106,6 +114,8 @@ def urlResolver(match):
     if resp.status >= 300 and resp.status < 400:
         longurl = resp.getheader('Location')
         logging.debug('Resolved %s as %s' % (url, longurl))
+        memcache.set(url, str(longurl), time = URLS_CACHE_EXPIRATION,
+                     namespace = URLS_NAMESPACE)
         return longurl
     else:
         return None
