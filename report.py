@@ -19,6 +19,9 @@ class AdminPanel(webapp.RequestHandler):
         tweetcount = data.StatusUpdate.all().count()
         self.response.out.write('Status update count: %d<br>' % tweetcount)
 
+        replycount = data.Reply.all().count()
+        self.response.out.write('Reply count: %d<br>' % replycount)
+
         groupcount = data.Group.all().count()
         self.response.out.write('Group count: %d<br>' % groupcount)
 
