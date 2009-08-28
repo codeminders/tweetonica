@@ -2,11 +2,13 @@
 import re
 import logging
 from urllib import urlencode
+import httplib
 
 from misc import quote
 import stock
 import yfrog
 import ytembed
+import flickrembed
 import constants
 
 URLRX = re.compile(r'((mailto\:|(news|(ht|f)tp(s?))\://){1}\S+)')
@@ -79,6 +81,47 @@ def twitpicMapper(m):
     media_id = m.group(3)
     return '<a href="%s"><img src="http://twitpic.com/show/thumb/%s"/></a>' % (url, media_id)
 
+def flickrMapper(m):
+    url = m.group(0)
+    photo_id = m.group(2)
+    logging.debug('flickrMapper starting for url %s photoid %s' % (url, photo_id))
+    try:
+        embed = flickrembed.getEmbed(url, photo_id)
+    except:
+        logging.exception("Error getting flickr embed for id %s" % photo_id)
+    if embed:
+        return embed
+    else: return '<a href="%s">%s</a>' % (url, url)
+
+def urlResolver(match):
+    url = match.group(0)
+    site = match.group(2)
+    short = match.group(3)
+    try:
+        conn = httplib.HTTPConnection(site)
+        conn.request('HEAD', short)
+        resp = conn.getresponse()
+    except e:
+        logging.error('Could not get responce from %s' % site)
+    if resp.status >= 300 and resp.status < 400:
+        longurl = resp.getheader('Location')
+        logging.debug('Resolved %s as %s' % (url, longurl))
+        return longurl
+    else:
+        return None
+
+SHORTLINK_WEBSITES = ['bit.ly',
+                     'tinyurl.com',
+                     'su.pr',
+                     'ow.ly',
+                     'is.gd',
+                     'tr.im']
+
+# this is good until there is a shortlink website which does not return
+# target url in location header
+URLSOLVERS = [ (re.compile('http://(www.)?(%s)(/.*)' % site), urlResolver) \
+               for site in SHORTLINK_WEBSITES ]
+
 MAPPERS = [
     (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
     (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
@@ -86,6 +129,7 @@ MAPPERS = [
     (re.compile(r'^http://((www\.)?youtube\.com)/v/([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/watch\?v=([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?mobypicture\.com)/\?([^/\?]+)$'), mobypictureMapper),
+    (re.compile(r'^http://(www\.)?flickr.com/photos/[\w\@]+/(\d+)'), flickrMapper),
 
     (re.compile(r'^(.+)$'), defaultMapper)
     ]
@@ -98,17 +142,50 @@ def itemHTML(e, decorate = True):
     # URLs
     res = ''
     prev = 0
-    for m in URLRX.finditer(tweet):
-        (fro, to) = m.span()
-        url = m.group(1)
-        res += tweet[prev:fro]
-        prev = to
-        for (mo,mf) in MAPPERS:
-            mx = mo.match(url)
-            if mx:
-                res += mf(mx)
-                break
-    tweet = res + tweet[prev:]
+
+    def urlSolver(src, match):
+        url = src[match.start():match.end()]
+        for (regex, handler) in URLSOLVERS:
+            match = regex.match(url)
+            if match:
+                try:
+                    res = handler(match)
+                    return res if res else url
+                except:
+                    return url
+        return url
+
+    def urlMapper(src, match):
+        url = src[match.start():match.end()]
+        for (regex, handler) in MAPPERS:
+            match = regex.match(url)
+            if match:
+                try: res = handler(match)
+                except: res = None
+                if res: return res
+                else: return url
+        return url
+
+    tweet = URLRX.subn(lambda x: urlSolver(tweet, x), tweet)[0]
+    tweet = URLRX.subn(lambda x: urlMapper(tweet, x), tweet)[0]
+
+    # This is old function. I don't see any reason not to use re.subn
+    #for m in URLRX.finditer(tweet):
+        #(fro, to) = m.span()
+        #url = m.group(1)
+        #res += tweet[prev:fro]
+        #prev = to
+        #for (regex, handler) in URLSOLVERS:
+            #match = regex.match(url)
+            #if match:
+                #res += handler(match)
+                #break
+        #for (mo,mf) in MAPPERS:
+            #mx = mo.match(url)
+            #if mx:
+                #res += mf(mx)
+                #break
+    #tweet = res + tweet[prev:]
 
     # stock symbols
     res = ''
