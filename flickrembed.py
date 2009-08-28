@@ -4,8 +4,8 @@ from google.appengine.api import memcache
 
 import flickr
 
-FLICKR_NAMESPACE='FLCKR'
-FLICKR_CACHE_EXPIRATION=3600*48
+FLICKR_NAMESPACE = 'FLCKR'
+FLICKR_CACHE_EXPIRATION = 3600 * 48
 
 def _getText(pageurl, photoid):
     try:
