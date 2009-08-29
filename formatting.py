@@ -26,7 +26,10 @@ def mobypictureMapper(m):
                           ('s', 'small'),
                           ('k',constants.MOBYPIC_DEV_KEY),
                           ('format','plain')]))
-    return '<br><a href="%s"><img src="%s"/></a>' % (url, th_url)
+    res = '<a href="%s"><img src="%s"/></a>' % (url, th_url)
+    if m.start() != 0:
+        res = '<br />' + res
+    return res
 
 def stockMapper(m):
     symbol = str(m.group(1))
@@ -81,7 +84,10 @@ def yfrogMapper(m):
             logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
     if media_id.endswith('x'):
         return '<a href="%s">%s</a>' % (url, url)
-    return '<br><a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
+    res = '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
+    if m.start() != 0:
+        res = '<br />' + res
+    return res
 
 def twitpicMapper(m):
     url = m.group(0)
@@ -97,8 +103,10 @@ def flickrMapper(m):
     except:
         logging.exception("Error getting flickr embed for id %s" % photo_id)
     if embed:
-
-        return '<br>' + embed
+        if m.start() != 0:
+            return '<br />' + embed
+        else:
+            return embed
     else: return '<a href="%s">%s</a>' % (url, url)
 
 def urlResolver(match):
