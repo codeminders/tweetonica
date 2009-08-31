@@ -99,7 +99,7 @@ class OPMLHandler(webapp.RequestHandler):
             if res[x]['memberships_last_updated'] > lastupdated:
                 lastupdated = res[x]['memberships_last_updated']
         opml.head.date_modified = lastupdated.strftime("%a, %d %b %Y %H:%M:%S GMT")
-        self.response.out.write(str(xmldoc))
+        self.response.out.write(unicode(xmldoc))
 
 
 def main():
