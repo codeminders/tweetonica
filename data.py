@@ -36,6 +36,7 @@ class Replies(db.Model):
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
     memberships_last_updated = db.DateTimeProperty()
+    viewed = db.DateTimeProperty()
     # foreing keys
     user = db.ReferenceProperty(User)
 

@@ -150,7 +150,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_fiends\' invoked for user %s' % u.screen_name)
         res = queries.loadGroups(u)
+
         for x in res.keys():
+            logging.debug('Threre are %d unread items in %s' % (res[x]['unread'], res[x]['name']))
             del res[x]['memberships_last_updated']
             res[x]['rssurl']=misc.getGroupRSS_URL(u.screen_name,
                                                u.rss_token,
@@ -196,7 +198,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g = data.Group(name=unicode(group_name),
                        memberships_last_updated=datetime.datetime.now(),
                        user=u,
-                       parent=u)
+                       parent=u,
+                       viewed=datetime.datetime.fromtimestamp(0))
         g.put()
         return {
             'name': g.name,
@@ -287,6 +290,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                   'real_name' : e.from_friend.real_name,
                                   'profile_image_url' : e.from_friend.profile_image_url},
                         'created_at': long(time.mktime(e.created_at.timetuple()))})
+
+        g.viewed = datetime.datetime.now()
+        g.put()
+
         return ret
 
     def json_get_feed_by_id(self, auth_token=None, id = None):
