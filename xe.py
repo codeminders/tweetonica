@@ -5,24 +5,24 @@
 #
 # Copyright (c) 2006, Steve R. Hastings
 # All rights reserved.
-# 
+#
 # Redistribution and use in source and binary forms, with or without
 # modification, are permitted provided that the following conditions
 # are met:
-# 
+#
 #     * Redistributions of source code must retain the above copyright
 #       notice, this list of conditions and the following disclaimer.
-# 
+#
 #     * Redistributions in binary form must reproduce the above copyright
 #       notice, this list of conditions and the following disclaimer in
 #       the documentation and/or other materials provided with the
 #       distribution.
-# 
+#
 #     * Neither the name of Steve R. Hastings nor the names
 #       of any contributors may be used to endorse or promote products
 #       derived from this software without specific prior written
 #       permission.
-# 
+#
 # THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS
 # IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
 # TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
@@ -222,7 +222,7 @@ class TFC(object):
         """
         Return an indent string.
 
-        Return a string of white space that indents correctly for the 
+        Return a string of white space that indents correctly for the
         current TFC settings.  If specified, extra_indent will be added
         to the current indent level.
         """
@@ -372,7 +372,7 @@ class XMLItem(object):
         This is for debugging; it's not valid XML syntax.
         """
         level = self.level()
-        return "%2d) %s -- %s" % (level, self.s_name(), str(self))
+        return "%2d) %s -- %s" % (level, self.s_name(), unicode(self))
 
     def import_xml(self, source, lst_errors):
         """
@@ -651,7 +651,7 @@ class Node(ElementItem):
                     "value's type is not compatible:" + str(type(value))
 
         self.__dict__[name] = value
-        
+
 
     def has_contents(self):
         """
@@ -685,7 +685,7 @@ class Node(ElementItem):
 
         Some elements can handle a direct assign.  Those elements need
         to overload this method and make it do the right thing.
-        
+
         For example, you might be able to assign a time float value to a
         timestamp element.  In that case, the timestamp element needs to
         add types.FloatType to its direct_types list, and add a
@@ -792,14 +792,14 @@ class Attrs(object):
 
     def __nonzero__(self):
         for value in self._attrs_dict.values():
-            if str(value):
+            if unicode(value):
                 return True
         return False
 
     def lst_attrs(self):
         lst = []
         for name in self._attrs_names:
-            s_value = str(self._attrs_dict[name])
+            s_value = unicode(self._attrs_dict[name])
             if s_value:
                 s = '%s="%s"' % (name, s_value)
                 lst.append(s)
@@ -943,7 +943,7 @@ class CoreElement(Node):
 
         Some elements can handle a direct assign.  Those elements need
         to overload this method and make it do the right thing.
-        
+
         For example, you might be able to assign a time float value to a
         timestamp element.  In that case, the timestamp element needs to
         add types.FloatType to its direct_types list, and add a
@@ -1272,7 +1272,7 @@ class IntElement(CustomElement):
     def s_from_value(self):
         if self.value is None:
             return ""
-        return str(self.value)
+        return unicode(self.value)
 
 
 
@@ -1310,7 +1310,7 @@ class FloatElement(CustomElement):
         if self.value is None:
             return ""
         if self.s_format is None:
-            return str(self.value)
+            return unicode(self.value)
         return self.s_format % self.value
 
 
@@ -1432,7 +1432,7 @@ class Nest(XMLItem):
             raise TypeError, "value's type is not compatible"
 
         self._do_setattr(name, value)
-        
+
     def __delattr__(self, name):
         # This won't be used often, if ever, but if anyone tries it, it
         # should work.  Can only delete nested ElementItems.
@@ -1981,7 +1981,7 @@ def _xe_import_xml(x, source, lst_errors=None):
     # The way this works:
     #
     # If you point the import code at XML data, it will use Python's
-    # xml.dom.minidom module to read and parse the XML.  (If you need 
+    # xml.dom.minidom module to read and parse the XML.  (If you need
     # more control over the process, you can do this parsing by hand, and
     # pass the xml.dom.minidom node data structure to the import code.)
     # The import code walks the node data structure, and matches up tag
@@ -2055,7 +2055,7 @@ def _xe_import_xml(x, source, lst_errors=None):
         assert node.nodeType == mdom.Node.ELEMENT_NODE
         if not isinstance(x, Nest):
             print "tried to import node on non-Nest"
-            print "x:", str(x)
+            print "x:", unicode(x)
             print "node:", node.toxml()
             raise TypeError, "attempt to nest in non-Nest:" + str(type(x))
 
@@ -2280,7 +2280,7 @@ if __name__ == "__main__":
 <?xml version="1.0" encoding="utf-8"?>
 <!-- no root element yet -->"""
 
-    result = str(xmldoc)
+    result = unicode(xmldoc)
     self_test_diff("generate trivial XML document")
 
 
@@ -2340,7 +2340,7 @@ if __name__ == "__main__":
     test.secret_agent = "Napoleon Solo"
     test.secret_agent.attrs["agency"] = "U.N.C.L.E."
 
-    result = str(test)
+    result = unicode(test)
     self_test_diff("test Element with both text and nested")
 
     test1 = NestElement("paper_size")
@@ -2350,7 +2350,7 @@ if __name__ == "__main__":
     <height>11</height>
 </paper_size>"""
     test1.import_xml(correct)
-    result = str(test1)
+    result = unicode(test1)
     self_test_diff("test Element import")
 
 
