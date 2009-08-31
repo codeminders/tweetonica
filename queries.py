@@ -13,13 +13,21 @@ def loadGroups(u):
     q = data.Group.gql('WHERE user = :1', u.key())
     res = {}
     for g in q:
+        if not g.viewed:
+            g.viewed = datetime.datetime.fromtimestamp(0)
+            g.put()
+        logging.debug('Group %s viewed at %s' % (g.name, g.viewed.strftime("%a, %d %b %Y %H:%M:%S GMT")))
+        unread = data.StatusUpdate.gql('WHERE group = :1 AND created_at > :2',
+                                       g, g.viewed)
+        logging.debug('Got %d new items for %s' % (unread.count(), g.name))
         res[g.name]={
             'name': g.name,
             'memberships_last_updated': g.memberships_last_updated,
             "users": [{'screen_name':f.screen_name,
                        'real_name':f.real_name,
                        'profile_image_url': f.profile_image_url} \
-                      for f in groupMembers(g)]
+                      for f in groupMembers(g)],
+            'unread': unread.count()
             };
     return res
 
