@@ -119,6 +119,8 @@ def getDefaultGroup(u):
 
 
 def getGroupByName(group_name, u):
+    if isinstance(group_name, str):
+        group_name = unicode(group_name, 'utf-8')
     q = data.Group.gql('WHERE name = :1 and user=:2', group_name, u.key())
     groups = q.fetch(1)
     if len(groups)==1:

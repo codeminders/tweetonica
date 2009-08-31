@@ -65,7 +65,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
     def trace(self):
         self.response.set_status(405)
         self.response.headers.add_header('Allow', 'POST')
-        
+
 
     # -- response methods delegates below --
 
@@ -104,7 +104,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.use_HTTP_auth = prefs['use_HTTP_auth']
         u.put()
         return self._get_user_prefs(u)
-    
+
 
     def json_logout(self, auth_token=None):
         """ Invalidates user cookie
@@ -144,7 +144,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             return self._updateFriends(u)
         else:
             return False
-        
+
 
     def json_get_friends(self, auth_token=None):
         u = self._verifyAuthToken(auth_token)
@@ -177,15 +177,15 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         for s in q:
             s.group = g
             s.put()
-        
+
 
     def json_new_group(self, auth_token=None, group_name=None):
         """ Create new group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'new_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
-        if group_name.startswith(SPECIAL_GROUP_PREFIX):
-            raise json.JSONRPCError("User-defined group name could not start with '%s'" % SPECIAL_GROUP_PREFIX,
+        if group_name.startswith(constants.SPECIAL_GROUP_PREFIX):
+            raise json.JSONRPCError("User-defined group name could not start with '%s'" % constants.SPECIAL_GROUP_PREFIX,
                                     code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
 
         #TODO: transacton
@@ -193,7 +193,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             raise json.JSONRPCError("Group %s already exists" % group_name,
                                     code=ERR_GROUP_ALREADY_EXISTS)
 
-        g = data.Group(name=group_name,
+        g = data.Group(name=unicode(group_name),
                        memberships_last_updated=datetime.datetime.now(),
                        user=u,
                        parent=u)
@@ -204,8 +204,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                         u.rss_token, g.name,
                                         u.use_HTTP_auth),
             'users': []
-        }               
-        
+        }
+
     def json_rename_group(self, auth_token=None,
                           old_group_name=None,
                           new_group_name=None):
@@ -213,8 +213,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'rename_group(%s,%s)\' invoked for user %s' % (old_group_name, new_group_name, u.screen_name))
 
-        if old_group_name.startswith(SPECIAL_GROUP_PREFIX) or \
-           new_group_name.startswith(SPECIAL_GROUP_PREFIX):
+        if old_group_name.startswith(constants.SPECIAL_GROUP_PREFIX) or \
+           new_group_name.startswith(constants.SPECIAL_GROUP_PREFIX):
             raise json.JSONRPCError("Could not modify special group",
                                     code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
         #TODO: transacton
@@ -222,7 +222,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         if g==None:
             raise json.JSONRPCError("Group %s does not exists" % old_group_name,
                                     code=ERR_NO_SUCH_GROUP)
-        
+
         if queries.getGroupByName(new_group_name, u)!=None:
             raise json.JSONRPCError("Group %s already exists" % new_group_name,
                                     code=ERR_GROUP_ALREADY_EXISTS)
@@ -234,14 +234,14 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             'rssurl': misc.getGroupRSS_URL(u.screen_name,
                                         u.rss_token, g.name,
                                         u.use_HTTP_auth)
-        }               
-    
+        }
+
     def json_delete_group(self, auth_token=None, group_name=None):
         """ Delete group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'delete_group(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
-        if group_name.startswith(SPECIAL_GROUP_PREFIX):
+        if group_name.startswith(constants.SPECIAL_GROUP_PREFIX):
             raise json.JSONRPCError("Could not modify special group",
                                     code=ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED)
         #TODO: transacton
@@ -276,16 +276,16 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                             (group, u.screen_name))
             raise json.JSONRPCError("Group %s does not exists" % group_name,
                                     code=ERR_NO_SUCH_GROUP)
-            
+
         tl = queries.getGroupTimeline(g, 20, offset)
 
         ret = []
         for e in tl:
             ret.append({'id' : e.id,
-                        'html' : itemHTML(e, False), 
-                        'from' : {'screen_name' : e.from_friend.screen_name, 
+                        'html' : itemHTML(e, False),
+                        'from' : {'screen_name' : e.from_friend.screen_name,
                                   'real_name' : e.from_friend.real_name,
-                                  'profile_image_url' : e.from_friend.profile_image_url}, 
+                                  'profile_image_url' : e.from_friend.profile_image_url},
                         'created_at': long(time.mktime(e.created_at.timetuple()))})
         return ret
 
@@ -303,12 +303,12 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
         return {'id' : e.id,
                 'text' : e.text,
-                'html' : itemHTML(e, False), 
-                'from' : {'screen_name' : e.from_friend.screen_name, 
+                'html' : itemHTML(e, False),
+                'from' : {'screen_name' : e.from_friend.screen_name,
                           'real_name' : e.from_friend.real_name,
-                          'profile_image_url' : e.from_friend.profile_image_url}, 
+                          'profile_image_url' : e.from_friend.profile_image_url},
                 'created_at': long(time.mktime(e.created_at.timetuple()))}
-        
+
     def json_post_tweet(self, auth_token=None, message=None, in_reply_to=None):
         """ Posts a tweet """
         u = self._verifyAuthToken(auth_token)
