@@ -14,8 +14,8 @@ from oauth import OAuthClient
 
 
 """ Timeline update frequency. Update no more often than this """
-#TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 90)
-TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 0)
+TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 90)
+#TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 0)
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100

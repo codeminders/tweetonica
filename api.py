@@ -372,6 +372,7 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
     def _updateFriends(self, u):
         logging.debug('Synchronizing friends for user %s' % u.screen_name)
+
         t = twitter.Api(oauth=OAuthClient(handler=None,token=u))
         try:
             friends = t.GetFriends()
@@ -407,6 +408,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u.friendlist_last_updated=datetime.datetime.now()
         u.put()
         logging.debug("User %s have %d friends" % (u.screen_name, n))
+
+        timeline.updateTimeLine(u)
+
         return changed
 
 def main():

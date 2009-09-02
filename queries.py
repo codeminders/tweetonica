@@ -17,9 +17,11 @@ def loadGroups(u):
             g.viewed = datetime.datetime.fromtimestamp(0)
             g.put()
         logging.debug('Group %s viewed at %s' % (g.name, g.viewed.strftime("%a, %d %b %Y %H:%M:%S GMT")))
-        unread = data.StatusUpdate.gql('WHERE group = :1 AND created_at > :2',
-                                       g, g.viewed)
-        logging.debug('Got %d new items for %s' % (unread.count(), g.name))
+        #unread = data.StatusUpdate.gql('WHERE group = :1', g)
+        #group = :1 and
+        unread = unreadForGroup(g)
+        #data.StatusUpdate.gql('WHERE created_at>:1 and group=:2', g.viewed, g)
+        #logging.debug('Got %d new items for %s' % (unread.count(), g.name))
         res[g.name]={
             'name': g.name,
             'memberships_last_updated': g.memberships_last_updated,
@@ -27,9 +29,18 @@ def loadGroups(u):
                        'real_name':f.real_name,
                        'profile_image_url': f.profile_image_url} \
                       for f in groupMembers(g)],
-            'unread': unread.count()
+            'unread': unread
             };
     return res
+
+def unreadForGroup(group):
+    #this is bad, but GQL does not work as it should
+    count = 0;
+    q = data.StatusUpdate.gql('WHERE group = :1', group)
+    for status in q:
+        if status.created_at > group.viewed:
+            count += 1
+    return count
 
 def groupMembers(g):
     q = data.Friend.gql('WHERE  group = :1', g.key())
