@@ -18,7 +18,7 @@ $(document).ready(function() {
     }
 
     var display_unread = function(unread) {
-        //if (unread == 0) return '';
+        if (unread == 0) return '';
         return ' ('+unread+')'
     }
 
