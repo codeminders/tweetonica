@@ -1,7 +1,7 @@
 import datetime
 import logging
 from urllib import unquote
- 
+
 import queries
 import twitter
 import data
@@ -14,7 +14,8 @@ from oauth import OAuthClient
 
 
 """ Timeline update frequency. Update no more often than this """
-TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 90)
+#TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 90)
+TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 0)
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
@@ -35,7 +36,7 @@ def updateTimeLine(u):
                 l.unlock()
         else:
             logging.debug("Timeline for %s is already been updated" % u.screen_name)
-            
+
     else:
         logging.debug("Timeline for %s is up to date" % u.screen_name)
 
@@ -98,7 +99,7 @@ def _updateTimeLine(u,t,tl):
             fetched = fetched+1
         # Save timeline_max_id between page
         tl.put()
-        
+
     tl.timeline_last_updated=datetime.datetime.now()
     tl.put()
     logging.debug("Fetced  %d timeline entries for %s" % \

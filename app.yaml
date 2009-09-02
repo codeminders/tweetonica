@@ -25,6 +25,10 @@ handlers:
   script: report.py
   login: admin
 
+- url: /updgroups
+  script: updgroups.py
+  login: admin
+
 - url: /
   static_files: static/index.html
   upload: static/index.html

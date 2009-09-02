@@ -7,14 +7,19 @@ var CACHE_TTL = 60 * 5; // 5 min
 var last_sync_time = 0;
 
 $(document).ready(function() {
-    
-    // aux functions 
+
+    // aux functions
 
     var display_group_name = function(name, trim) {
         name = name == '__ALL__' ? 'Uncategorized' : name;
         if (trim && name.length > 14)
             name = name.substring(0, 14) + '..';
         return name;
+    }
+
+    var display_unread = function(unread) {
+        //if (unread == 0) return '';
+        return ' ('+unread+')'
     }
 
     var format_date = function(s) {
@@ -147,7 +152,7 @@ $(document).ready(function() {
     var render_group = function(g) {
 
         var container = $('<div class="group-background groupentry">').droppable({
-            accept: '.userinfo', 
+            accept: '.userinfo',
             drop: function(event, ui) {
                 var dest = $('a', this).data('groupname');
                 move_user(ui.draggable.get(0).id.substring(5), dest);
@@ -174,7 +179,7 @@ $(document).ready(function() {
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name(g.name, true));
+        var span = $('<span>').text(display_group_name(g.name, true) + display_unread(g.unread));
 
         container.append(node.append(span));
 
@@ -245,7 +250,7 @@ $(document).ready(function() {
 
         container.draggable({appendTo : 'body',helper:'clone', start: function() {
                 $('#tt').hide();
-                $('.userinfo_pic').die('mouseover');        
+                $('.userinfo_pic').die('mouseover');
             }, stop: function() {
                 $('.userinfo_pic').live('mouseover', function(e) {
                 show_tooltip(e, $(this));
@@ -400,7 +405,7 @@ $(document).ready(function() {
                     refresh_groups(function() {
                         open_page('manage');
                     });
-                } 
+                }
                 else
                     last_sync_time = (new Date()).getTime();
             });
@@ -537,7 +542,7 @@ $(document).ready(function() {
                 $('#followme').click(function(e) {
                     tweetonica.api.create_friendship('tweetonica', function(results) {
                         cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
-                        open_group($('#groups a#root'));            
+                        open_group($('#groups a#root'));
                         $('#followme').unbind('click');
                         check_for_updates();
                     }, function(error) {
@@ -577,13 +582,13 @@ $(document).ready(function() {
                 tweetonica.api.delete_group(name, function(results) {
                     var src = cache[name];
                     for (var i = 0; i < src.users.length; i++)
-                        cache['__ALL__'].users.push(src.users[i]);                        
+                        cache['__ALL__'].users.push(src.users[i]);
 
                     var tmp = [];
                     for (var g in cache) {
                         var info = cache[g];
                         if (info.name != name)
-                            tmp[g] = info;                
+                            tmp[g] = info;
                     }
                     cache = tmp;
                     $('#groups a').each(function() {
@@ -838,7 +843,7 @@ $(document).ready(function() {
         temp_prefs['icons_only'] = $('#vs-icons').attr('checked') ? true : false;
 
         tweetonica.api.set_prefs(temp_prefs, function(results) {
-            PREFS = results; 
+            PREFS = results;
         }, function(error) {
             $('#error-description').text('Sorry, we were unable to save your preferences. Please try again later');
             $('#error-dialog').dialog('open');
@@ -884,15 +889,15 @@ $(document).ready(function() {
         temp_prefs['icons_only'] = $(':radio[name=vs]:checked').val() == '1' ? true : false;
 
         tweetonica.api.set_prefs(temp_prefs, function(results) {
-            PREFS = results; 
+            PREFS = results;
             $('#opml_link').attr('href', results.OPML_download_url);
             $('#opml_text').val(results.OPML_feed_url);
             open_page('progress');
             refresh_groups(function() {
                 open_page('prefs');
             });
-        }, function(error) {            
-            $('#error-description').text('Sorry, we were unable to save your preferences. Please try again later');        
+        }, function(error) {
+            $('#error-description').text('Sorry, we were unable to save your preferences. Please try again later');
             $('#error-dialog').dialog('open');
         });
     });
@@ -908,7 +913,7 @@ $(document).ready(function() {
                 refresh_groups(function() {
                     open_page('manage');
                 });
-            } else 
+            } else
                 open_page('manage');
         });
     });
@@ -970,7 +975,7 @@ $(document).ready(function() {
                 e.stopPropagation();
                 e.preventDefault();
             });
-        }        
+        }
     }
 
 });

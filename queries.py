@@ -35,7 +35,6 @@ def groupMembers(g):
     q = data.Friend.gql('WHERE  group = :1', g.key())
     return q
 
-
 def getUserByScreenName(screen_name):
     q = data.User.gql('WHERE screen_name = :1', screen_name)
     users = q.fetch(1)
