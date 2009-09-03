@@ -18,8 +18,8 @@ $(document).ready(function() {
     }
 
     var display_unread = function(unread) {
-        if (unread == 0) return '';
-        return ' ('+unread+')'
+        //if (unread == 0) return '';
+        return '('+unread+')';
     }
 
     var format_date = function(s) {
@@ -76,6 +76,14 @@ $(document).ready(function() {
         $('#feed_anchor').show();
         $('#btn-morefeed').hide();
         tweetonica.api.get_feed(g, offset, function(feed) {
+
+            $('#groups a').each(function() {
+                var o = $(this);
+                if (o.data('groupname') == g.name) {
+                    $('.unread', o).text(display_unread(0));
+                }
+            });
+
             for (var i = 0; i < feed.length; i++) {
 
                 var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
@@ -179,9 +187,9 @@ $(document).ready(function() {
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name(g.name, true) + display_unread(g.unread));
+        var span = $('<span>').text(display_group_name(g.name, true));
 
-        container.append(node.append(span));
+        container.append(node.append(span).append('<span class="unread">' + display_unread(g.unread) + '</span>'));
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
@@ -426,6 +434,7 @@ $(document).ready(function() {
             p.show();
 
             if (id == 'threads') {
+                $('.unread').show();
                 $('#groupmembers_feed').show();
                 $('#groupmembers_members').hide();
                 $('.add-group').hide();
@@ -436,6 +445,7 @@ $(document).ready(function() {
                 $('#view-style').hide();
                 load_feed($('#groups a.gropen').data('groupname'), 0);
             } else if (id == 'manage') {
+                $('.unread').hide();
                 $('#groupmembers_feed').hide();
                 $('#groupmembers_members').show();
                 $('.add-group').show();
