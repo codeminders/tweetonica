@@ -372,6 +372,7 @@ $(document).ready(function() {
 
         e.get(0).className = newcl;
 
+		cache[e.data('groupname')].unread = 0;    
         var g = cache[e.data('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
@@ -386,6 +387,8 @@ $(document).ready(function() {
         if ($('#groupmembers_feed').css('display') != 'none') {
             load_feed(g.name, 0);
         }
+		
+		e.children().eq(1).text(display_unread(0))
     }
 
     var sync_groups = function(force, callback) {
