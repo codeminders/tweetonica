@@ -510,9 +510,16 @@ $(document).ready(function() {
             $('#loggedout').show();
             open_page('error');
         });
+
+        /*(function(fn, interval) {
+            id = setInterval(function() {
+                fn(false, function(state){});
+            }, interval);
+        //})(sync_groups, 60000, 3);
+        })(silent_refresh_groups, 5000);*/
     };
 
-    var refresh_groups = function(callback) {
+    var silent_refresh_groups = function(callback) {
         tweetonica.api.get_friends(function(results) {
             last_sync_time = (new Date()).getTime();
             cache = {};
@@ -564,7 +571,83 @@ $(document).ready(function() {
                 });
             }
 
-            open_group($('#groups a#root'));
+            //open_group($('#groups a#root'));
+
+            if (callback)
+               callback();
+
+        }, function(error) {
+            $.cookie('t.uname', null, {expires: -1, path: '/'});
+            $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
+            $('.prefsmenu').hide();
+            $('#currentuser').html('');
+            $('#currentuserurl').attr('href', 'javascript:;');
+            $('#loggedin').hide();
+            $('#loggedout').show();
+            tweetonica.api.token = null;
+            open_page('error');
+        });
+    };
+
+    var refresh_groups = function(callback) {
+        tweetonica.api.get_friends(function(results) {
+            last_sync_time = (new Date()).getTime();
+            cache = {};
+
+            var groups = [];
+            for (var g in results) {
+                groups.push(results[g]);
+            }
+
+            groups.sort(function(a, b) {
+                if (a.name == '__ALL__')
+                    return -1;
+                if (b.name == '__ALL__')
+                    return 1;
+                var k1 = a.name.toLowerCase();
+                var k2 = b.name.toLowerCase();
+                return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
+            });
+            cache = [];
+
+            var follows_tweetonica = false;
+
+            var lastgr = 0;
+            $('.groupentry').remove();
+            for (var i = 0; i < groups.length; i++) {
+				if (groups[i].last)
+				{
+					lastgr = i;
+				}
+                var group = groups[i];
+                render_group(group);
+                cache[group.name] = group;
+                for (var j = 0; !follows_tweetonica && j < group.users.length; j++) {
+                   if (group.users[j].screen_name == 'tweetonica') {
+                       follows_tweetonica = true;
+                       break;
+                   }
+                }
+            }
+            if (!follows_tweetonica)
+            {
+                $('#followme').click(function(e) {
+                    tweetonica.api.create_friendship('tweetonica', function(results) {
+                        cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
+                        open_group($('#groups a#root'));
+                        $('#followme').unbind('click');
+                        check_for_updates();
+                    }, function(error) {
+                        $('#error-description').text('Sorry, an error occured. Please try again later');
+                        $('#error-dialog').dialog('open');
+                    });
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            }
+
+			jgroups = $('#groups a.grclosed');
+            open_group(jgroups.eq(lastgr));
 
             if (callback)
                callback();

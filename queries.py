@@ -11,6 +11,8 @@ import constants
 
 def loadGroups(u):
     q = data.Group.gql('WHERE user = :1', u.key())
+    last = data.Group.gql('WHERE user = :1 ORDER BY viewed DESC LIMIT 1', u.key())
+    lastgr = last[0].name
     res = {}
     for g in q:
         if not g.viewed:
@@ -29,7 +31,8 @@ def loadGroups(u):
                        'real_name':f.real_name,
                        'profile_image_url': f.profile_image_url} \
                       for f in groupMembers(g)],
-            'unread': unread
+            'unread': unread,
+            'last': g.name == lastgr
             };
     return res
 
