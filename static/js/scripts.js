@@ -18,7 +18,7 @@ $(document).ready(function() {
     }
 
     var display_unread = function(unread) {
-        //if (unread == 0) return '';
+        if (unread == 0) return '';
         return '('+unread+')';
     }
 
@@ -291,6 +291,8 @@ $(document).ready(function() {
                 if (destg.name != srcg.name)
                     $('#user_' + screen_name).remove();
             check_for_updates();
+			refresh_groups(function(nothig){});
+			//sync_groups(false, function(state) {} );
         }}, function(error) {
             $('#error-description').text('Sorry, we were unable to move your contact. Please try again later');
             $('#error-dialog').dialog('open');
@@ -305,7 +307,7 @@ $(document).ready(function() {
 
     var create_group = function(name) {
         tweetonica.api.new_group(name, function(results) {
-            var g = {name: name, users: [], rssurl: results.rssurl};
+            var g = {name: name, users: [], rssurl: results.rssurl, unread: 0};
             cache[name] = g;
             render_group(g);
             open_group($('#groups a.gropen'));
