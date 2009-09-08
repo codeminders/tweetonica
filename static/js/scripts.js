@@ -530,7 +530,7 @@ $(document).ready(function() {
 			for (var key in results)
 			{
 				var g = results[key]
-				unread[g.name] = g.unread;
+				unread[display_group_name(g.name)] = g.unread;
 			}
 			
 			var spans = $('#groups span')
@@ -540,7 +540,6 @@ $(document).ready(function() {
 				if (jgr.attr('class') != 'unread')
 				{
 					var grname = jgr.text();
-					if (grname == 'Uncategorized') { grname = "__ALL__"; }
 					spans.eq(i+1).text(display_unread(unread[grname]));
 				}
 			}
