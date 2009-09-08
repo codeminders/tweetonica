@@ -292,7 +292,6 @@ $(document).ready(function() {
                     $('#user_' + screen_name).remove();
             check_for_updates();
 			refresh_unread_count();
-			//sync_groups(false, function(state) {} );
         }}, function(error) {
             $('#error-description').text('Sorry, we were unable to move your contact. Please try again later');
             $('#error-dialog').dialog('open');
@@ -530,18 +529,15 @@ $(document).ready(function() {
 			for (var key in results)
 			{
 				var g = results[key]
-				unread[display_group_name(g.name)] = g.unread;
+				unread[g.name] = g.unread;
 			}
 			
-			var spans = $('#groups span')
-			for (var i=0; i<spans.length; i++)
+			var unreads = $('#groups span.unread')
+			groups = $('#groups a.gropen, a.grclosed');
+			for(var i=0; i<groups.length; i++)
 			{
-				var jgr = spans.eq(i);
-				if (jgr.attr('class') != 'unread')
-				{
-					var grname = jgr.text();
-					spans.eq(i+1).text(display_unread(unread[grname]));
-				}
+				un = unread[groups.eq(i).data('groupname')];
+				unreads.eq(i).text(display_unread(un));
 			}
 		})
 	};
