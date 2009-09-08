@@ -291,7 +291,7 @@ $(document).ready(function() {
                 if (destg.name != srcg.name)
                     $('#user_' + screen_name).remove();
             check_for_updates();
-			refresh_groups(function(nothig){});
+			refresh_unread_count();
 			//sync_groups(false, function(state) {} );
         }}, function(error) {
             $('#error-description').text('Sorry, we were unable to move your contact. Please try again later');
@@ -524,75 +524,28 @@ $(document).ready(function() {
         })(silent_refresh_groups, 5000);*/
     };
 
-    var silent_refresh_groups = function(callback) {
-        tweetonica.api.get_friends(function(results) {
-            last_sync_time = (new Date()).getTime();
-            cache = {};
-
-            var groups = [];
-            for (var g in results) {
-                groups.push(results[g]);
-            }
-
-            groups.sort(function(a, b) {
-                if (a.name == '__ALL__')
-                    return -1;
-                if (b.name == '__ALL__')
-                    return 1;
-                var k1 = a.name.toLowerCase();
-                var k2 = b.name.toLowerCase();
-                return k1 > k2 ? 1 : k1 == k2 ? 0 : - 1;
-            });
-            cache = [];
-
-            var follows_tweetonica = false;
-
-            $('.groupentry').remove();
-            for (var i = 0; i < groups.length; i++) {
-                var group = groups[i];
-                render_group(group);
-                cache[group.name] = group;
-                for (var j = 0; !follows_tweetonica && j < group.users.length; j++) {
-                   if (group.users[j].screen_name == 'tweetonica') {
-                       follows_tweetonica = true;
-                       break;
-                   }
-                }
-            }
-            if (!follows_tweetonica)
-            {
-                $('#followme').click(function(e) {
-                    tweetonica.api.create_friendship('tweetonica', function(results) {
-                        cache['__ALL__'].users.push({screen_name: 'tweetonica', real_name: 'tweetonica', profile_image_url: '/images/twitter-logo.png'});
-                        open_group($('#groups a#root'));
-                        $('#followme').unbind('click');
-                        check_for_updates();
-                    }, function(error) {
-                        $('#error-description').text('Sorry, an error occured. Please try again later');
-                        $('#error-dialog').dialog('open');
-                    });
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-            }
-
-            //open_group($('#groups a#root'));
-
-            if (callback)
-               callback();
-
-        }, function(error) {
-            $.cookie('t.uname', null, {expires: -1, path: '/'});
-            $.cookie('oauth.twitter', null, {expires: -1, path: '/'});
-            $('.prefsmenu').hide();
-            $('#currentuser').html('');
-            $('#currentuserurl').attr('href', 'javascript:;');
-            $('#loggedin').hide();
-            $('#loggedout').show();
-            tweetonica.api.token = null;
-            open_page('error');
-        });
-    };
+    var refresh_unread_count = function() {
+		tweetonica.api.get_friends(function(results){
+			var unread = {};
+			for (var key in results)
+			{
+				var g = results[key]
+				unread[g.name] = g.unread;
+			}
+			
+			var spans = $('#groups span')
+			for (var i=0; i<spans.length; i++)
+			{
+				var jgr = spans.eq(i);
+				if (jgr.attr('class') != 'unread')
+				{
+					var grname = jgr.text();
+					if (grname == 'Uncategorized') { grname = "__ALL__"; }
+					spans.eq(i+1).text(display_unread(unread[grname]));
+				}
+			}
+		})
+	};
 
     var refresh_groups = function(callback) {
         tweetonica.api.get_friends(function(results) {
