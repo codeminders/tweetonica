@@ -327,6 +327,26 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
 
         return ret
 
+    def json_mark_group_read(self, lastid, auth_token=None, group_name=None):
+        """ Feed entries for a given group """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'mark_group_read(%s)\' invoked for user %s' % (group_name, u.screen_name))
+
+        timeline.updateTimeLine(u)
+
+        g = queries.getGroupByName(group_name, u)
+        if not g:
+            logging.warning("Req. non-existing group '%s' for user '%s'" % \
+                            (group, u.screen_name))
+            raise json.JSONRPCError("Group %s does not exists" % group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+        
+        q = data.StatusUpdate.gql('WHERE id = :1', lastid)
+        if not q.count(): return False
+        g.viewed = q[0].created_at
+        g.put()
+        return True
+
     def json_get_feed_by_id(self, auth_token=None, id = None):
         """ Feed entries with specified ID """
         u = self._verifyAuthToken(auth_token)
