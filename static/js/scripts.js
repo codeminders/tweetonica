@@ -600,11 +600,11 @@ $(document).ready(function() {
 				var grname = $(this).data('groupname');
 				unreads.each(function(){
 					if ($(this).data('groupname') == grname){
-						$(this).text(display_unread(unread[grname]))
+						$(this).text(display_unread(unread[grname]));
 					}
-				}) 
-			})
-		})
+				}); 
+			});
+		});
 	};
 
     var refresh_groups = function(callback) {
