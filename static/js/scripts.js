@@ -71,7 +71,56 @@ $(document).ready(function() {
        $('#direct-chars-left').text(140 - message.length);
     }
 
-    //var compose_feeds = function(feed)
+    var compose_feed = function(feed) {
+		var container = $('<div class="usermsg" id="msg-' + feed.id + '">');
+        container.append('<div class="userinfo_pic"><img src="' + feed.from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
+        container.append('<a href="http://twitter.com/' + feed.from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed.from.screen_name + '</span></a>');
+        container.append('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>');
+        container.append('<span class="feed-text">' + feed.html + '</span>');
+
+        var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed.id + '">');
+        var btn_direct = $('<a href="javascript:;">').click(function(e) {
+            var id = $(this).parent().attr('id').substring(4);
+            $('#direct-message-text').val('');
+            $('#direct-chars-left').text(140);
+            var to = $('#msg-' + id + ' .feed-author-name').text();
+            $('.direct-msg label span').text(to);
+            $('#target-user').val(to);
+            $('#direct-post-dialog').dialog('open');
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        btn_direct.append('<img src="/images/direct_msg.png" alt="Direct Message"/>');
+        buttons.append(btn_direct);
+
+        var btn_reply = $('<a href="javascript:;">').click(function(e) {
+            var id = $(this).parent().attr('id').substring(4);
+            set_post_text('@' + $('#msg-' + id + ' .feed-author-name').text());
+            $('#reply-to-status-id').val(id);
+            $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        btn_reply.append('<img src="/images/reply.png" alt="Reply"/>');
+        buttons.append(btn_reply);
+
+        var btn_retweet = $('<a href="javascript:;">').click(function(e) {
+            var id = $(this).parent().attr('id').substring(4);
+            tweetonica.api.get_feed_by_id(id, function(result) {
+                set_post_text('RT @' + result.from.screen_name + ' ' + result.text);
+                $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
+            }, function(error) {
+                $('#error-description').text('Sorry, we were unable to retrieve feed data, please try again later');
+                $('#error-dialog').dialog('open');
+            });
+            e.stopPropagation();
+            e.preventDefault();
+        });
+        btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
+        buttons.append(btn_retweet);
+        $('.feed-text a', container).attr('target', '_blank');
+		return [container, buttons];
+	}
 
     var load_feed = function(g, offset) {
         $('#feed_anchor').show();
@@ -86,54 +135,10 @@ $(document).ready(function() {
             });
 
             for (var i = 0; i < feed.length; i++) {
-
-                var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
-                container.append('<div class="userinfo_pic"><img src="' + feed[i].from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
-                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed[i].from.screen_name + '</span></a>');
-                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '/status/' + feed[i].id + '" target="_blank"><span class="msg-date">' + format_date(feed[i].created_at) + '</span></a><br/>');
-                container.append('<span class="feed-text">' + feed[i].html + '</span>');
-
-                var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed[i].id + '">');
-                var btn_direct = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    $('#direct-message-text').val('');
-                    $('#direct-chars-left').text(140);
-                    var to = $('#msg-' + id + ' .feed-author-name').text();
-                    $('.direct-msg label span').text(to);
-                    $('#target-user').val(to);
-                    $('#direct-post-dialog').dialog('open');
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_direct.append('<img src="/images/direct_msg.png" alt="Direct Message"/>');
-                buttons.append(btn_direct);
-
-                var btn_reply = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    set_post_text('@' + $('#msg-' + id + ' .feed-author-name').text());
-                    $('#reply-to-status-id').val(id);
-                    $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_reply.append('<img src="/images/reply.png" alt="Reply"/>');
-                buttons.append(btn_reply);
-
-                var btn_retweet = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    tweetonica.api.get_feed_by_id(id, function(result) {
-                        set_post_text('RT @' + result.from.screen_name + ' ' + result.text);
-                        $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
-                    }, function(error) {
-                        $('#error-description').text('Sorry, we were unable to retrieve feed data, please try again later');
-                        $('#error-dialog').dialog('open');
-                    });
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
-                buttons.append(btn_retweet);
-                $('.feed-text a', container).attr('target', '_blank');
+                var items = compose_feed(feed[i]);
+				var container = items[0];
+				var buttons = items[1];
+                
                 var anc = $('#feed_anchor');
                 anc.before(container);
                 anc.before(buttons);
@@ -164,53 +169,10 @@ $(document).ready(function() {
         tweetonica.api.get_new_tweets(g, id, function(feed) {
             for (var i = 0; i < feed.length; i++) {
 
-                var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
-                container.append('<div class="userinfo_pic"><img src="' + feed[i].from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
-                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed[i].from.screen_name + '</span></a>');
-                container.append('<a href="http://twitter.com/' + feed[i].from.screen_name + '/status/' + feed[i].id + '" target="_blank"><span class="msg-date">' + format_date(feed[i].created_at) + '</span></a><br/>');
-                container.append('<span class="feed-text">' + feed[i].html + '</span>');
-
-                var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed[i].id + '">');
-                var btn_direct = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    $('#direct-message-text').val('');
-                    $('#direct-chars-left').text(140);
-                    var to = $('#msg-' + id + ' .feed-author-name').text();
-                    $('.direct-msg label span').text(to);
-                    $('#target-user').val(to);
-                    $('#direct-post-dialog').dialog('open');
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_direct.append('<img src="/images/direct_msg.png" alt="Direct Message"/>');
-                buttons.append(btn_direct);
-
-                var btn_reply = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    set_post_text('@' + $('#msg-' + id + ' .feed-author-name').text());
-                    $('#reply-to-status-id').val(id);
-                    $('#post-dialog').dialog('option', 'title', 'Reply').dialog('open');
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_reply.append('<img src="/images/reply.png" alt="Reply"/>');
-                buttons.append(btn_reply);
-
-                var btn_retweet = $('<a href="javascript:;">').click(function(e) {
-                    var id = $(this).parent().attr('id').substring(4);
-                    tweetonica.api.get_feed_by_id(id, function(result) {
-                        set_post_text('RT @' + result.from.screen_name + ' ' + result.text);
-                        $('#post-dialog').dialog('option', 'title', 'reTweet').dialog('open');
-                    }, function(error) {
-                        $('#error-description').text('Sorry, we were unable to retrieve feed data, please try again later');
-                        $('#error-dialog').dialog('open');
-                    });
-                    e.stopPropagation();
-                    e.preventDefault();
-                });
-                btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
-                buttons.append(btn_retweet);
-                $('.feed-text a', container).attr('target', '_blank');
+                var items = compose_feed(feed[i]);
+                var container = items[0];
+                var buttons = items[1];
+				
 				var anc = $(".usermsg").eq(0);
 				var splitter = $('<div>').addClass("line");
 				container.hide();
@@ -634,20 +596,14 @@ $(document).ready(function() {
 			}
 			
 			var unreads = $('#groups span.unread')
-			groups = $('#groups a.gropen, a.grclosed');
-			for(var i=0; i<groups.length; i++)
-			{
-				var grname = groups.eq(i).data('groupname')
-				var un = unread[grname];
-				unreads.each(function()
-				{
-					var uspan = $(this);
-					if (uspan.data('groupname') == grname)
-					{
-						uspan.text(display_unread(un));
+			$('#groups a.gropen, a.grclosed').each(function(){
+				var grname = $(this).data('groupname');
+				unreads.each(function(){
+					if ($(this).data('groupname') == grname){
+						$(this).text(display_unread(unread[grname]))
 					}
-				});
-			}
+				}) 
+			})
 		})
 	};
 
