@@ -296,6 +296,36 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         g.put()
 
         return ret
+    
+    def json_get_new_tweets(self, lastid, auth_token=None, group_name=None):
+        """ Feed entries for a given group """
+        u = self._verifyAuthToken(auth_token)
+        logging.debug('Method \'get_new_tweets(%s)\' invoked for user %s' % (group_name, u.screen_name))
+
+        timeline.updateTimeLine(u)
+
+        g = queries.getGroupByName(group_name, u)
+        if not g:
+            logging.warning("Req. non-existing group '%s' for user '%s'" % \
+                            (group, u.screen_name))
+            raise json.JSONRPCError("Group %s does not exists" % group_name,
+                                    code=ERR_NO_SUCH_GROUP)
+
+        tl = queries.getGroupsNewTweets(g, lastid)
+        
+        ret = []
+        for e in tl:
+            ret.append({'id' : e.id,
+                        'html' : itemHTML(e, False),
+                        'from' : {'screen_name' : e.from_friend.screen_name,
+                                  'real_name' : e.from_friend.real_name,
+                                  'profile_image_url' : e.from_friend.profile_image_url},
+                        'created_at': long(time.mktime(e.created_at.timetuple()))})
+ 
+        #g.viewed = queries.getUserTimeline(u).timeline_last_updated
+        #g.put()
+
+        return ret
 
     def json_get_feed_by_id(self, auth_token=None, id = None):
         """ Feed entries with specified ID """
