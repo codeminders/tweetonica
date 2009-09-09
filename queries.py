@@ -189,7 +189,7 @@ def getGroupTimeline(g, howmany=20, offset = 0):
 
 def getGroupsNewTweets(g, lastid):
     logging.debug('Group key is %s and lastid is %s' % (str(g.key()), str(lastid)))
-    q = data.StatusUpdate.gql("WHERE group = :1 AND id > :2", g.key(), int(lastid))
+    q = data.StatusUpdate.gql("WHERE group = :1 AND id > :2 ORDER BY id ASC", g.key(), int(lastid))
     logging.debug('Returning %d new tweets' % q.count())
     return q
 
