@@ -188,8 +188,12 @@ $(document).ready(function() {
         });
 
         var span = $('<span>').text(display_group_name(g.name, true));
+		var span2 = $('<span>').text(display_unread(g.unread));
+		span2.addClass('unread')
+		span2.data('groupname', g.name)
 
-        container.append(node.append(span).append('<span class="unread">' + display_unread(g.unread) + '</span>'));
+        container.append(node.append(span).append(' ').append(span2));
+		//'<span class="unread">'+ display_unread(g.unread) + '</span>'));
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
@@ -536,8 +540,16 @@ $(document).ready(function() {
 			groups = $('#groups a.gropen, a.grclosed');
 			for(var i=0; i<groups.length; i++)
 			{
-				un = unread[groups.eq(i).data('groupname')];
-				unreads.eq(i).text(display_unread(un));
+				grname = groups.eq(i).data('groupname')
+				un = unread[grname];
+				unreads.each(function()
+				{
+					u = $(this);
+					if (u.data('groupname') == grname)
+					{
+						u.text(display_unread(un));
+					}
+				});
 			}
 		})
 	};

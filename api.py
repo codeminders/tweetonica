@@ -290,8 +290,9 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                                   'real_name' : e.from_friend.real_name,
                                   'profile_image_url' : e.from_friend.profile_image_url},
                         'created_at': long(time.mktime(e.created_at.timetuple()))})
-
-        g.viewed = datetime.datetime.now()
+ 
+        g.viewed = queries.getUserTimeline(u).timeline_last_updated
+        #datetime.datetime.now()
         g.put()
 
         return ret
