@@ -71,6 +71,7 @@ $(document).ready(function() {
        $('#direct-chars-left').text(140 - message.length);
     }
 
+    //var compose_feeds = function(feed)
 
     var load_feed = function(g, offset) {
         $('#feed_anchor').show();
@@ -161,7 +162,6 @@ $(document).ready(function() {
         $('#feed_anchor').show();
         $('#btn-morefeed').hide();
         tweetonica.api.get_new_tweets(g, id, function(feed) {
-            //alert('got '+feed.length+' new tweets');
             for (var i = 0; i < feed.length; i++) {
 
                 var container = $('<div class="usermsg" id="msg-' + feed[i].id + '">');
@@ -251,6 +251,10 @@ $(document).ready(function() {
 		refresh_unread_count();
 	} 
 	
+	var mark_group_viewed = function(g) {
+		tweetonica.api.mark_group_viewed(g.name);
+	}
+	
     var render_group = function(g) {
 
         var container = $('<div class="group-background groupentry">').droppable({
@@ -286,8 +290,7 @@ $(document).ready(function() {
 		span2.addClass('unread')
 		span2.data('groupname', g.name)
 
-        container.append(node.append(span).append(' ').append(span2));
-		//'<span class="unread">'+ display_unread(g.unread) + '</span>'));
+        container.append(node.append(span).append(span2));
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
@@ -487,8 +490,8 @@ $(document).ready(function() {
             load_feed(g.name, 0);
         }
 		
-		e.children().eq(1).text(display_unread(0));
-		$.cookie('last_group', g.name);
+		$('.unread', e).text(display_unread(0));
+		$.cookie('last_group', g.name, {expires: 365, path: '/'});
     }
 
     var sync_groups = function(force, callback) {
@@ -634,14 +637,14 @@ $(document).ready(function() {
 			groups = $('#groups a.gropen, a.grclosed');
 			for(var i=0; i<groups.length; i++)
 			{
-				grname = groups.eq(i).data('groupname')
-				un = unread[grname];
+				var grname = groups.eq(i).data('groupname')
+				var un = unread[grname];
 				unreads.each(function()
 				{
-					u = $(this);
-					if (u.data('groupname') == grname)
+					var uspan = $(this);
+					if (uspan.data('groupname') == grname)
 					{
-						u.text(display_unread(un));
+						uspan.text(display_unread(un));
 					}
 				});
 			}
@@ -671,13 +674,8 @@ $(document).ready(function() {
 
             var follows_tweetonica = false;
 
-            var lastgr = 0;
             $('.groupentry').remove();
             for (var i = 0; i < groups.length; i++) {
-				if (groups[i].last)
-				{
-					lastgr = i;
-				}
                 var group = groups[i];
                 render_group(group);
                 cache[group.name] = group;
