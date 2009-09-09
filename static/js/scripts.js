@@ -393,7 +393,8 @@ $(document).ready(function() {
             load_feed(g.name, 0);
         }
 		
-		e.children().eq(1).text(display_unread(0))
+		e.children().eq(1).text(display_unread(0));
+		$.cookie('last_group', g.name);
     }
 
     var sync_groups = function(force, callback) {
@@ -612,7 +613,12 @@ $(document).ready(function() {
             }
 
 			jgroups = $('#groups a.grclosed');
-            open_group(jgroups.eq(lastgr));
+			lastgr = $.cookie('last_group');
+			$('#groups a.grclosed').each(function(){
+				if ($(this).data('groupname') == lastgr){
+					open_group($(this));
+				}
+			})
 
             if (callback)
                callback();
