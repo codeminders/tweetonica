@@ -213,8 +213,41 @@ $(document).ready(function() {
 		refresh_unread_count();
 	} 
 	
-	var mark_group_viewed = function(g) {
-		tweetonica.api.mark_group_viewed(g.name);
+	var mark_group_read = function(g) {
+		$('#feed_anchor').show();
+        $('#btn-morefeed').hide();
+
+        var messages = $('.usermsg')
+		if (messages.length == 0) {
+            $('.unread', g).text(display_unread(0));
+            $('#feed_anchor').hide();
+            $('#btn-morefeed').show().unbind('click').click(function(e) {
+                load_feed(g, $('.usermsg').size());
+                e.stopPropagation();
+                e.preventDefault();
+            });
+			return;
+        }
+		var lastid = messages.attr('id').split('-')[1];
+		
+		tweetonica.api.mark_group_read(g.data('groupname'), lastid,
+		function(success) {
+			$('.unread', g).text(display_unread(0));
+            $('#feed_anchor').hide();
+            $('#btn-morefeed').show().unbind('click').click(function(e) {
+                load_feed(g, $('.usermsg').size());
+                e.stopPropagation();
+                e.preventDefault();
+            });
+
+        }, function(error) {
+            $('#feed_anchor').hide();
+            $('#btn-morefeed').show().unbind('click').click(function(e) {
+                load_feed(g, $('.usermsg').size());
+                e.stopPropagation();
+                e.preventDefault();
+            });
+        });
 	}
 	
     var render_group = function(g) {
@@ -584,6 +617,17 @@ $(document).ready(function() {
                 fn();
             }, interval);
         })(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        
+		$('.group-header')
+		/*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
+		'<b class="utop"><b class="ub1"><b class="ub2"><b class="ub3"><b class="ub4">' +
+		'<span class="prefs-box-content">Mark all as read</span>' +
+		'<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
+		'</a>')*/
+		.append($('<input type=button value="Mark all as read">')
+		.click(function() {
+			mark_group_read($('#groups .gropen')); 
+		}));
     };
 
     var refresh_unread_count = function() {
