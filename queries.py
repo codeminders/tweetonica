@@ -11,8 +11,6 @@ import constants
 
 def loadGroups(u):
     q = data.Group.gql('WHERE user = :1', u.key())
-    last = data.Group.gql('WHERE user = :1 ORDER BY viewed DESC LIMIT 1', u.key())
-    lastgr = last[0].name
     res = {}
     for g in q:
         if not g.viewed:
@@ -31,8 +29,7 @@ def loadGroups(u):
                        'real_name':f.real_name,
                        'profile_image_url': f.profile_image_url} \
                       for f in groupMembers(g)],
-            'unread': unread,
-            'last': g.name == lastgr
+            'unread': unread
             };
     return res
 
@@ -188,6 +185,12 @@ def addNewFriend(u,f,g):
 def getGroupTimeline(g, howmany=20, offset = 0):
     q = data.StatusUpdate.gql("WHERE group = :1 ORDER BY id DESC LIMIT %d OFFSET %d" % (howmany, offset),\
                               g.key())
+    return q
+
+def getGroupsNewTweets(g, lastid):
+    logging.debug('Group key is %s and lastid is %s' % (str(g.key()), str(lastid)))
+    q = data.StatusUpdate.gql("WHERE group = :1 AND id > :2", g.key(), int(lastid))
+    logging.debug('Returning %d new tweets' % q.count())
     return q
 
 def getTimelineById(uid, u):

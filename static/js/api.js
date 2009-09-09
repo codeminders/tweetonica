@@ -256,6 +256,27 @@ var tweetonica = {
                     tweetonica.api.handle_request_error(o, status, thrown, error);
                 });
         },
+		
+		get_new_tweets : function (group_name, lastid, success, error) {
+	            this.jsonrpc('get_new_tweets', 
+                {
+                    auth_token: this.token,
+                    group_name: group_name,
+					lastid: lastid
+                }, 
+
+                function(o) {
+                    if (tweetonica.api.handle_jsonrpc_error(o, error)) {
+                        return;
+                    }
+                    if (success)                    
+                        success(o.result);
+                }, 
+                function(o, status, thrown) {
+                    tweetonica.api.handle_request_error(o, status, thrown, error);
+                });
+
+		},
 
         get_feed_by_id : function(id, success, error) {
             this.jsonrpc('get_feed_by_id', 
