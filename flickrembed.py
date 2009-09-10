@@ -15,7 +15,7 @@ def _getText(pageurl, photoid):
             url = flickr.Photo(photoid).getURL(size = 'Large', urlType = 'source')
         except:
             pass
-    if url: return '<a href="%s"><img src="%s"></a>' % (pageurl, url)
+    if url: return '<a href="%s"><img class="tweet-image" src="%s"></a>' % (pageurl, url)
     else: return None
 
 
