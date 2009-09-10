@@ -6,8 +6,6 @@ var PREFS = {};
 var CACHE_TTL = 60 * 5; // 5 min
 var last_sync_time = 0;
 
-var CURRENT_GROUP_UNREAD = 0;
-
 $(document).ready(function() {
 
     // aux functions
