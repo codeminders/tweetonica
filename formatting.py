@@ -26,7 +26,7 @@ def mobypictureMapper(m):
                           ('s', 'small'),
                           ('k',constants.MOBYPIC_DEV_KEY),
                           ('format','plain')]))
-    res = '<a href="%s"><img src="%s"/></a>' % (url, th_url)
+    res = '<a href="%s"><img class="tweet-image" src="%s"/></a>' % (url, th_url)
     if m.start() != 0:
         res = '<br />' + res
     return res
@@ -84,7 +84,7 @@ def yfrogMapper(m):
             logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
     if media_id.endswith('x'):
         return '<a href="%s">%s</a>' % (url, url)
-    res = '<a href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
+    res = '<a class="tweet-image" href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
     if m.start() != 0:
         res = '<br />' + res
     return res
@@ -92,7 +92,7 @@ def yfrogMapper(m):
 def twitpicMapper(m):
     url = m.group(0)
     media_id = m.group(3)
-    return '<a href="%s"><img src="http://twitpic.com/show/thumb/%s"/></a>' % (url, media_id)
+    return '<a href="%s"><img class="tweet-image" src="http://twitpic.com/show/thumb/%s"/></a>' % (url, media_id)
 
 def flickrMapper(m):
     url = m.group(0)
