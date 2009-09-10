@@ -6,6 +6,8 @@ var PREFS = {};
 var CACHE_TTL = 60 * 5; // 5 min
 var last_sync_time = 0;
 
+var CURRENT_GROUP_UNREAD = 0;
+
 $(document).ready(function() {
 
     // aux functions
@@ -21,6 +23,10 @@ $(document).ready(function() {
         if (unread == 0) return '';
         return '('+unread+')';
     }
+	
+	var update_title = function() {
+		
+	}
 
     var format_date = function(s) {
         var d = new Date();
@@ -131,6 +137,7 @@ $(document).ready(function() {
                 var o = $(this);
                 if (o.data('groupname') == g.name) {
                     $('.unread', o).text(display_unread(0));
+					$('.unread', o).data('count', 0);
                 }
             });
 
@@ -217,9 +224,12 @@ $(document).ready(function() {
 		$('#feed_anchor').show();
         $('#btn-morefeed').hide();
 
+        $('.unread', $('#groups .gropen')).text(display_unread(0));
+        $('.unread', $('#groups .gropen')).data('count', 0);
         var messages = $('.usermsg')
 		if (messages.length == 0) {
             $('.unread', g).text(display_unread(0));
+			$('.unread', g).data('count', 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
@@ -233,6 +243,7 @@ $(document).ready(function() {
 		tweetonica.api.mark_group_read(g.data('groupname'), lastid,
 		function(success) {
 			$('.unread', g).text(display_unread(0));
+			$('.unread', g).data('count', 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
@@ -284,6 +295,7 @@ $(document).ready(function() {
 		var span2 = $('<span>').text(display_unread(g.unread));
 		span2.addClass('unread')
 		span2.data('groupname', g.name)
+		span2.data('count', g.unread);
 
         container.append(node.append(span).append(span2));
 
@@ -446,6 +458,7 @@ $(document).ready(function() {
     }
 
     var open_group = function(e) {
+		document.title = 'Tweetonica';
         $('a.gropen').each(function() {
             var cl = this.className.split(' ');
             var newcl = 'grclosed ';
@@ -486,6 +499,7 @@ $(document).ready(function() {
         }
 		
 		$('.unread', e).text(display_unread(0));
+		$('.unread', e).data('count', 0);
 		$.cookie('last_group', g.name, {expires: 365, path: '/'});
     }
 
@@ -522,6 +536,7 @@ $(document).ready(function() {
     };
 
     var open_page = function(id) {
+		document.title = 'Tweetonica';
         if (id != 'manage' && id != 'prefs' && id != 'threads' || tweetonica.api.token) {
             $('.menu').removeClass('act');
             if (id == 'progress')
@@ -617,6 +632,7 @@ $(document).ready(function() {
                 fn();
             }, interval);
         })(silent_refresh, 5*60000); // auto refresh every 5 minutes
+		//})(silent_refresh, 10000); // auto refresh every 10 seconds (for debug)
         
 		$('.group-header')
 		/*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
@@ -626,6 +642,7 @@ $(document).ready(function() {
 		'</a>')*/
 		.append($('<input type=button value="Mark all as read">')
 		.click(function() {
+			document.title = 'Tweetonica';
 			mark_group_read($('#groups .gropen')); 
 		}));
     };
@@ -645,9 +662,15 @@ $(document).ready(function() {
 				unreads.each(function(){
 					if ($(this).data('groupname') == grname){
 						$(this).text(display_unread(unread[grname]));
+						$(this).data('count', unread[grname]);
 					}
 				}); 
 			});
+			var curunread = $('.unread', $('#groups .gropen')).data('count');
+			if (curunread > 0) {
+				document.title = '[' + curunread + '] Tweetonica';
+			}
+			else { document.title = 'Tweetonica'; }
 		});
 	};
 
@@ -705,6 +728,7 @@ $(document).ready(function() {
 
 			jgroups = $('#groups a.grclosed');
 			lastgr = $.cookie('last_group');
+			var opened = false;
 			if (lastgr) {
 				$('#groups a.grclosed').each(function(){
 					if ($(this).data('groupname') == lastgr) {
@@ -713,7 +737,7 @@ $(document).ready(function() {
 					}
 				});
 			}
-			else {
+			if (!opened) {
 				open_group($('#groups a#root'));
 			}
 
