@@ -32,6 +32,7 @@ ERR_NO_SUCH_GROUP = 105
 ERR_NO_SUCH_FRIEND = 106
 ERR_SPECIAL_GROUP_MODIFICATION_NOT_PERMITTED = 107
 ERR_NO_SUCH_ENTRY = 108
+ERR_NO_SUCH_TWEET = 109
 
 
 class JSONHandler(webapp.RequestHandler, json.JSONRPC):
@@ -332,8 +333,6 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'mark_group_read(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
-        timeline.updateTimeLine(u)
-
         g = queries.getGroupByName(group_name, u)
         if not g:
             logging.warning("Req. non-existing group '%s' for user '%s'" % \
@@ -341,8 +340,10 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
             raise json.JSONRPCError("Group %s does not exists" % group_name,
                                     code=ERR_NO_SUCH_GROUP)
         
-        q = data.StatusUpdate.gql('WHERE id = :1', lastid)
-        if not q.count(): return False
+        q = data.StatusUpdate.gql('WHERE id = :1', int(lastid))
+        if not q.count():
+            raise json.JSONRPCError("Tweet %s does not exists" % lastgr,
+                                    code=ERR_NO_SUCH_TWEET)
         g.viewed = q[0].created_at
         g.put()
         return True
