@@ -22,9 +22,17 @@ $(document).ready(function() {
         return '('+unread+')';
     }
 	
-	var update_title = function() {
-		
+	var set_group_unread = function(group, unread) {
+		$('.unread', group).text(display_unread(unread));
+        $('.unread', group).data('count', unread);
+		if ( unread == 0 ) {
+            group.css('font-weight','normal');
+		}
+		else {
+			group.css('font-weight','bold');
+		}
 	}
+	
 
     var format_date = function(s) {
         var d = new Date();
@@ -134,8 +142,7 @@ $(document).ready(function() {
             $('#groups a').each(function() {
                 var o = $(this);
                 if (o.data('groupname') == g.name) {
-                    $('.unread', o).text(display_unread(0));
-					$('.unread', o).data('count', 0);
+					set_group_unread(o, 0);
                 }
             });
 
@@ -168,7 +175,7 @@ $(document).ready(function() {
         });
     }
 	
-	var update_feed = function(g, id) {
+	var update_feed = function(g, id, callback) {
         $('#feed_anchor').show();
         $('#btn-morefeed').hide();
         tweetonica.api.get_new_tweets(g, id, function(feed) {
@@ -198,6 +205,7 @@ $(document).ready(function() {
                 e.preventDefault();
             });
 
+            if (callback) { callback(); }
 
         }, function(error) {
             $('#feed_anchor').hide();
@@ -207,27 +215,24 @@ $(document).ready(function() {
                 e.preventDefault();
             });
         });
-    }
+    };
 	
 	var silent_refresh = function()	{
 		opengr = cache[$('#groups .gropen').data('groupname')];
 		if (opengr) {
             lastid = $('.usermsg').attr('id').split('-')[1];
-			update_feed(opengr.name, lastid);
+			update_feed(opengr.name, lastid, refresh_unread_count);
 		};
-		refresh_unread_count();
 	} 
 	
 	var mark_group_read = function(g) {
 		$('#feed_anchor').show();
         $('#btn-morefeed').hide();
 
-        $('.unread', $('#groups .gropen')).text(display_unread(0));
-        $('.unread', $('#groups .gropen')).data('count', 0);
+        set_group_unread($('#groups .gropen'), 0);
         var messages = $('.usermsg')
 		if (messages.length == 0) {
-            $('.unread', g).text(display_unread(0));
-			$('.unread', g).data('count', 0);
+			set_group_unread(g, 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
@@ -240,8 +245,7 @@ $(document).ready(function() {
 		
 		tweetonica.api.mark_group_read(g.data('groupname'), lastid,
 		function(success) {
-			$('.unread', g).text(display_unread(0));
-			$('.unread', g).data('count', 0);
+			set_group_unread(g, 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
@@ -290,12 +294,15 @@ $(document).ready(function() {
         });
 
         var span = $('<span>').text(display_group_name(g.name, true));
-		var span2 = $('<span>').text(display_unread(g.unread));
-		span2.addClass('unread')
+		var span2 = $('<span>');//.text(display_unread(g.unread));
+		span2.addClass('unread');
 		span2.data('groupname', g.name)
-		span2.data('count', g.unread);
+		node.append(span).append(span2);		
+		//span2.data('count', g.unread);
 
+        set_group_unread(node, g.unread);
         container.append(node.append(span).append(span2));
+
 
         if (g.name != '__ALL__') {
             var buttons = $('<div class="group-button">');
@@ -496,8 +503,7 @@ $(document).ready(function() {
             load_feed(g.name, 0);
         }
 		
-		$('.unread', e).text(display_unread(0));
-		$('.unread', e).data('count', 0);
+		set_group_unread(e, 0);
 		$.cookie('last_group', g.name, {expires: 365, path: '/'});
     }
 
@@ -630,7 +636,7 @@ $(document).ready(function() {
                 fn();
             }, interval);
         })(silent_refresh, 5*60000); // auto refresh every 5 minutes
-		//})(silent_refresh, 10000); // auto refresh every 10 seconds (for debug)
+		//})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
 		$('.group-header')
 		/*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
@@ -650,19 +656,13 @@ $(document).ready(function() {
 			var unread = {};
 			for (var key in results)
 			{
-				var g = results[key]
+				var g = results[key];
 				unread[g.name] = g.unread;
 			}
-			
-			var unreads = $('#groups span.unread')
 			$('#groups a.gropen, a.grclosed').each(function(){
-				var grname = $(this).data('groupname');
-				unreads.each(function(){
-					if ($(this).data('groupname') == grname){
-						$(this).text(display_unread(unread[grname]));
-						$(this).data('count', unread[grname]);
-					}
-				}); 
+				var group = $(this);
+				var grname = group.data('groupname');
+				set_group_unread(group, unread[grname]);
 			});
 			var curunread = $('.unread', $('#groups .gropen')).data('count');
 			if (curunread > 0) {
