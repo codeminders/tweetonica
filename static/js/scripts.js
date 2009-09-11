@@ -170,6 +170,8 @@ $(document).ready(function() {
                 e.preventDefault();
             });
 
+                    $('#markasread').css('position','absolute')
+        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0)
 
         }, function(error) {
             $('#feed_anchor').hide();
@@ -538,6 +540,7 @@ $(document).ready(function() {
         set_group_unread(e, 0);
         $.cookie('last_group', g.name, { expires: 365, path: '/'});
         
+        //$('#markasread').animate({left:-100, top: -10}, 0)        
         update_title();
     }
 
@@ -678,7 +681,7 @@ $(document).ready(function() {
         '<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
         '</a>')*/
         //.append($('<input type=button value="Mark all as read">')
-        .append($('<a href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
+        .append($('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
         .click(function() {
             mark_group_read($('#groups .gropen'));
             update_title(); 
