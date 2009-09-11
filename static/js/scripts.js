@@ -21,18 +21,24 @@ $(document).ready(function() {
         if (unread == 0) return '';
         return '('+unread+')';
     }
-	
-	var set_group_unread = function(group, unread) {
-		$('.unread', group).text(display_unread(unread));
+    
+    var set_group_unread = function(group, unread) {
+        $('.unread', group).text(display_unread(unread));
         $('.unread', group).data('count', unread);
-		if ( unread == 0 ) {
-            group.css('font-weight','normal');
-		}
-		else {
-			group.css('font-weight','bold');
-		}
-	}
-	
+        if (unread == 0) {
+            group.css('font-weight', 'normal');
+        }
+        else {
+            group.css('font-weight', 'bold');
+        }
+    }
+    
+    var update_title = function() {
+        var open = $('#groups a.gropen');
+        if (open) {
+            document.title = open.eq(0).text() + " - Tweetonica";
+        }
+    }
 
     var format_date = function(s) {
         var d = new Date();
@@ -84,7 +90,7 @@ $(document).ready(function() {
     }
 
     var compose_feed = function(feed) {
-		var container = $('<div class="usermsg" id="msg-' + feed.id + '">');
+        var container = $('<div class="usermsg" id="msg-' + feed.id + '">');
         container.append('<div class="userinfo_pic"><img src="' + feed.from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed.from.screen_name + '</span></a>');
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>');
@@ -131,8 +137,8 @@ $(document).ready(function() {
         btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
         buttons.append(btn_retweet);
         $('.feed-text a', container).attr('target', '_blank');
-		return [container, buttons];
-	}
+        return [container, buttons];
+    }
 
     var load_feed = function(g, offset) {
         $('#feed_anchor').show();
@@ -142,14 +148,14 @@ $(document).ready(function() {
             $('#groups a').each(function() {
                 var o = $(this);
                 if (o.data('groupname') == g.name) {
-					set_group_unread(o, 0);
+                    set_group_unread(o, 0);
                 }
             });
 
             for (var i = 0; i < feed.length; i++) {
                 var items = compose_feed(feed[i]);
-				var container = items[0];
-				var buttons = items[1];
+                var container = items[0];
+                var buttons = items[1];
                 
                 var anc = $('#feed_anchor');
                 anc.before(container);
@@ -174,8 +180,8 @@ $(document).ready(function() {
             });
         });
     }
-	
-	var update_feed = function(g, id, callback) {
+
+    var update_feed = function(g, id, callback) {
         $('#feed_anchor').show();
         $('#btn-morefeed').hide();
         tweetonica.api.get_new_tweets(g, id, function(feed) {
@@ -184,18 +190,18 @@ $(document).ready(function() {
                 var items = compose_feed(feed[i]);
                 var container = items[0];
                 var buttons = items[1];
-				
-				var anc = $(".usermsg").eq(0);
-				var splitter = $('<div>').addClass("line");
-				container.hide();
-				buttons.hide();
-				splitter.hide();
+                
+                var anc = $(".usermsg").eq(0);
+                var splitter = $('<div>').addClass("line");
+                container.hide();
+                buttons.hide();
+                splitter.hide();
                 anc.before(container);
                 anc.before(buttons);
                 anc.before(splitter);
-				container.slideDown('slow');
-				buttons.slideDown('slow');
-				splitter.slideDown('slow');
+                container.slideDown('slow');
+                buttons.slideDown('slow');
+                splitter.slideDown('slow');
 
             }
             $('#feed_anchor').hide();
@@ -216,43 +222,49 @@ $(document).ready(function() {
             });
         });
     };
-	
-	var silent_refresh = function()	{
-		opengr = cache[$('#groups .gropen').data('groupname')];
-		if (opengr) {
-            lastid = $('.usermsg').attr('id').split('-')[1];
-			update_feed(opengr.name, lastid, refresh_unread_count);
-		};
-	} 
-	
-	var mark_group_read = function(g) {
-		$('#feed_anchor').show();
+    
+    var silent_refresh = function() {
+        var opengr = cache[$('#groups .gropen').data('groupname')];
+        if (opengr) {
+            if ($('.usermsg').length) {
+                lastid = $('.usermsg').attr('id').split('-')[1];
+                update_feed(opengr.name, lastid, refresh_unread_count);
+            }
+            else {
+                update_feed(opengr.name, 0, refresh_unread_count);
+            }
+            update_title();
+        };
+    }
+    
+    var mark_group_read = function(g) {
+        $('#feed_anchor').show();
         $('#btn-morefeed').hide();
-
+        
         set_group_unread($('#groups .gropen'), 0);
         var messages = $('.usermsg')
-		if (messages.length == 0) {
-			set_group_unread(g, 0);
+        if (messages.length == 0) {
+            set_group_unread(g, 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
                 e.stopPropagation();
                 e.preventDefault();
             });
-			return;
+            return;
         }
-		var lastid = messages.attr('id').split('-')[1];
-		
-		tweetonica.api.mark_group_read(g.data('groupname'), lastid,
-		function(success) {
-			set_group_unread(g, 0);
+        var lastid = messages.attr('id').split('-')[1];
+        
+        tweetonica.api.mark_group_read(g.data('groupname'), lastid, function(success) {
+            set_group_unread(g, 0);
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
                 load_feed(g, $('.usermsg').size());
                 e.stopPropagation();
                 e.preventDefault();
             });
-
+            update_title();
+            
         }, function(error) {
             $('#feed_anchor').hide();
             $('#btn-morefeed').show().unbind('click').click(function(e) {
@@ -261,7 +273,7 @@ $(document).ready(function() {
                 e.preventDefault();
             });
         });
-	}
+    }
 	
     var render_group = function(g) {
 
@@ -294,11 +306,10 @@ $(document).ready(function() {
         });
 
         var span = $('<span>').text(display_group_name(g.name, true));
-		var span2 = $('<span>');//.text(display_unread(g.unread));
-		span2.addClass('unread');
-		span2.data('groupname', g.name)
-		node.append(span).append(span2);		
-		//span2.data('count', g.unread);
+        var span2 = $('<span>');//.text(display_unread(g.unread));
+        span2.addClass('unread');
+        span2.data('groupname', g.name)
+        node.append(span).append(span2);
 
         set_group_unread(node, g.unread);
         container.append(node.append(span).append(span2));
@@ -404,7 +415,7 @@ $(document).ready(function() {
                 if (destg.name != srcg.name)
                     $('#user_' + screen_name).remove();
             check_for_updates();
-			refresh_unread_count();
+            refresh_unread_count();
         }}, function(error) {
             $('#error-description').text('Sorry, we were unable to move your contact. Please try again later');
             $('#error-dialog').dialog('open');
@@ -463,7 +474,6 @@ $(document).ready(function() {
     }
 
     var open_group = function(e) {
-		document.title = 'Tweetonica';
         $('a.gropen').each(function() {
             var cl = this.className.split(' ');
             var newcl = 'grclosed ';
@@ -487,7 +497,7 @@ $(document).ready(function() {
 
         e.get(0).className = newcl;
 
-		cache[e.data('groupname')].unread = 0;    
+        cache[e.data('groupname')].unread = 0;
         var g = cache[e.data('groupname')];
         $('#info_groupname').text(display_group_name(g.name));
         $('#info_groupfeed').attr('href', g.rssurl);
@@ -502,9 +512,11 @@ $(document).ready(function() {
         if ($('#groupmembers_feed').css('display') != 'none') {
             load_feed(g.name, 0);
         }
-		
-		set_group_unread(e, 0);
-		$.cookie('last_group', g.name, {expires: 365, path: '/'});
+        
+        set_group_unread(e, 0);
+        $.cookie('last_group', g.name, { expires: 365, path: '/'});
+        
+        update_title();
     }
 
     var sync_groups = function(force, callback) {
@@ -540,7 +552,6 @@ $(document).ready(function() {
     };
 
     var open_page = function(id) {
-		document.title = 'Tweetonica';
         if (id != 'manage' && id != 'prefs' && id != 'threads' || tweetonica.api.token) {
             $('.menu').removeClass('act');
             if (id == 'progress')
@@ -636,41 +647,37 @@ $(document).ready(function() {
                 fn();
             }, interval);
         })(silent_refresh, 5*60000); // auto refresh every 5 minutes
-		//})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
-		$('.group-header')
-		/*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
-		'<b class="utop"><b class="ub1"><b class="ub2"><b class="ub3"><b class="ub4">' +
-		'<span class="prefs-box-content">Mark all as read</span>' +
-		'<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
-		'</a>')*/
-		.append($('<input type=button value="Mark all as read">')
-		.click(function() {
-			document.title = 'Tweetonica';
-			mark_group_read($('#groups .gropen')); 
-		}));
+        $('.group-header')
+        /*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
+        '<b class="utop"><b class="ub1"><b class="ub2"><b class="ub3"><b class="ub4">' +
+        '<span class="prefs-box-content">Mark all as read</span>' +
+        '<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
+        '</a>')*/
+        .append($('<input type=button value="Mark all as read">')
+        .click(function() {
+            mark_group_read($('#groups .gropen'));
+            update_title(); 
+        }));
     };
 
     var refresh_unread_count = function() {
-		tweetonica.api.get_friends(function(results){
-			var unread = {};
-			for (var key in results)
-			{
-				var g = results[key];
-				unread[g.name] = g.unread;
-			}
-			$('#groups a.gropen, a.grclosed').each(function(){
-				var group = $(this);
-				var grname = group.data('groupname');
-				set_group_unread(group, unread[grname]);
-			});
-			var curunread = $('.unread', $('#groups .gropen')).data('count');
-			if (curunread > 0) {
-				document.title = '[' + curunread + '] Tweetonica';
-			}
-			else { document.title = 'Tweetonica'; }
-		});
-	};
+        tweetonica.api.get_friends(function(results) {
+            var unread = {};
+            for (var key in results) {
+                var g = results[key];
+                unread[g.name] = g.unread;
+            }
+            $('#groups a.gropen, a.grclosed').each(function() {
+                var group = $(this);
+                var grname = group.data('groupname');
+                set_group_unread(group, unread[grname]);
+            });
+            var curunread = $('.unread', $('#groups .gropen')).data('count');
+            update_title();
+        });
+    };
 
     var refresh_groups = function(callback) {
         tweetonica.api.get_friends(function(results) {
@@ -724,20 +731,20 @@ $(document).ready(function() {
                 });
             }
 
-			jgroups = $('#groups a.grclosed');
-			lastgr = $.cookie('last_group');
-			var opened = false;
-			if (lastgr) {
-				$('#groups a.grclosed').each(function(){
-					if ($(this).data('groupname') == lastgr) {
-						open_group($(this));
-						opened = true;
-					}
-				});
-			}
-			if (!opened) {
-				open_group($('#groups a#root'));
-			}
+            jgroups = $('#groups a.grclosed');
+            lastgr = $.cookie('last_group');
+            var opened = false;
+            if (lastgr) {
+                $('#groups a.grclosed').each(function() {
+                    if ($(this).data('groupname') == lastgr) {
+                        open_group($(this));
+                        opened = true;
+                    }
+                });
+            }
+            if (!opened) {
+                open_group($('#groups a#root'));
+            }
 
             if (callback)
                callback();
