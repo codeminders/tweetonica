@@ -540,6 +540,8 @@ $(document).ready(function() {
         set_group_unread(e, 0);
         $.cookie('last_group', g.name, { expires: 365, path: '/'});
         
+        $('#markasread').css('position','absolute')
+        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0)
         //$('#markasread').animate({left:-100, top: -10}, 0)        
         update_title();
     }
