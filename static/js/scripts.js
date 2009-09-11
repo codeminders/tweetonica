@@ -40,6 +40,13 @@ $(document).ready(function() {
             document.title = open.eq(0).text() + " - Tweetonica";
         }
     }
+    
+    var show_mark_button = function() {
+        $('#markasread').css('position','absolute');
+        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0);
+        $('#markasread').slideDown('slow');
+        
+    }
 
     var format_date = function(s) {
         var d = new Date();
@@ -173,8 +180,7 @@ $(document).ready(function() {
                 e.preventDefault();
             });
 
-                    $('#markasread').css('position','absolute')
-        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0)
+        show_mark_button();
 
         }, function(error) {
             $('#feed_anchor').hide();
@@ -551,9 +557,7 @@ $(document).ready(function() {
         set_group_unread(e, 0);
         $.cookie('last_group', g.name, { expires: 365, path: '/'});
         
-        $('#markasread').css('position','absolute')
-        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0)
-        //$('#markasread').animate({left:-100, top: -10}, 0)        
+        //show_mark_button();    
         update_title();
     }
 
@@ -695,9 +699,16 @@ $(document).ready(function() {
             id = setInterval(function() {
                 fn();
             }, interval);
-        //})(silent_refresh, 5*60000); // auto refresh every 5 minutes
-        })(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        })(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
+        
+        var btn = $('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
+        .click(function() {
+            mark_group_read($('#groups .gropen'));
+            update_title(); 
+        });
+        btn.hide();
         $('.group-header')
         /*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
         '<b class="utop"><b class="ub1"><b class="ub2"><b class="ub3"><b class="ub4">' +
@@ -705,11 +716,7 @@ $(document).ready(function() {
         '<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
         '</a>')*/
         //.append($('<input type=button value="Mark all as read">')
-        .append($('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
-        .click(function() {
-            mark_group_read($('#groups .gropen'));
-            update_title(); 
-        }));
+        .append(btn);//.hide();
     };
 
     var refresh_unread_count = function() {
