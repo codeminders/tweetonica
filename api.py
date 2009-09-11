@@ -16,6 +16,7 @@ import queries
 import constants
 import misc
 import timeline
+import replies
 from oauth import OAuthClient
 from formatting import itemHTML
 
@@ -271,13 +272,31 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """ Feed entries for a given group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_feed(%s, %d)\' invoked for user %s' % (group_name, offset, u.screen_name))
+        
+        if group_name == '__REPLIES__':
+            replies.updateReplies(u);
+            re = queries.getReplies(u)
+            ret = []
+            for r in re:
+                ret.append({'id' : r.id,
+                            'html' : itemHTML(r, False),
+                            'from' : {'screen_name' : r.author,
+                                      'real_name' : r.author,
+                                      'profile_image_url' : "http://twitter.com/%s" % r.author},
+                            'created_at': long(time.mktime(r.created_at.timetuple())),
+                            'reply': True})
+            repl = queries.getUserReplies(u)
+            repl.viewed = repl.replies_last_updated
+            repl.put()
+            return ret
+
 
         timeline.updateTimeLine(u)
 
         g = queries.getGroupByName(group_name, u)
         if not g:
             logging.warning("Req. non-existing group '%s' for user '%s'" % \
-                            (group, u.screen_name))
+                            (group_name, u.screen_name))
             raise json.JSONRPCError("Group %s does not exists" % group_name,
                                     code=ERR_NO_SUCH_GROUP)
 
@@ -290,7 +309,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                         'from' : {'screen_name' : e.from_friend.screen_name,
                                   'real_name' : e.from_friend.real_name,
                                   'profile_image_url' : e.from_friend.profile_image_url},
-                        'created_at': long(time.mktime(e.created_at.timetuple()))})
+                        'created_at': long(time.mktime(e.created_at.timetuple())),
+                        'reply': False})
  
         g.viewed = queries.getUserTimeline(u).timeline_last_updated
         #datetime.datetime.now()
@@ -302,8 +322,22 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         """ Feed entries for a given group """
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'get_new_tweets(%s)\' invoked for user %s' % (group_name, u.screen_name))
-
+        
         timeline.updateTimeLine(u)
+        
+        if group_name == '__REPLIES__':
+            replies.updateReplies(u);
+            re = queries.getNewReplies(u, lastid)
+            ret = []
+            for r in re:
+                ret.append({'id' : r.id,
+                            'html' : itemHTML(r, False),
+                            'from' : {'screen_name' : r.author,
+                                      'real_name' : r.author,
+                                      'profile_image_url' : "http://twitter.com/%s" % r.author},
+                            'created_at': long(time.mktime(r.created_at.timetuple())),
+                            'reply': True})
+            return ret
 
         g = queries.getGroupByName(group_name, u)
         if not g:
@@ -321,10 +355,8 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
                         'from' : {'screen_name' : e.from_friend.screen_name,
                                   'real_name' : e.from_friend.real_name,
                                   'profile_image_url' : e.from_friend.profile_image_url},
-                        'created_at': long(time.mktime(e.created_at.timetuple()))})
- 
-        #g.viewed = queries.getUserTimeline(u).timeline_last_updated
-        #g.put()
+                        'created_at': long(time.mktime(e.created_at.timetuple())),
+                        'reply': False})
 
         return ret
 

@@ -12,6 +12,7 @@ $(document).ready(function() {
 
     var display_group_name = function(name, trim) {
         name = name == '__ALL__' ? 'Uncategorized' : name;
+        name = name == '__REPLIES__' ? 'Replies' : name;
         if (trim && name.length > 14)
             name = name.substring(0, 14) + '..';
         return name;
@@ -91,7 +92,9 @@ $(document).ready(function() {
 
     var compose_feed = function(feed) {
         var container = $('<div class="usermsg" id="msg-' + feed.id + '">');
-        container.append('<div class="userinfo_pic"><img src="' + feed.from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
+        if (!feed.reply) {
+            container.append('<div class="userinfo_pic"><img src="' + feed.from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
+        }
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed.from.screen_name + '</span></a>');
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>');
         container.append('<span class="feed-text">' + feed.html + '</span>');
@@ -279,23 +282,27 @@ $(document).ready(function() {
 	
     var render_group = function(g) {
 
-        var container = $('<div class="group-background groupentry">').droppable({
-            accept: '.userinfo',
-            drop: function(event, ui) {
-                var dest = $('a', this).data('groupname');
-                move_user(ui.draggable.get(0).id.substring(5), dest);
-                $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
-                $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
-            },
-            over: function() {
-                $('a.grclosed', $(this)).removeClass('grclosed').addClass('grclosed-hl');
-                $('a.gropen', $(this)).removeClass('gropen').addClass('gropen-hl');
-            },
-            out: function() {
-                $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
-                $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
-            }
-        });
+        var container = $('<div class="group-background groupentry">')
+        if (g.name != '__REPLIES__')
+        {
+            container.droppable({
+                accept: '.userinfo',
+                drop: function(event, ui) {
+                    var dest = $('a', this).data('groupname');
+                    move_user(ui.draggable.get(0).id.substring(5), dest);
+                    $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
+                    $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
+                },
+                over: function() {
+                    $('a.grclosed', $(this)).removeClass('grclosed').addClass('grclosed-hl');
+                    $('a.gropen', $(this)).removeClass('gropen').addClass('gropen-hl');
+                },
+                out: function() {
+                    $('a.grclosed-hl', $(this)).removeClass('grclosed-hl').addClass('grclosed');
+                    $('a.gropen-hl', $(this)).removeClass('gropen-hl').addClass('gropen');
+                }
+            });
+        }
 
         var c = COLORS[COLOR++];
         if (COLOR >= COLORS.length)
@@ -317,7 +324,7 @@ $(document).ready(function() {
         container.append(node.append(span).append(span2));
 
 
-        if (g.name != '__ALL__') {
+        if (g.name != '__ALL__' && g.name != '__REPLIES__') {
             var buttons = $('<div class="group-button">');
             var editbutton = $('<a href="javascript:;" title="Rename"></a>').click(function(e) {
                 $('#old-group-name').val(g.name);
@@ -340,18 +347,20 @@ $(document).ready(function() {
     };
     
     var render_replies_group = function(unread) {
+        if (!unread) unread = 0;
+        $('#replies').remove();
         var container = $('<div class="group-background groupentry">')
         var c = COLORS[COLOR++];
         if (COLOR >= COLORS.length)
             COLOR = 0;
-        var node = $('<a href="javascript:; id="replies"' + ' class="grclosed ' + c + '-sm color-' + c + '"></a>').attr({
+        var node = $('<a href="javascript:;" id="replies"' + ' class="grclosed ' + c + '-sm color-' + c + '"></a>').attr({
         }).data('groupname', "__REPLIES__").click(function(e) {
             open_group($(this));
             e.stopPropagation();
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name("__REPLIES__", true));
+        var span = $('<span>').text(display_group_name("Replies", true));
         var span2 = $('<span>').text(display_unread(unread));
         span2.addClass('unread');
         span2.data('groupname', "__REPLIES__")
@@ -359,8 +368,10 @@ $(document).ready(function() {
 
         set_group_unread(node, unread);
         container.append(node.append(span).append(span2));
+        alert(container.text());
+        $('#groups').parent().after(container);
     }
-
+    
     var render_user = function(u, g) {
 
         var picturebox = '<div class="userinfo_pic">' +
@@ -622,6 +633,13 @@ $(document).ready(function() {
     var initialize = function(first) {
 
         open_page('progress');
+        
+        cache['__REPLIES__'] = jQuery({
+            name: '__REPLIES__',
+            unread: 0,
+            rssurl: 'None',
+            users: []
+        });
 
         tweetonica.api.get_prefs(function(results) {
             PREFS = results;
@@ -649,6 +667,8 @@ $(document).ready(function() {
 
 
             $('.prefsmenu').show();
+            
+            
 
             sync_groups(true, function(state) {
                 refresh_groups(function() {
@@ -657,6 +677,8 @@ $(document).ready(function() {
                     $.cookie('tt.tab', null);
                 });
             });
+            
+            
         }, function(error) {
             tweetonica.api.token = null;
             $.cookie('t.uname', null, {expires: -1, path: '/'});
@@ -673,8 +695,8 @@ $(document).ready(function() {
             id = setInterval(function() {
                 fn();
             }, interval);
-        })(silent_refresh, 5*60000); // auto refresh every 5 minutes
-        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        //})(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        })(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
         $('.group-header')
         /*.append($('<a id="btn-reset-prefs" class="white" href="javascript:;">' +
@@ -742,6 +764,8 @@ $(document).ready(function() {
                    }
                 }
             }
+            
+            
             if (!follows_tweetonica)
             {
                 $('#followme').click(function(e) {
@@ -774,6 +798,7 @@ $(document).ready(function() {
             if (!opened) {
                 open_group($('#groups a#root'));
             }
+            
 
             if (callback)
                callback();
