@@ -336,6 +336,28 @@ $(document).ready(function() {
 
         $('#groups').append(container);
     };
+    
+    var render_replies_group = function(unread) {
+        var container = $('<div class="group-background groupentry">')
+        var c = COLORS[COLOR++];
+        if (COLOR >= COLORS.length)
+            COLOR = 0;
+        var node = $('<a href="javascript:; id="replies"' + ' class="grclosed ' + c + '-sm color-' + c + '"></a>').attr({
+        }).data('groupname', "__REPLIES__").click(function(e) {
+            open_group($(this));
+            e.stopPropagation();
+            e.preventDefault();
+        });
+
+        var span = $('<span>').text(display_group_name("__REPLIES__", true));
+        var span2 = $('<span>').text(display_unread(unread));
+        span2.addClass('unread');
+        span2.data('groupname', "__REPLIES__")
+        node.append(span).append(span2);
+
+        set_group_unread(node, unread);
+        container.append(node.append(span).append(span2));
+    }
 
     var render_user = function(u, g) {
 
@@ -655,7 +677,8 @@ $(document).ready(function() {
         '<span class="prefs-box-content">Mark all as read</span>' +
         '<b class="ubottom"><b class="ub4"><b class="ub3"><b class="ub2"><b class="ub1">' + 
         '</a>')*/
-        .append($('<input type=button value="Mark all as read">')
+        //.append($('<input type=button value="Mark all as read">')
+        .append($('<a href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
         .click(function() {
             mark_group_read($('#groups .gropen'));
             update_title(); 
@@ -730,6 +753,7 @@ $(document).ready(function() {
                     e.preventDefault();
                 });
             }
+
 
             jgroups = $('#groups a.grclosed');
             lastgr = $.cookie('last_group');
