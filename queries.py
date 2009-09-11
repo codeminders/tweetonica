@@ -31,6 +31,16 @@ def loadGroups(u):
                       for f in groupMembers(g)],
             'unread': unread
             };
+    rq = data.Replies.gql('WHERE user = :1', u);
+    if rq.count():
+        last_read_replies = rq[0].viewed
+        urq = data.Reply.gql('WHERE created_at > :1', last_read_replies).count()
+    else:
+        urq = 0
+    res['__REPLIES__'] = {'name': '__REPLIES__',
+                          'memberships_last_updated': 0,
+                          'users': [],
+                          'unread': urq }
     return res
 
 def unreadForGroup(group):
@@ -192,6 +202,12 @@ def getGroupsNewTweets(g, lastid):
                               g.key(), int(lastid))
     return q
 
+def getNewReplies(u, lastid):
+    q = data.Reply.gql("WHERE to = :1 AND id > :2 ORDER BY id ASC",
+                       u.key(), int(lastid))
+    logging.debug('Got %d replies' % q.count())
+    return q
+
 def getTimelineById(uid, u):
     ''' TODO: does not work '''
     q = data.StatusUpdate.gql('WHERE id =:1 ', int(uid))
@@ -234,6 +250,6 @@ def getUserReplies(user):
         return tl
 
 def getReplies(user):
-    query = data.Reply.gql('WHERE to=:1', user.key())
+    query = data.Reply.gql('WHERE to=:1 ORDER BY id DESC', user.key())
     replies = query.fetch(100)
     return replies
