@@ -32,6 +32,7 @@ class Replies(db.Model):
     user = db.ReferenceProperty(User)
     replies_last_updated = db.DateTimeProperty()
     replies_max_id = db.IntegerProperty()
+    viewed = db.DateTimeProperty()
 
 class Group(db.Model):
     name = db.StringProperty(required=True) # primary key
