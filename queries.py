@@ -33,8 +33,10 @@ def loadGroups(u):
             };
     rq = data.Replies.gql('WHERE user = :1', u);
     if rq.count():
-        last_read_replies = rq[0].viewed
-        urq = data.Reply.gql('WHERE created_at > :1', last_read_replies).count()
+        logging.debug('Resplies last viewed at %s' % str(rq[0].viewed));
+        urq = data.Reply.gql('WHERE created_at > :1 AND to = :2',
+                             rq[0].viewed, u).count()
+        logging.debug('Got %d new replies' % urq)
     else:
         urq = 0
     res['__REPLIES__'] = {'name': '__REPLIES__',
