@@ -71,8 +71,8 @@ class ATOMHandler(webapp.RequestHandler):
         ims = self.request.headers['If-Modified-Since']
         inm = self.request.headers['If-None-Match']
         if ims and inm:
-            imsd = datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S GMT')
-            inmd = datetime.strptime(inm, '%a, %d %b %Y %H:%M:%S GMT')
+            imsd = datetime.datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S GMT')
+            inmd = datetime.datetime.strptime(inm, '%a, %d %b %Y %H:%M:%S GMT')
             last_update = queries.getLastMessageDate(user, group)
             if imsd >= last_update and inmd >= last_update:
                 self.response.set_status(304)
