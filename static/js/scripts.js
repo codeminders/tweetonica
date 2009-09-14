@@ -349,6 +349,10 @@ $(document).ready(function() {
 
             container.append(buttons.append(editbutton).append(delbutton));
         }
+        
+        if (g.name == '__REPLIES__') {
+            container.addClass('repliesbox');
+        }
 
         $('#groups').append(container);
     };
@@ -596,7 +600,13 @@ $(document).ready(function() {
 
     var open_page = function(id) {
         if (id != 'manage' && id != 'prefs' && id != 'threads' || tweetonica.api.token) {
-            if (id != 'threads') $('#markasread').hide();
+            if (id != 'threads') {
+                $('#markasread').hide();
+                $('.repliesbox').hide();
+            }
+            else {
+                $('.repliesbox').show();
+            }
             //else $('#markasread').show();
             $('.menu').removeClass('act');
             if (id == 'progress')
@@ -750,6 +760,14 @@ $(document).ready(function() {
             }
 
             groups.sort(function(a, b) {
+                if (a.name == '__REPLIES__') {
+                    if (b.name == '__ALL__') return 1;
+                    else return -1;
+                }
+                if (b.name == '__REPLIES__') {
+                    if (a.name == '__ALL__') return -1;
+                    else return 1;
+                }
                 if (a.name == '__ALL__')
                     return -1;
                 if (b.name == '__ALL__')
