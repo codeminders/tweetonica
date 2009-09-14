@@ -56,12 +56,28 @@ class ATOMHandler(webapp.RequestHandler):
                                 (group, u.screen_name))
                 self.response.set_status(404)
                 return
-            self._generateFeed(u, g)
+            if self.haveNewMessages(u, g):
+                self._generateFeed(u, g)
         else:
             logging.debug("Request for replies feed")
             replies.updateReplies(u)
-            self._generateRepliesFeed(u)
+            if self.haveNewMessages(u, g):
+                self._generateRepliesFeed(u)
 
+    def haveNewMessages(self, user, group):
+        if not self.request.headers.has_key('If-Modified-Since') or \
+           not self.request.headers.has_key('If-None-Match'):
+            return True
+        ims = self.request.headers['If-Modified-Since']
+        inm = self.request.headers['If-None-Match']
+        if ims and inm:
+            imsd = datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S GMT')
+            inmd = datetime.strptime(inm, '%a, %d %b %Y %H:%M:%S GMT')
+            last_update = queries.getLastMessageDate(user, group)
+            if imsd >= last_update and inmd >= last_update:
+                self.response.set_status(304)
+                return False
+        return True
 
     def post(self):
         self.response.set_status(405)
@@ -125,7 +141,10 @@ class ATOMHandler(webapp.RequestHandler):
                                      guid = Guid(link),
                                      description = itemHTML(e),
                                      pubDate = e.created_at))
-
+            
+        mdate = queries.getLastMessageDate(u, g)
+        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
+        self.response.headers['etag'] = mtext
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
@@ -164,6 +183,9 @@ class ATOMHandler(webapp.RequestHandler):
                                      description = itemHTML(reply),
                                      pubDate = reply.created_at))
 
+        mdate = queries.getLastMessageDate(user, constants.REPLIES_GROUP_NAME)
+        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
+        self.response.headers['etag'] = mtext
         self.response.headers['Content-Type'] = 'application/rss+xml'
         rss.write_xml(self.response.out)
 
