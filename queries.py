@@ -255,3 +255,16 @@ def getReplies(user):
     query = data.Reply.gql('WHERE to=:1 ORDER BY id DESC', user.key())
     replies = query.fetch(100)
     return replies
+
+def getLastMessageDate(user, group):
+    if group.name == constants.REPLIES_GROUP_NAME:
+        query = data.Reply.gql('WHERE to = :1 ORDER BY id DESC LIMIT 1',
+                               user.key())
+    else:
+        query = data.StatusUpdate.gql('WHERE group = :1 ORDER BY id DESC LIMIT 1',
+                                      group.key())
+    items = query.fetch(1)
+    if len(items):
+        return items[0].created_at
+    else:
+        return datetime.datetime.min
