@@ -44,7 +44,8 @@ $(document).ready(function() {
     var show_mark_button = function() {
         $('#markasread').css('position','absolute');
         $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0);
-        $('#markasread').slideDown('normal');
+        //$('#markasread').slideDown('normal');
+        $('#markasread').show();
         
     }
 
