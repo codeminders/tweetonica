@@ -44,7 +44,7 @@ $(document).ready(function() {
     var show_mark_button = function() {
         $('#markasread').css('position','absolute');
         $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0);
-        $('#markasread').slideDown('slow');
+        $('#markasread').slideDown('normal');
         
     }
 
@@ -699,8 +699,8 @@ $(document).ready(function() {
             id = setInterval(function() {
                 fn();
             }, interval);
-        })(silent_refresh, 5*60000); // auto refresh every 5 minutes
-        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        //})(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        })(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
         
         var btn = $('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
