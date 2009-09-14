@@ -595,6 +595,8 @@ $(document).ready(function() {
 
     var open_page = function(id) {
         if (id != 'manage' && id != 'prefs' && id != 'threads' || tweetonica.api.token) {
+            if (id != 'threads') $('#markasread').hide();
+            //else $('#markasread').show();
             $('.menu').removeClass('act');
             if (id == 'progress')
                 $('#mmanage').addClass('act');
@@ -699,8 +701,8 @@ $(document).ready(function() {
             id = setInterval(function() {
                 fn();
             }, interval);
-        //})(silent_refresh, 5*60000); // auto refresh every 5 minutes
-        })(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        })(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
         
         var btn = $('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
