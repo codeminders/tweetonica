@@ -12,6 +12,9 @@ from mclock import MCLock
 
 from oauth import OAuthClient
 
+from google.appengine.api import memcache
+
+
 
 """ Timeline update frequency. Update no more often than this """
 TIMELINE_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -52,6 +55,7 @@ def _updateTimeLine(u,t,tl):
     fetched = 0
     since_id = tl.timeline_max_id
     since = datetime.datetime.now()-constants.BACK_ENTRIES
+    first = None
     while not done and page<=MAX_PAGES_TO_FETCH:
         try:
             logging.debug("Fetching page %d of %s timeline (since id %d)" % \
@@ -66,6 +70,8 @@ def _updateTimeLine(u,t,tl):
         if timeline==None or len(timeline)==0:
             break
         for e in timeline:
+            if not first:
+                first = e
             logging.debug("Got timeline entry %d" % e.id)
             if e.id<=since_id:
                 done = True
@@ -104,6 +110,11 @@ def _updateTimeLine(u,t,tl):
     tl.put()
     logging.debug("Fetced  %d timeline entries for %s" % \
                   (fetched, u.screen_name))
+    
+    if not first: return
+    last = datetime.datetime.utcfromtimestamp(first.GetCreatedAtInSeconds())
+    memcache.set(str(user.key()), last, constants.LAST_MESSAGE_CACHE_TIME,
+                 namespace = constants.LAST_MESSAGE_NAMESPACE)
 
 def _addTimeLineEntry(e,ts,u,friend):
     logging.debug("Adding timeline entry %d" % e.id)
