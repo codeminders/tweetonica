@@ -70,7 +70,12 @@ a.gropen, a.grclosed, a.gropen-hl, a.grclosed-hl {
     height: 29px;
     text-decoration: none;
     margin-bottom: 3px;
-    text-align:center;
+    /*text-align:center;*/
+   /*margin-left: 15px;*/
+}
+
+.groupname {
+    margin-left: 60px;
 }
 
 a.gropen, a.grclosed {

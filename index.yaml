@@ -5,3 +5,14 @@ indexes:
   - name: group
   - name: id
     direction: desc
+
+- kind: Reply
+  properties:
+  - name: to
+  - name: created_at
+
+- kind: Reply
+  properties:
+  - name: to
+  - name: id
+    direction: desc

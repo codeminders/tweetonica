@@ -321,7 +321,7 @@ $(document).ready(function() {
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name(g.name, true));
+        var span = $('<span class="groupname">').text(display_group_name(g.name, true));
         var span2 = $('<span>');//.text(display_unread(g.unread));
         span2.addClass('unread');
         span2.data('groupname', g.name)
@@ -371,7 +371,7 @@ $(document).ready(function() {
             e.preventDefault();
         });
 
-        var span = $('<span>').text(display_group_name("Replies", true));
+        var span = $('<span class="groupname">').text(display_group_name("Replies", true));
         var span2 = $('<span>').text(display_unread(unread));
         span2.addClass('unread');
         span2.data('groupname', "__REPLIES__")
