@@ -257,7 +257,7 @@ def getReplies(user):
     return replies
 
 def getLastMessageDate(user, group):
-    if group.name == constants.REPLIES_GROUP_NAME:
+    if group == constants.REPLIES_GROUP_NAME:
         query = data.Reply.gql('WHERE to = :1 ORDER BY id DESC LIMIT 1',
                                user.key())
     else:

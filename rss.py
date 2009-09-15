@@ -6,6 +6,8 @@ from urllib import unquote
 from google.appengine.ext import webapp
 from google.appengine.ext.webapp import util
 from google.appengine.ext import db
+from google.appengine.api import memcache
+
 
 from PyRSS2Gen import RSS2, SyInfo, RSSItem, Guid, Image
 
@@ -142,6 +144,13 @@ class ATOMHandler(webapp.RequestHandler):
                                      description = itemHTML(e),
                                      pubDate = e.created_at))
             
+        cached = memcache.get(str(g.key()), constants.LAST_MESSAGE_NAMESPACE)
+        if cached:
+            mdate = cached
+        else:
+            mdate = queries.getLastMessageDate(u, g)
+            memcache.set(str(g.key()), mdate, constants.LAST_MESSAGE_CACHE_TIME,
+                         constants.LAST_MESSAGE_NAMESPACE)
         mdate = queries.getLastMessageDate(u, g)
         mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
         self.response.headers['etag'] = mtext
@@ -182,8 +191,13 @@ class ATOMHandler(webapp.RequestHandler):
                                      guid = Guid(link),
                                      description = itemHTML(reply),
                                      pubDate = reply.created_at))
-
-        mdate = queries.getLastMessageDate(user, constants.REPLIES_GROUP_NAME)
+        cached = memcache.get(str(user.key()), constants.LAST_REPLY_NAMESPACE)
+        if cached:
+            mdate = cached
+        else:
+            mdate = queries.getLastMessageDate(user, constants.REPLIES_GROUP_NAME)
+            memcache.set(str(user.key()), mdate, constants.LAST_REPLY_CACHE_TIME,
+                         constants.LAST_REPLY_NAMESPACE)
         mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
         self.response.headers['etag'] = mtext
         self.response.headers['Content-Type'] = 'application/rss+xml'

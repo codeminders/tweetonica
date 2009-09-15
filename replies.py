@@ -12,6 +12,9 @@ from mclock import MCLock
 
 from oauth import OAuthClient
 
+from google.appengine.api import memcache
+
+
 
 """ Timeline update frequency. Update no more often than this """
 REPLIES_UPDATE_FREQ = datetime.timedelta(0, 90)
@@ -82,6 +85,10 @@ def _updateReplies(user, twitter, replies):
     replies.replies_last_updated = datetime.datetime.now()
     replies.put()
     logging.debug("Fetced  %d reply for %s" %  (fetched, user.screen_name))
+    
+    last = datetime.datetime.utcfromtimestamp(reply_list[0].GetCreatedAtInSeconds())
+    memcache.set(str(user.key()), last, constants.LAST_REPLY_CACHE_TIME,
+                 namespace = constants.LAST_REPLY_NAMESPACE)
 
 def _addReplyEntry(reply, ts, user, friend):
     logging.debug("Adding reply entry %d" % reply.id)
