@@ -153,7 +153,7 @@ class ATOMHandler(webapp.RequestHandler):
             memcache.set(str(g.key()), mdate, constants.LAST_MESSAGE_CACHE_TIME,
                          constants.LAST_MESSAGE_NAMESPACE)
         mdate = queries.getLastMessageDate(u, g)
-        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
+        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(group.key())
         self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
         self.response.headers['Last-Modified'] = mtext
@@ -200,7 +200,7 @@ class ATOMHandler(webapp.RequestHandler):
             mdate = queries.getLastMessageDate(user, constants.REPLIES_GROUP_NAME)
             memcache.set(str(user.key()), mdate, constants.LAST_REPLY_CACHE_TIME,
                          constants.LAST_REPLY_NAMESPACE)
-        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
+        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(user.key())
         self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
         self.response.headers['Last-Modified'] = mtext
