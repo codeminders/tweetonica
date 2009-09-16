@@ -4,6 +4,11 @@ indexes:
   properties:
   - name: group
   - name: id
+
+- kind: StatusUpdate
+  properties:
+  - name: group
+  - name: id
     direction: desc
 
 - kind: Reply
