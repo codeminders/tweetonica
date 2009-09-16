@@ -1,6 +1,7 @@
 
 import datetime
 import logging
+from hashlib import md5
 from urllib import unquote
 
 from google.appengine.ext import webapp
@@ -153,8 +154,9 @@ class ATOMHandler(webapp.RequestHandler):
                          constants.LAST_MESSAGE_NAMESPACE)
         mdate = queries.getLastMessageDate(u, g)
         mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
-        self.response.headers['etag'] = mtext
+        self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
+        self.response.headers['Last-Modified'] = mtext
         rss.write_xml(self.response.out)
 
     def _generateRepliesFeed(self, user):
@@ -199,8 +201,9 @@ class ATOMHandler(webapp.RequestHandler):
             memcache.set(str(user.key()), mdate, constants.LAST_REPLY_CACHE_TIME,
                          constants.LAST_REPLY_NAMESPACE)
         mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"')
-        self.response.headers['etag'] = mtext
+        self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
+        self.response.headers['Last-Modified'] = mtext
         rss.write_xml(self.response.out)
 
 
