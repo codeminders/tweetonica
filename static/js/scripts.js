@@ -24,29 +24,22 @@ $(document).ready(function() {
     }
     
     var set_group_unread = function(group, unread) {
-        $('.unread', group).text(display_unread(unread));
-        $('.unread', group).data('count', unread);
-        if (unread == 0) {
-            group.css('font-weight', 'normal');
-        }
-        else {
-            group.css('font-weight', 'bold');
-        }
+        $('.unread', group).text(display_unread(unread)).data('count', unread);
+        if (unread == 0) group.removeClass('bold');
+        else group.addClass('bold');
     }
     
     var update_title = function() {
         var open = $('#groups a.gropen');
-        if (open) {
+        if (open.length) {
             document.title = open.eq(0).text() + " - Tweetonica";
         }
     }
     
     var show_mark_button = function() {
-        $('#markasread').css('position','absolute');
-        $('#markasread').animate({left:$('#group-box').width()-150+$('#group-box').position().left, top: $('#group-box').position().top+1}, 0);
-        //$('#markasread').slideDown('normal');
-        $('#markasread').show();
-        
+        $('#markasread').css('position','absolute').animate(
+         { left: $('#group-box').width()-150+$('#group-box').position().left,
+           top: $('#group-box').position().top+1 }, 0).show();        
     }
 
     var format_date = function(s) {
@@ -198,7 +191,6 @@ $(document).ready(function() {
         $('#btn-morefeed').hide();
         tweetonica.api.get_new_tweets(g, id, function(feed) {
             for (var i = 0; i < feed.length; i++) {
-
                 var items = compose_feed(feed[i]);
                 var container = items[0];
                 var buttons = items[1];
@@ -356,32 +348,6 @@ $(document).ready(function() {
 
         $('#groups').append(container);
     };
-    
-    var render_replies_group = function(unread) {
-        if (!unread) unread = 0;
-        $('#replies').remove();
-        var container = $('<div class="group-background groupentry">')
-        var c = COLORS[COLOR++];
-        if (COLOR >= COLORS.length)
-            COLOR = 0;
-        var node = $('<a href="javascript:;" id="replies"' + ' class="grclosed ' + c + '-sm color-' + c + '"></a>').attr({
-        }).data('groupname', "__REPLIES__").click(function(e) {
-            open_group($(this));
-            e.stopPropagation();
-            e.preventDefault();
-        });
-
-        var span = $('<span class="groupname">').text(display_group_name("Replies", true));
-        var span2 = $('<span>').text(display_unread(unread));
-        span2.addClass('unread');
-        span2.data('groupname', "__REPLIES__")
-        node.append(span).append(span2);
-
-        set_group_unread(node, unread);
-        container.append(node.append(span).append(span2));
-        alert(container.text());
-        $('#groups').parent().after(container);
-    }
     
     var render_user = function(u, g) {
 
@@ -651,13 +617,6 @@ $(document).ready(function() {
 
         open_page('progress');
         
-        cache['__REPLIES__'] = jQuery({
-            name: '__REPLIES__',
-            unread: 0,
-            rssurl: 'None',
-            users: []
-        });
-
         tweetonica.api.get_prefs(function(results) {
             PREFS = results;
             reset_prefs();
@@ -744,7 +703,7 @@ $(document).ready(function() {
                 var grname = group.data('groupname');
                 set_group_unread(group, unread[grname]);
             });
-            var curunread = $('.unread', $('#groups .gropen')).data('count');
+            var curunread = $('#groups .gropen .unread').data('count');
             update_title();
         });
     };
@@ -817,8 +776,9 @@ $(document).ready(function() {
             var opened = false;
             if (lastgr) {
                 $('#groups a.grclosed').each(function() {
-                    if ($(this).data('groupname') == lastgr) {
-                        open_group($(this));
+                    current = $(this);
+                    if (current.data('groupname') == lastgr) {
+                        open_group(current);
                         opened = true;
                     }
                 });
