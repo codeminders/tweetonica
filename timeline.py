@@ -113,7 +113,7 @@ def _updateTimeLine(u,t,tl):
     
     if not first: return
     last = datetime.datetime.utcfromtimestamp(first.GetCreatedAtInSeconds())
-    memcache.set(str(user.key()), last, constants.LAST_MESSAGE_CACHE_TIME,
+    memcache.set(str(u.key()), last, constants.LAST_MESSAGE_CACHE_TIME,
                  namespace = constants.LAST_MESSAGE_NAMESPACE)
 
 def _addTimeLineEntry(e,ts,u,friend):
