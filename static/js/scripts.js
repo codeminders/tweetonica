@@ -31,9 +31,19 @@ $(document).ready(function() {
     
     var update_title = function() {
         var open = $('#groups a.gropen');
+        var text = '';
         if (open.length) {
-            document.title = open.eq(0).text() + " - Tweetonica";
+             text = open.eq(0).text() + " - Tweetonica";
         }
+        var closed = $('#groups a.grclosed .unread')
+        for (var i = 0; i < closed.length; i++) {
+            var current = closed.eq(i);
+            if (current.data('count') != 0) {
+                text = "***NEW*** " + text;
+                break;
+            };
+        };
+        document.title = text;
     }
     
     var show_mark_button = function() {
@@ -527,8 +537,7 @@ $(document).ready(function() {
         
         set_group_unread(e, 0);
         $.cookie('last_group', g.name, { expires: 365, path: '/'});
-        
-        //show_mark_button();    
+            
         update_title();
     }
 

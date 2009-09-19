@@ -24,11 +24,11 @@ DOMAIN = "www.tweetonica.com"
 REALM='tweetonica.com'
 
 OAUTH_APP_SETTINGS = {
-#    'consumer_key': 'Jfhz20pXgCsg282eIdbg',
-#    'consumer_secret': 'elCnqrCy2IfGl1KaRde9cOLxjPPpvkFDo2WRNPOzKA',
+    'consumer_key': 'Jfhz20pXgCsg282eIdbg',
+    'consumer_secret': 'elCnqrCy2IfGl1KaRde9cOLxjPPpvkFDo2WRNPOzKA',
 
-    'consumer_key': 'K9qqChOFmpGp7e4LlA1g',
-    'consumer_secret': 'DxcDnyLEeOOSXteiZf0gntHXQMkfeUoCgIiKro',
+#    'consumer_key': 'K9qqChOFmpGp7e4LlA1g',
+#    'consumer_secret': 'DxcDnyLEeOOSXteiZf0gntHXQMkfeUoCgIiKro',
 
     'request_token_url': 'http://twitter.com/oauth/request_token',
     'access_token_url': 'http://twitter.com/oauth/access_token',
@@ -47,9 +47,9 @@ BACK_ENTRIES = datetime.timedelta(days=7)
 MOBYPIC_DEV_KEY='7mV3iBuSDu33ERyi'
 
 # web-related
-#SITE_BASE_URL = 'http://tweetonica.com'
+SITE_BASE_URL = 'http://tweetonica.com'
 #SITE_BASE_URL = 'http://localhost:8080'
-SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
+#SITE_BASE_URL = 'http://3.latest.tweetonica.appspot.com'
 ICONS_PATH = "/images/"
 
 LAST_MESSAGE_CACHE_TIME = 3600 * 600
