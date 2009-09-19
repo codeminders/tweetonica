@@ -74,12 +74,25 @@ class ATOMHandler(webapp.RequestHandler):
         ims = self.request.headers['If-Modified-Since']
         inm = self.request.headers['If-None-Match']
         if ims and inm:
-            imsd = datetime.datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S GMT')
-            inmd = datetime.datetime.strptime(inm, '%a, %d %b %Y %H:%M:%S GMT')
-            last_update = queries.getLastMessageDate(user, group)
-            if imsd >= last_update and inmd >= last_update:
+            mdate = queries.getLastMessageDate(user, group)
+            try:
+                mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(g.key())
+            except:
+                if group.name == '__REPLIES__':
+                    mtext = str(user.key())
+                else:
+                    mtext = str(group.key())
+            etag = md5(mtext).hexdigest() + '"'
+
+            #imsd = datetime.datetime.strptime(ims, '%a, %d %b %Y %H:%M:%S GMT')
+            #inmd = datetime.datetime.strptime(inm, '%a, %d %b %Y %H:%M:%S GMT')
+            #last_update = queries.getLastMessageDate(user, group)
+            if ims == etag and inm == etag:
                 self.response.set_status(304)
                 return False
+            #if imsd >= last_update and inmd >= last_update:
+            #    self.response.set_status(304)
+            #    return False
         return True
 
     def post(self):
@@ -153,7 +166,10 @@ class ATOMHandler(webapp.RequestHandler):
             memcache.set(str(g.key()), mdate, constants.LAST_MESSAGE_CACHE_TIME,
                          constants.LAST_MESSAGE_NAMESPACE)
         mdate = queries.getLastMessageDate(u, g)
-        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(group.key())
+        try:
+            mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(g.key())
+        except:
+            mtext = str(g.key())
         self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
         self.response.headers['Last-Modified'] = mtext
@@ -200,7 +216,10 @@ class ATOMHandler(webapp.RequestHandler):
             mdate = queries.getLastMessageDate(user, constants.REPLIES_GROUP_NAME)
             memcache.set(str(user.key()), mdate, constants.LAST_REPLY_CACHE_TIME,
                          constants.LAST_REPLY_NAMESPACE)
-        mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(user.key())
+        try:
+            mtext = mdate.strftime('"%a, %d %b %Y %H:%M:%S GMT"') + str(user.key())
+        except:
+            mtext = str(user.key())
         self.response.headers['etag'] = '"' + md5(mtext).hexdigest() + '"'
         self.response.headers['Content-Type'] = 'application/rss+xml'
         self.response.headers['Last-Modified'] = mtext
