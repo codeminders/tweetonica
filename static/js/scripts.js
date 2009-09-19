@@ -35,7 +35,7 @@ $(document).ready(function() {
         if (open.length) {
              text = open.eq(0).text() + " - Tweetonica";
         }
-        var closed = $('#groups a.grclosed .unread')
+        var closed = $('#groups a .unread')
         for (var i = 0; i < closed.length; i++) {
             var current = closed.eq(i);
             if (current.data('count') != 0) {
