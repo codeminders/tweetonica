@@ -30,6 +30,10 @@ $(document).ready(function() {
     }
     
     var update_title = function() {
+        if ($('.act').attr('id') != 'mthreads') {
+            document.title = 'Tweetonica';
+            return;
+        }
         var open = $('#groups a.gropen');
         var text = '';
         if (open.length) {
@@ -47,6 +51,7 @@ $(document).ready(function() {
     }
     
     var show_mark_button = function() {
+        if ($('.act').attr('id')!='mthreads') return;
         $('#markasread').css('position','absolute').animate(
          { left: $('#group-box').width()-150+$('#group-box').position().left,
            top: $('#group-box').position().top+1 }, 0).show();        
