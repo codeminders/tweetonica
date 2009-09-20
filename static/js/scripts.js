@@ -621,6 +621,7 @@ $(document).ready(function() {
                 $('#view-style').show();
                 $('#group-box').removeClass('purple');
             }
+            update_title();
         }
         else {
             document.location.href = '/oauth/login';
