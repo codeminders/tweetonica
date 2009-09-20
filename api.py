@@ -365,10 +365,20 @@ class JSONHandler(webapp.RequestHandler, json.JSONRPC):
         u = self._verifyAuthToken(auth_token)
         logging.debug('Method \'mark_group_read(%s)\' invoked for user %s' % (group_name, u.screen_name))
 
+        if group_name == '__REPLIES__':
+            replies = queries.getUserReplies(u)
+            q = data.Reply.gql('WHERE id = :1', int(lastid))
+            if not q.count():
+                raise json.JSONRPCError("Tweet %s does not exists" % lastgr,
+                                        code=ERR_NO_SUCH_TWEET)
+            replies.viewed = q[0].created_at
+            replies.put()
+            return
+            
         g = queries.getGroupByName(group_name, u)
         if not g:
             logging.warning("Req. non-existing group '%s' for user '%s'" % \
-                            (group, u.screen_name))
+                            (group_name, u.screen_name))
             raise json.JSONRPCError("Group %s does not exists" % group_name,
                                     code=ERR_NO_SUCH_GROUP)
         
