@@ -78,6 +78,15 @@ $(document).ready(function() {
             return Math.ceil(delta / (24 * 3600)) + ' days ago';
         return d.getMonth() + '/' + d.getDate() + '/' + d.getFullYear();
     }
+    
+    var update_dates = function() {
+        $('.msg-header').each(function() {
+            var header = $(this);
+            var date = header.children('.msg-date').eq(0);
+            var created = header.data('date');
+            date.text(format_date(created));  
+        });
+    }
 
     var set_post_text = function(s) {
         if (s.length > 140)
@@ -112,7 +121,7 @@ $(document).ready(function() {
             container.append('<div class="userinfo_pic"><img src="' + feed.from.profile_image_url + '" alt="vzaliva" width="48" height="48"/></div>');
         }
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed.from.screen_name + '</span></a>');
-        container.append('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>');
+        container.append($('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank" class="msg-header"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>').data('date', feed.created_at));
         container.append('<span class="feed-text">' + feed.html + '</span>');
 
         var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed.id + '">');
@@ -253,6 +262,7 @@ $(document).ready(function() {
                 update_feed(opengr.name, 0, refresh_unread_count);
             }
             update_title();
+            update_dates();
         };
     }
     
@@ -686,8 +696,8 @@ $(document).ready(function() {
             id = setInterval(function() {
                 fn();
             }, interval);
-        })(silent_refresh, 5*60000); // auto refresh every 5 minutes
-        //})(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
+        //})(silent_refresh, 5*60000); // auto refresh every 5 minutes
+        })(silent_refresh, 20000); // auto refresh every 20 seconds (for debug)
         
         
         var btn = $('<a id="markasread" href="javascript:;"><img src="images/mark-button.png" alt="Mark all as read"></a>')
