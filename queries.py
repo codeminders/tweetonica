@@ -211,15 +211,14 @@ def getNewReplies(u, lastid):
     return q
 
 def getTimelineById(uid, u):
-    ''' TODO: does not work '''
     q = data.StatusUpdate.gql('WHERE id =:1 ', int(uid))
     tl = q.fetch(1)
     logging.debug("Got %d items" % len(tl))
-    if len(tl)==1:
-        if  tl[0].from_friend.user.key() == u.key():
-            return tl[0]
-        else:
-            return None
+    if q.count():
+        for item in q:
+            if item.from_friend.user.key() == u.key():
+                return item
+        return None
     else:
         return None
 
