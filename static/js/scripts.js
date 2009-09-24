@@ -71,7 +71,7 @@ $(document).ready(function() {
         else if (delta > 60 && delta <= 48 * 60)
             return 'about ' + Math.ceil(delta / 60) + ' minutes ago';
         else if (delta > 48 * 60 && delta <= 90 * 60)
-            return 'about a hour ago';
+            return 'about an hour ago';
         else if (delta > 90 * 60 && delta < 23 * 3600 + 31 * 60)
             return Math.ceil(delta / 3600) + ' hours ago';
         else if (delta >= 23 * 3600 + 31 * 60 && delta < 30 * 24 * 3600)
