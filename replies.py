@@ -17,8 +17,8 @@ from google.appengine.api import memcache
 
 
 """ Timeline update frequency. Update no more often than this """
-REPLIES_UPDATE_FREQ = datetime.timedelta(0, 90)
-#REPLIES_UPDATE_FREQ = datetime.timedelta(0, 0)
+#REPLIES_UPDATE_FREQ = datetime.timedelta(0, 90)
+REPLIES_UPDATE_FREQ = datetime.timedelta(0, 0)
 
 """ How many timeline entries to fetch. No more than 200! """
 FETCH_COUNT=100
