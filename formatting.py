@@ -66,7 +66,7 @@ def mailtoMapper(m):
 
 def defaultMapper(m):
     url = m.group(1)
-    return '<a href="%s">%s</a>' % (url, url)
+    return '<a href="%s" class="user-link">%s</a>' % (url, url)
 
 def yfrogMapper(m):
     url = m.group(0)
@@ -119,7 +119,7 @@ def yfrogMapper2(m):
 def twitpicMapper(m):
     url = m.group(0)
     media_id = m.group(3)
-    return '<a href="%s"><img class="tweet-image" src="http://twitpic.com/show/thumb/%s"/></a>' % (url, media_id)
+    return '<a href="%s"><img class="tweet-image" src="http://twitpic.com/show/thumb/%s"/ title="Preview"></a>' % (url, media_id)
 
 def flickrMapper(m):
     url = m.group(0)
@@ -138,7 +138,7 @@ def flickrMapper(m):
 
 def tweetphotoMapper(m):
     url = m.group(0)
-    return '<a href="%s" alt="thumbnail"><img class="tweet-image" src="http://TweetPhotoAPI.com/api/TPAPI.svc/imagefromurl?size=medium&url=%s"></a>' % (url, url)
+    return '<a href="%s" alt="thumbnail" title="Preview"><img class="tweet-image" src="http://TweetPhotoAPI.com/api/TPAPI.svc/imagefromurl?size=medium&url=%s"></a>' % (url, url)
 
 def urlResolver(match):
     url = match.group(0)
