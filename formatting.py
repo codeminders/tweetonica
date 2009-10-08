@@ -86,7 +86,7 @@ def yfrogMapper(m):
             logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
     if media_id.endswith('x'):
         return '<a href="%s">%s</a>' % (url, url)
-    res = '<a class="tweet-image yfrog-image" href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
+    res = '<a class="tweet-image yfrog-image" href="%s"><img src="%s.th.jpg" onerror="$(this).attr(\'src\',\'%s.jpg\')"/></a>' % (url, url, url)
     if m.start() != 0:
         res = '<br />' + res
     return res
