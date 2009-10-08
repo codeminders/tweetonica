@@ -512,6 +512,7 @@ $(document).ready(function() {
 
     var open_group = function(e) {
         $('a.gropen').each(function() {
+			mark_group_read($(this));
             var cl = this.className.split(' ');
             var newcl = 'grclosed ';
             for (var i = 0; i < cl.length; i++) {
