@@ -122,6 +122,7 @@ $(document).ready(function() {
         }
         container.append('<a href="http://twitter.com/' + feed.from.screen_name + '" target="_blank"><span class="feed-author-name">' + feed.from.screen_name + '</span></a>');
         container.append($('<a href="http://twitter.com/' + feed.from.screen_name + '/status/' + feed.id + '" target="_blank" class="msg-header"><span class="msg-date">' + format_date(feed.created_at) + '</span></a><br/>').data('date', feed.created_at));
+		
         container.append('<span class="feed-text">' + feed.html + '</span>');
 
         var buttons = $('<div class="msg-edit-buttons" id="btn-' + feed.id + '">');
@@ -165,6 +166,12 @@ $(document).ready(function() {
         btn_retweet.append('<img src="/images/retweet.png" alt="reTweet"/>');
         buttons.append(btn_retweet);
         $('.feed-text a', container).attr('target', '_blank');
+		
+		/*$('.yfrog-image', container).error(function()
+		{
+	
+		});*/
+		
         return [container, buttons];
     }
 
