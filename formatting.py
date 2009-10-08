@@ -10,6 +10,7 @@ import yfrog
 import ytembed
 import flickrembed
 import constants
+import hash_bucket
 
 from google.appengine.api import memcache
 
@@ -91,30 +92,18 @@ def yfrogMapper(m):
     return res
 
 def yfrogMapper2(m):
-    return '<a href="http://%s">http://%s</a>' % (m.group(0), m.group(0))
-
-    # !!!TODO!!!
-
-    url = m.group(0)
-    logging.debug(url)
-    domain = 'img' + m.group(1)
-    media_id = m.group(2)
-    if domain=="us" or \
-       media_id.endswith('z') or \
-       media_id.endswith('f'):
-        # Video file, try to get embed
-        try:
-            embed = yfrog.getEmbed(media_id)
-            if embed!=None:
-                return embed
-        except:
-            logging.exception("Error getting emebed for yfrog media '%s'" % media_id)
-    if media_id.endswith('x'):
-        return '<a href="%s">%s</a>' % (url, url)
-    #res = '<a class="tweet-image yfrog-image" href="%s"><img src="%s.th.jpg"/></a>' % (url, url)
-    if m.start() != 0:
-        res = '<br />' + res
-    return res
+    server = m.group(2)
+    basename = m.group(3)
+    ext = m.group(4)
+    logging.debug(server + ' '+ basename + ' '+ ext)
+    bucket = hash_bucket.bucket(basename + '.' + ext)
+    logging.debug('2' + server + ' '+ basename + ' '+ ext)
+    if ext in ('flv', 'mp4'):
+        url = 'http://%s.imageshack.us/%s/%s/%s.%s.th.jpg' % (server, server, bucket, basename, ext)
+    else:
+        url = 'http://%s.imageshack.us/%s/%s/%s.th.%s' % (server, server, bucket, basename, ext)
+    logging.debug('Formated %s as %s' % (m.group(1), url))
+    return '<a href="%s" class="tweet-image yfrog2-image"><img src="%s"></a>' % (m.group(0), url)
 
 def twitpicMapper(m):
     url = m.group(0)
@@ -138,7 +127,7 @@ def flickrMapper(m):
 
 def tweetphotoMapper(m):
     url = m.group(0)
-    return '<a href="%s" alt="thumbnail" title="Preview"><img class="tweet-image" src="http://TweetPhotoAPI.com/api/TPAPI.svc/imagefromurl?size=medium&url=%s"></a>' % (url, url)
+    return '<a href="%s" alt="thumbnail" title="Preview"><img class="tweet-image" src="http://TweetPhotoAPI.com/api/TPAPI.svc/imagefromurl?size=thumbnail&url=%s"></a>' % (url, url)
 
 def urlResolver(match):
     url = match.group(0)
@@ -179,7 +168,7 @@ URLSOLVERS = [ (re.compile('http://(www.)?(%s)(/.*)' % site, re.U), urlResolver)
 MAPPERS = [
     (re.compile(r'(^mailto:([^ ]+))$'), mailtoMapper),
     (re.compile(r'^http://((www\.)?yfrog\.(com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il))/([^./\:\?]+)$'), yfrogMapper),
-    (re.compile(r'http://(img(\d+).yfrog.com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il)/i/(\w+).\w{1,4}/?$'), yfrogMapper2),
+    (re.compile(r'http://((img\d+).yfrog.com|ru|es|fr|us|org|it|pl|eu|com\.pl|com\.tr|co\.uk|co\.il)/i/(\w+).(\w{1,4})/?$'), yfrogMapper2),
     (re.compile(r'^http://((www\.)?twitpic\.com)/([^/\?]+)$'), twitpicMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/v/([^/\?]+)$'), youtubeMapper),
     (re.compile(r'^http://((www\.)?youtube\.com)/watch\?v=([^/\?]+)$'), youtubeMapper),
